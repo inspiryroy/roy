@@ -7,7 +7,7 @@
 // Hub-and-spoke netting: each participant ends a cycle with at most one transfer
 // per asset, whatever the number of payments.
 
-import type { ChainAdapter, SettlementPartner } from '../adapters/types.ts';
+import type { ChainAdapter, OffRamp, SettlementPartner } from '../adapters/types.ts';
 import type { Ledger } from '../ledger/ledger.ts';
 
 export interface Instruction {
@@ -20,7 +20,10 @@ export interface Instruction {
   amount: bigint;
   direction: 'PAY' | 'COLLECT';
   status: 'PENDING' | 'SENT' | 'CONFIRMED' | 'FAILED';
+  /** How a PAY to a partner is delivered (see SettlementPartner.settlementMode). */
+  route?: 'onchain' | 'offramp-wire';
   txHash?: string;
+  wireRef?: string;
   error?: string;
 }
 
@@ -42,6 +45,10 @@ export interface SettlementDeps {
   partners: SettlementPartner[];
   hubAddress: string;
   settlementAsset: string;
+  /** Required when any partner settles in fiat. */
+  offRamp?: OffRamp;
+  /** Fiat currency wired to fiat-mode partners. */
+  wireCurrency?: string;
   clock?: () => number;
 }
 
@@ -99,9 +106,21 @@ export class SettlementEngine {
           continue;
         }
         try {
-          const tx = await this.d.chain.transfer({ asset, from: this.d.hubAddress, to: partner.settlementAddress, amount: ins.amount, memo: ins.instructionId });
-          ins.txHash = tx.txHash;
-          ins.status = tx.finalized ? 'CONFIRMED' : 'SENT';
+          if (partner.settlementMode === 'fiat') {
+            // Stablecoin stays at the hub: move it to the off-ramp, which wires fiat to the partner.
+            if (!this.d.offRamp) throw new Error('fiat-mode partner but no off-ramp configured');
+            const tx = await this.d.chain.transfer({ asset, from: this.d.hubAddress, to: this.d.offRamp.address, amount: ins.amount, memo: ins.instructionId });
+            const w = await this.d.offRamp.payout({ partnerId: partner.id, asset, amount: ins.amount, fiatCurrency: this.d.wireCurrency ?? 'USD', reference: ins.instructionId });
+            ins.route = 'offramp-wire';
+            ins.txHash = tx.txHash;
+            ins.wireRef = w.wireRef;
+            ins.status = 'SENT'; // confirmed when the partner acknowledges the wire
+          } else {
+            const tx = await this.d.chain.transfer({ asset, from: this.d.hubAddress, to: partner.settlementAddress, amount: ins.amount, memo: ins.instructionId });
+            ins.route = 'onchain';
+            ins.txHash = tx.txHash;
+            ins.status = tx.finalized ? 'CONFIRMED' : 'SENT';
+          }
           ledger.post({
             id: `${ins.instructionId}:pay`,
             ref: cycleId,
@@ -139,6 +158,13 @@ export class SettlementEngine {
     this.settledJournals = captured;
     this.cycles.push(report);
     return report;
+  }
+
+  /** Partner acknowledgement of a wired (fiat-mode) payout. */
+  confirmPayout(cycleId: string, instructionId: string): void {
+    const ins = this.cycles.find(x => x.cycleId === cycleId)?.instructions.find(x => x.instructionId === instructionId);
+    if (!ins || ins.direction !== 'PAY' || ins.status !== 'SENT') throw new Error('no payout awaiting confirmation');
+    ins.status = 'CONFIRMED';
   }
 
   /** Records an MPP's payment of its due amount (bank wire or on-chain JPYC). */

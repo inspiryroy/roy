@@ -22,11 +22,13 @@ for (const s of SAMPLES) {
 
 console.log('\n=== 2. settlement cycle ===\n');
 const r = await net.settlement.closeCycle('2026-10-18T09');
-console.log(`payments in cycle: ${r.grossItems}, on-chain transfers: ${r.instructions.filter(x => x.direction === 'PAY').length}`);
+const pays = r.instructions.filter(x => x.direction === 'PAY');
+console.log(`payments in cycle: ${r.grossItems} → partner payouts: ${pays.length} (on-chain USDC: ${pays.filter(x => x.route === 'onchain').length}, off-ramp + USD wire: ${pays.filter(x => x.route === 'offramp-wire').length})`);
 console.log(`treasury USDC required ${fromMinorUnits(r.liquidity.required, 6)} / available ${fromMinorUnits(r.liquidity.available, 6)}`);
 for (const ins of r.instructions) {
   const amt = ins.asset === 'USDC' ? `${fromMinorUnits(ins.amount, 6)} USDC` : fmt(ins.asset, ins.amount);
-  console.log(`  ${ins.instructionId} ${ins.direction.padEnd(7)} ${ins.participant.padEnd(16)} ${amt.padStart(18)}  ${ins.status}${ins.txHash ? ` ${ins.txHash.slice(0, 12)}…` : ''}`);
+  const via = ins.route === 'offramp-wire' ? `off-ramp → USD wire ${ins.wireRef}` : ins.route === 'onchain' ? `on-chain ${ins.txHash!.slice(0, 10)}…` : '';
+  console.log(`  ${ins.instructionId} ${ins.direction.padEnd(7)} ${ins.participant.padEnd(16)} ${amt.padStart(18)}  ${ins.status.padEnd(9)} ${via}`);
 }
 for (const rb of r.rebalance) console.log(`  treasury rebalance: sell ${fmt(rb.sell, rb.sellAmount)} → buy back ${fromMinorUnits(rb.buyAmount, 6)} ${rb.buy}`);
 

@@ -32,6 +32,12 @@ export interface SettlementPartner {
   /** Settlement asset and on-chain address used to reimburse the partner. */
   settlementAsset: string;
   settlementAddress: string;
+  /**
+   * "onchain": the partner (or its licensed affiliate) receives the stablecoin directly
+   * (Singapore, Philippines). "fiat": stablecoins must not enter the partner's country
+   * (Thailand, Malaysia, Indonesia, Vietnam, Laos…), so the hub off-ramps and wires fiat.
+   */
+  settlementMode?: 'onchain' | 'fiat';
   credit(instr: CreditInstruction): Promise<CreditResult>;
   /** Resolves an UNKNOWN credit after a timeout. */
   inquire(paymentId: string): Promise<CreditResult>;
@@ -46,6 +52,13 @@ export interface ChainTransfer {
   /** Integer base units (USDC = 6 dp). */
   amount: bigint;
   memo: string;
+}
+
+/** Licensed off-ramp at the settlement hub: takes stablecoin, wires fiat to a partner's bank account. */
+export interface OffRamp {
+  /** On-chain address the hub sends stablecoin to. */
+  address: string;
+  payout(input: { partnerId: string; asset: string; amount: bigint; fiatCurrency: string; reference: string }): Promise<{ wireRef: string }>;
 }
 
 export interface ChainAdapter {

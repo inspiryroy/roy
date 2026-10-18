@@ -50,3 +50,18 @@ test('ledger stays balanced across payment, refund and settlement', async () => 
     assert.equal(sum, 0n, `${asset} trial balance`);
   }
 });
+
+test('fiat-mode partner: stablecoin goes to the hub off-ramp, partner gets a fiat wire', async () => {
+  const n = network({ settlementMode: 'fiat' });
+  await payN(n, ['1000.00']);
+  const r = await n.settlement.closeCycle('C1');
+  const pay = r.instructions.find(i => i.direction === 'PAY')!;
+  assert.equal(pay.route, 'offramp-wire');
+  assert.equal(pay.status, 'SENT');
+  assert.equal(await n.chain.balanceOf('USDC', n.partner.settlementAddress), 0n, 'no stablecoin reaches the partner');
+  assert.equal(await n.chain.balanceOf('USDC', n.offRamp.address), 31_250_000n);
+  assert.deepEqual(n.offRamp.payouts.map(p => [p.partnerId, p.amount, p.fiatCurrency]), [['THP1', 31_250_000n, 'USD']]);
+  n.settlement.confirmPayout('C1', pay.instructionId);
+  assert.equal(pay.status, 'CONFIRMED');
+  assert.equal(n.ledger.balance('acqp:THP1:owed', 'USDC'), 0n);
+});

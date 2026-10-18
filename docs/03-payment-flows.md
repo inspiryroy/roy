@@ -46,6 +46,7 @@ sequenceDiagram
 ```
 
 要点：
+0. **能付哪些码取决于接入路径**：泰国既有的入境通道只接受参与银行发出的商户码（tag 30/31）；Phase 1 的 on-us 模式下只能付合作行自己的商户码，`identify` 对其他银行的码返回 `NO_ROUTE`，钱包提示"该店暂不支持"。
 1. **商户零改造**：商户贴的是本国国家码，钱到的是自己原有的银行账户/钱包，到账通知来自自己的银行 App。网络不需要"签约商户"，覆盖面 = 该国国家码的全部商户。
 2. **用户只看到日元**：用户余额里扣的是日元；稳定币只在机构之间（NET ↔ LSP、NET ↔ LP）流转，用户和商户都不接触加密资产——这是在多数东南亚国家合规可行的前提（见 [06 合规](06-compliance-risk.md)）。
 3. **LSP 先垫付本币**：第 16 步 LSP 用自己在本地轨道的本币头寸给商户入账，之后在结算周期由 NET 以稳定币偿付（3.6）。LSP 的垫付额度由 NET 在链上托管的稳定币保证金覆盖。
@@ -95,7 +96,7 @@ sequenceDiagram
 2. 若商户不是 LSP 的客户（例如商户的银行是 A 行，LSP 是 B 行），退款只能由商户用自己银行 App 向 LSP 的专用回款账户做一笔反向贷记，附原 `paymentId`/`railRef`；LSP 匹配后调用 `POST /v1/lsp/refunds`；
 3. NET 把本币退款折算回日元，`notifyRefund` 给 MPP，MPP 退回用户余额。
 
-**退款汇率规则**（需要和 MPP 约定，参考实现采用 A）：
+**退款汇率规则**（需要和 MPP 约定，参考实现采用 A）。现有做法可作参照：马来西亚 DuitNow 跨境退款按退款时的 PayNet 汇率，FX 风险由付款人承担；Alipay+ 结算时沿用原交易汇率。
 * A. **按原交易汇率退本金**，费用不退；汇率波动由网络承担（用户体验最好，网络有小额 FX 风险）；
 * B. 按退款时的汇率；
 * C. 全额 ≤ X 天内按原汇率，之后按当时汇率（卡组织常见做法）。
@@ -113,13 +114,15 @@ sequenceDiagram
     participant M as MPP（PayPay）
     participant N as NET（链上金库）
     participant LP as LP（JPY↔USDC）
-    participant L1 as LSP 泰国
-    participant L2 as LSP 越南
+    participant L1 as LSP 泰国（稳定币不入境）
+    participant L2 as LSP 菲律宾（稳定币可落地）
     Note over N: 周期截止（例：日本时间 24:00）
     N->>N: 按参与者、按资产轧差（多笔 → 每参与者 1 笔）
-    N->>L1: USDC 转账（净额，链上，memo=instructionId）
-    N->>L2: USDC 转账（净额）
-    L1-->>N: ack（链上确认 + 轨道日终文件核对）
+    N->>N: 枢纽把泰国份额 USDC 出金为 USD
+    N->>L1: USD 电汇（净额，附 instructionId），境内银行兑泰铢
+    N->>L2: USDC 链上转账（净额，memo=instructionId）
+    L1-->>N: ack（到账确认 + 轨道日终文件核对）
+    L2-->>N: ack（链上确认 + 轨道日终文件核对）
     N->>M: 结算单（应付 JPY 净额）
     M->>N: JPY 银行汇款（或 JPYC 链上转账）
     N->>LP: 用收到的 JPY 买回 USDC，补充金库浮存

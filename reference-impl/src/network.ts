@@ -2,7 +2,7 @@
 // settlement partner per routing key, a rate table, ledger, screening and the
 // settlement engine. Used by the demo, the HTTP server and tests.
 
-import { InMemoryChain, MockPartner, RecordingNotifier, RuleScreening } from './adapters/mock.ts';
+import { InMemoryChain, MockOffRamp, MockPartner, RecordingNotifier, RuleScreening } from './adapters/mock.ts';
 import { TableRateSource } from './fx/quote.ts';
 import { Ledger } from './ledger/ledger.ts';
 import { PaymentService } from './payments/service.ts';
@@ -29,8 +29,15 @@ export function createNetwork(opts: { clock?: () => number; hubFloatUsdc?: bigin
   const registry = new SchemeRegistry();
   for (const s of ALL_SCHEMES) registry.register(s);
 
+  // Countries whose regulators do not let stablecoins reach local institutions get fiat
+  // wires from the hub's off-ramp (docs/04 §4.2, §4.10). Cambodia stays fiat until NBC
+  // approves a bank's Group 1b stablecoin holding.
+  const ONCHAIN_COUNTRIES = new Set(['SG', 'PH']);
   const keys = [...new Set(ALL_SCHEMES.map(s => s.routingKey))];
-  const partners = keys.map(k => new MockPartner(`LSP-${k.replace(/[^A-Z0-9]/g, '')}`, [k]));
+  const partners = keys.map(
+    k => new MockPartner(`LSP-${k.replace(/[^A-Z0-9]/g, '')}`, [k], { settlementMode: ONCHAIN_COUNTRIES.has(k.slice(0, 2)) ? 'onchain' : 'fiat' }),
+  );
+  const offRamp = new MockOffRamp();
 
   const rates = new TableRateSource(30_000);
   for (const [b, q, r] of DEMO_RATES) rates.set(b, q, r, `LP-${q}`);
@@ -65,6 +72,6 @@ export function createNetwork(opts: { clock?: () => number; hubFloatUsdc?: bigin
     settlementAsset: 'USDC',
     clock,
   });
-  const settlement = new SettlementEngine({ ledger, chain, partners, hubAddress, settlementAsset: 'USDC', clock });
-  return { registry, partners, rates, ledger, chain, hubAddress, notifier, payments, settlement };
+  const settlement = new SettlementEngine({ ledger, chain, partners, hubAddress, settlementAsset: 'USDC', offRamp, wireCurrency: 'USD', clock });
+  return { registry, partners, rates, ledger, chain, hubAddress, offRamp, notifier, payments, settlement };
 }

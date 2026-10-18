@@ -8,6 +8,7 @@ import type {
   CreditInstruction,
   CreditResult,
   MppNotifier,
+  OffRamp,
   Screening,
   ScreeningDecision,
   SettlementPartner,
@@ -20,15 +21,17 @@ export class MockPartner implements SettlementPartner {
   readonly routingKeys: readonly string[];
   readonly settlementAsset: string;
   readonly settlementAddress: string;
+  readonly settlementMode: 'onchain' | 'fiat';
   behaviour: Behaviour = 'success';
   readonly credits: CreditInstruction[] = [];
   private readonly pending = new Map<string, CreditResult>();
 
-  constructor(id: string, routingKeys: string[], settlementAsset = 'USDC', settlementAddress = `0x${id.toLowerCase()}`) {
+  constructor(id: string, routingKeys: string[], opts: { settlementMode?: 'onchain' | 'fiat'; settlementAsset?: string; settlementAddress?: string } = {}) {
     this.id = id;
     this.routingKeys = routingKeys;
-    this.settlementAsset = settlementAsset;
-    this.settlementAddress = settlementAddress;
+    this.settlementMode = opts.settlementMode ?? 'onchain';
+    this.settlementAsset = opts.settlementAsset ?? 'USDC';
+    this.settlementAddress = opts.settlementAddress ?? `0x${id.toLowerCase()}`;
   }
 
   async credit(instr: CreditInstruction): Promise<CreditResult> {
@@ -54,6 +57,19 @@ export class MockPartner implements SettlementPartner {
 
   async refund(paymentId: string): Promise<CreditResult> {
     return { status: 'SUCCESS', railRef: `${this.id}-RF-${paymentId}` };
+  }
+}
+
+export class MockOffRamp implements OffRamp {
+  readonly address: string;
+  readonly payouts: Array<{ partnerId: string; asset: string; amount: bigint; fiatCurrency: string; reference: string; wireRef: string }> = [];
+  constructor(address = '0xHUB-OFFRAMP') {
+    this.address = address;
+  }
+  async payout(input: { partnerId: string; asset: string; amount: bigint; fiatCurrency: string; reference: string }): Promise<{ wireRef: string }> {
+    const wireRef = `WIRE-${this.payouts.length + 1}`;
+    this.payouts.push({ ...input, wireRef });
+    return { wireRef };
   }
 }
 

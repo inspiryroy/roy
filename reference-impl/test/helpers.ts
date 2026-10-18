@@ -1,4 +1,4 @@
-import { InMemoryChain, MockPartner, RecordingNotifier, RuleScreening } from '../src/adapters/mock.ts';
+import { InMemoryChain, MockOffRamp, MockPartner, RecordingNotifier, RuleScreening } from '../src/adapters/mock.ts';
 import { buildMpm } from '../src/emvco/mpm.ts';
 import { TableRateSource } from '../src/fx/quote.ts';
 import { Ledger } from '../src/ledger/ledger.ts';
@@ -41,11 +41,12 @@ export function testQr(opts: { amount?: string; p2p?: boolean; tip?: '01' } = {}
   });
 }
 
-export function network(opts: { now?: () => number; hubUsdc?: bigint } = {}) {
+export function network(opts: { now?: () => number; hubUsdc?: bigint; settlementMode?: 'onchain' | 'fiat' } = {}) {
   let t = 1_700_000_000_000;
   const clock = opts.now ?? (() => t);
   const ledger = new Ledger();
-  const partner = new MockPartner('THP1', ['XT:TESTRAIL']);
+  const partner = new MockPartner('THP1', ['XT:TESTRAIL'], { settlementMode: opts.settlementMode ?? 'onchain' });
+  const offRamp = new MockOffRamp();
   const chain = new InMemoryChain();
   const hub = '0xhub';
   chain.mint('USDC', hub, opts.hubUsdc ?? 1_000_000_000n);
@@ -74,6 +75,6 @@ export function network(opts: { now?: () => number; hubUsdc?: bigint } = {}) {
     settlementAsset: 'USDC',
     clock,
   });
-  const settlement = new SettlementEngine({ ledger, chain, partners: [partner], hubAddress: hub, settlementAsset: 'USDC', clock });
-  return { ledger, partner, chain, hub, notifier, payments, settlement, advance: (ms: number) => (t += ms) };
+  const settlement = new SettlementEngine({ ledger, chain, partners: [partner], hubAddress: hub, settlementAsset: 'USDC', offRamp, clock });
+  return { ledger, partner, chain, hub, offRamp, notifier, payments, settlement, advance: (ms: number) => (t += ms) };
 }
