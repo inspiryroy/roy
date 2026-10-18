@@ -429,11 +429,12 @@ export class PaymentService {
   refund(input: { partnerId: string; paymentId: string; amountMinor: bigint; refundRequestId: string }): Promise<RefundResult> {
     try {
       if (!REQUEST_ID.test(input.refundRequestId ?? '')) throw new PaymentError('BAD_REQUEST', 'refundRequestId must be 1..64 printable ASCII characters');
+      // Ownership first: another partner replaying a known key must not see the refund.
+      const p = this.payments.get(input.paymentId);
+      if (!p || p.partnerId !== input.partnerId) throw new PaymentError('NOT_FOUND', 'payment not found');
       const key = `${input.paymentId}|${input.refundRequestId}`;
       const prior = this.refunds.get(key);
       if (prior) return prior;
-      const p = this.payments.get(input.paymentId);
-      if (!p || p.partnerId !== input.partnerId) throw new PaymentError('NOT_FOUND', 'payment not found');
       if (p.status !== 'SUCCEEDED') throw new PaymentError('NOT_REFUNDABLE', 'payment has not succeeded');
       const total = p.quote.merchant.amountMinor;
       if (input.amountMinor <= 0n || p.refundedMinor + p.pendingRefundMinor + input.amountMinor > total) throw new PaymentError('REFUND_EXCEEDS', 'refund exceeds captured amount');

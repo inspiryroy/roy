@@ -203,6 +203,9 @@ test('only the partner that credited the merchant can refund', async () => {
   const n = network();
   const p = await paid(n, '100.00');
   await assert.rejects(n.payments.refund({ partnerId: 'OTHER-LSP', paymentId: p.paymentId, amountMinor: 100n, refundRequestId: 'z' }), { code: 'NOT_FOUND' });
+  // replaying a key the owner already used does not reveal the refund either
+  await n.payments.refund({ partnerId: LSP, paymentId: p.paymentId, amountMinor: 100n, refundRequestId: 'y' });
+  await assert.rejects(n.payments.refund({ partnerId: 'OTHER-LSP', paymentId: p.paymentId, amountMinor: 100n, refundRequestId: 'y' }), { code: 'NOT_FOUND' });
 });
 
 test('cancel before pay tombstones the request; in-flight and captured payments cannot be cancelled', async () => {
