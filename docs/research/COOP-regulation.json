@@ -1,0 +1,377 @@
+{
+  "topic": "REGULATION：Alipay+ × DCS × INSPAY（INSCREEN）× Sui 各合作模式的分市场监管可行性（日本、新加坡、香港、机构间 Sui 结算腿）",
+  "as_of": "2026-10-18",
+  "searches_used": 12,
+  "method_notes": "共用 12 次 WebSearch（standard），已用完。WebFetch 打开 bakermckenzie.com、sbivc.co.jp 均报 getaddrinfo ENOTFOUND，所有核实只依据搜索摘要，用于对外材料或法律判断前须回原文。日本侧法规以仓库 docs/06、docs/11 与 docs/research/INSCREEN-law.json、STABLECOIN-INFRA.json 的已核实结论为准，本轮未重复检索；新加坡、香港、Sui 与 DCS 牌照为本轮重点。同轮兄弟输出 dcs.json、sui.json、alipayplus.json 已对照，结论一致处在 notes 中注明。标注：【事实】【公司说法】【推论】【假设】【未查到】（未查到≠不存在）。本文件不是法律意见。",
+  "summary": "按市场检验五种合作模式的监管可行性（截至 2026-10-18；12 次检索，WebFetch 全部失败，只依据摘要）。(1) 日本·INSCREEN 经日本 Alipay+ 收单方受理 Alipay+ 钱包（不涉稳定币）：监管上最可行。牌照与商户审核在收单方（PayPay 是資金移動業者，Alipay+ 在日本有 40 多家本地收单方）；INSPAY 只做展示终端、不经手资金、不招揽缔约时原则上不需要登録（推论，低）。瓶颈是收单方的技术接入与商务意愿，不是法规。(2) 日本·受理 DCSPay/KuCoin Pay 类钱包或 Sui 上的 USDC：阻力最大。KuCoin 是金融庁 2023-11 依資金決済法警告过的无登録业者，2025-02 金融庁要求 Apple/Google 下架其 App，不能面向日本居民；DCS 在日本无已知登録，若由境外的 DCS 收币、再向日本商户付日元，可能落入 2026-06-01 施行的跨境收纳代行（第2条の2第2号，視为為替取引）——典型例是‘国内付款人→境外受款人’，反方向及‘收的是稳定币而不是金钱’是否适用都未确认，须律师意见；可行的规避结构是仿照 PayPay×HIVEX×Binance Pay：稳定币在境外由 DCS 换成法币，再经日本持牌收单方（資金移動業者）付日元给商户，只服务非居民。Sui 上 USDC 直收在设计(a)（非托管、直达商户钱包）下的法律定性与 Polygon 相同，但未查到 SBI VC Trade 支持 Sui 网络 USDC 入库（FAQ 只见 SUI 币条目），USDsui 也没有日本登记业者经手，商户收到后没有已确认的境内换日元通道。(3) 新加坡·INSCREEN 装在 DCS 收单商户、受理 Alipay+ 与 DCSPay 稳定币：可行，但每个经手资金或代币的环节都须持牌。按 PS Act，稳定币目前是 DPT，替商户把稳定币换成新元属 DPT 服务（‘facilitating exchange’），须 SPI/MPI；收单本身是 merchant acquisition service。DCS 自述持《银行法》下信用卡/签账卡牌照，未查到 MPI 或 DPT 牌照，其数字资产环节此前交给持牌的 Triple-A 与渣打。商户为自己商品收稳定币原则上不需牌照（推论）。MAS 2026-09-01 稳定币立法咨询已于 10-16 截止，终稿未出。DTSP 制度使新加坡实体只服务境外客户也须持牌。(4) 香港：《稳定币条例》（Cap. 656）只管法币稳定币的发行与向公众推广；首批发行人牌照仅 Anchorpoint、HSBC（2026-04-10，36 家申请），之后未见新增。VA 交易商/托管牌照法案据二手来源预计 2026 Q4 提交立法会、不设视为持牌安排。DCS Fintech（香港）运营的 DCSPay 目前处在立法空档，未查到其任何牌照；法案生效后很可能需要交易商牌照，付法币一段可能涉 MSO（推论，低）。(5) Sui 机构间结算腿：未查到日、新、港任何法规按链名禁止或指定区块链；约束来自发行方是否原生部署、持牌机构的技术与风险评估、日本登记业者是否支持该链。亚洲受监管法币稳定币（XSGD、XUSD、JPYC、日本版 RLUSD）都未见上 Sui，Sui 腿实际只能用原生 USDC 或 USDsui。Ant International 的结算走 Whale/HSBC 代币化存款与 Avalanche 上的 XSGD，未见与 Sui 关联；Alipay+ 按合同以法币结算，伙伴不能单方面改用 Sui。最小可行结构（推论）：Sui 腿只放在新加坡或香港两家持牌机构之间（如 DCSPay 与持 DPT 牌照的伙伴），日本侧保持日元与日本持牌主体。",
+  "model_assessment": [
+    {
+      "model": "M1 日本：INSCREEN 经日本 Alipay+ 收单方受理 Alipay+ 钱包（无稳定币）",
+      "feasibility": "高（监管）；中（商务/技术，取决于收单方）",
+      "who_must_be_licensed": "日本收单方（PayPay 为資金移動業者 関東財務局長第00068号；其他 ACQP 视业态）；Ant International 作为海外网络方",
+      "inspay_role_and_licence": "展示终端/SaaS 或收单方的 TSP；不经手资金、不招揽缔约时原则上无需登録（推论，低）；若同时受理信用卡，签约商户的 PSP 须按割賦販売法登録（INSPAY 招揽商户须看是否构成媒介）",
+      "key_risks": "跨境收纳代行对入境方向是否适用由收单方承担；收单方是否允许第三方终端显示其动态码",
+      "fact_ids": ["REGULATION-01", "REGULATION-02", "REGULATION-03"]
+    },
+    {
+      "model": "M2 日本：INSCREEN 受理 DCSPay/KuCoin Pay 类钱包或 Sui 上 USDC/USDsui",
+      "feasibility": "低–中：直收 Sui-USDC 法律上可做但无日元出口；DCS 直接向日本商户付日元须先做跨境收纳代行与無登録营业判断；KuCoin 渠道风险高",
+      "who_must_be_licensed": "日本境内为他人兑换/管理 USDC 等只能是電子決済手段等取引業者（SBI VC Trade 00001、Coincheck 00002）；向日本商户付日元的境外收纳代行者可能须資金移動業登録或适用除外；KuCoin 未在日本登録",
+      "inspay_role_and_licence": "设计(a) 非托管直收：原则上无需登録（推论，低）；不得替境外无登録业者招揽日本商户或用户",
+      "key_risks": "Sui 网络 USDC 的境内出金未确认；USDsui/USDT 无日本出金通道；跨境收纳代行的方向与标的未确认；KuCoin 被金融庁警告",
+      "fact_ids": ["REGULATION-04", "REGULATION-05", "REGULATION-06", "REGULATION-07", "REGULATION-08", "REGULATION-09", "REGULATION-10", "REGULATION-11", "REGULATION-12", "REGULATION-13", "REGULATION-14", "REGULATION-15"]
+    },
+    {
+      "model": "M3 新加坡：INSCREEN 装在 DCS 收单商户，受理 Alipay+ 与 DCSPay 稳定币",
+      "feasibility": "中：结构上可行，前提是 DCS 或其伙伴持有 merchant acquisition 与 DPT 牌照（未查到 DCS 自持）",
+      "who_must_be_licensed": "收单方（PS Act merchant acquisition，MPI/SPI 或豁免）；稳定币兑换方（DPT 服务，MPI/SPI）；新加坡实体只服务境外客户时受 DTSP 约束",
+      "inspay_role_and_licence": "只提供终端与软件、不经手资金和代币：原则上不需 PS Act 牌照（推论，低）；若 INSPAY 新加坡实体持有或兑换代币则须持牌",
+      "key_risks": "DCS 的 MPI 状态未核实；MAS 稳定币立法终稿未出；DPT 公众营销限制对终端上‘用稳定币付’的展示是否适用未核实",
+      "fact_ids": ["REGULATION-16", "REGULATION-17", "REGULATION-18", "REGULATION-19", "REGULATION-20", "REGULATION-21", "REGULATION-22", "REGULATION-23", "REGULATION-24"]
+    },
+    {
+      "model": "M4 香港：DCS Fintech（香港）/DCSPay 作为稳定币收款与法币结算方",
+      "feasibility": "中（当前）→ 不确定（交易商/托管法案生效后）",
+      "who_must_be_licensed": "发行法币稳定币或向香港公众主动推广发行：HKMA 牌照；VA 交易平台：SFC；VA 交易商/托管：法案预计 2026 Q4 提交，生效后由 SFC 发牌；法币汇款一段可能涉 MSO（推论）",
+      "inspay_role_and_licence": "终端与软件提供方，原则上不涉牌照（推论，低）",
+      "key_risks": "DCS Fintech（香港）牌照未查到；无视为持牌安排；港元持牌稳定币首阶段只面向机构与专业投资者；蚂蚁香港稳定币计划据报被内地监管叫停",
+      "fact_ids": ["REGULATION-25", "REGULATION-26", "REGULATION-27", "REGULATION-28", "REGULATION-29", "REGULATION-30", "REGULATION-31"]
+    },
+    {
+      "model": "M5 机构间 Sui 稳定币结算腿（如 DCS ↔ Alipay+ 伙伴或东南亚伙伴）",
+      "feasibility": "中（新加坡、香港两家持牌机构之间）；低（日本境内落地）；Alipay+ 一侧取决于 Ant，未见迹象",
+      "who_must_be_licensed": "两端都须是所在地持牌的 DPT/VA 服务方，并执行 Travel Rule",
+      "inspay_role_and_licence": "不建议 INSPAY 自己持有或转移结算稳定币（会触发 DPT/取引業牌照）",
+      "key_risks": "Sui 上没有亚洲受监管法币稳定币；Ant International 结算走自有链路与法币合同；日本登记业者 Sui 网络支持未确认；Travel Rule 方案对 Sui 的支持未核实",
+      "fact_ids": ["REGULATION-32", "REGULATION-33", "REGULATION-34", "REGULATION-35", "REGULATION-36", "REGULATION-37", "REGULATION-38"]
+    }
+  ],
+  "facts": [
+    {
+      "id": "REGULATION-01",
+      "claim": "【事实】Alipay+ 在日本经本地收单方接入：2024-03 时经 40 多家本地收单方连接 200 万以上商户；PayPay 是主要收单方，截至 2026-06-29 作为 Alipay+ 收单方受理 17 个国家和地区的 35 项服务，经 PayPay 受理 Alipay+ 的商户费率固定 1.98% 税別。Netstars 自称也受理 Alipay/Alipay+（公司说法）。",
+      "confidence": "high",
+      "source": "https://www.businesswire.com/news/home/20240327604903/en ; https://about.paypay.ne.jp/en/pr/20260629/01/ ; https://paypay.ne.jp/help-merchant/b0076/ ；仓库 docs/research/ALIPAY-VERIFY.json、INSCREEN-competitors.json；同轮 alipayplus.json ALIPAYPLUS-11",
+      "date": "2024-03-27 / 2026-06-29",
+      "notes": "本轮未重复检索，沿用仓库与同轮已核实结论。除 PayPay、Netstars 外的日本 ACQP 名单未查到。"
+    },
+    {
+      "id": "REGULATION-02",
+      "claim": "【推论】模式 M1 的牌照负担在日本收单方，不在 INSPAY：PayPay 是資金移動業者（関東財務局長第00068号），与商户签约、做加盟店审核并付日元；QR 码支付的收单不在割賦販売法的信用卡规制内（记忆）。INSPAY 若只把收单方的 MPM/动态码显示在 INSCREEN 上、不经手资金、不以自身名义招揽缔约，原则上不需要資金決済法上的登録；若同时受理信用卡，签约商户的 PSP 须按割賦販売法登録、终端须过认证与 PCI，INSPAY 替 PSP 招揽商户时要看是否构成媒介。",
+      "confidence": "low",
+      "source": "仓库 docs/06-compliance-risk.md 6.2（PayPay 登録号）；docs/11 1 节（卡 PSP 割賦販売法、记忆）；docs/research/INSCREEN-law.json LAW-40、LAW-42",
+      "date": "2026-10-18",
+      "notes": "推论，须日本律师确认。QR 收单不受割賦販売法约束这一点凭记忆，本轮未检索。"
+    },
+    {
+      "id": "REGULATION-03",
+      "claim": "【推论】M1 入境方向的跨境收纳代行问题（Ant International 在境外收外国钱包用户的钱、经日本收单方付日本商户）由收单方承担；PayPay 本身是資金移動業者，府令的适用除外类型之一是‘再委托给银行或資金移動業者’，所以 M1 不会给 INSPAY 带来新的牌照要求。",
+      "confidence": "low",
+      "source": "https://amt-law.com/asset/pdf/bulletins2_pdf/260316.pdf ; https://www.fsa.go.jp/news/r7/sonota/20260522/04.pdf ；仓库 INSCREEN-law.json LAW-14",
+      "date": "2026-05-22（府令公布）/ 2026-06-01（施行）",
+      "notes": "适用除外类型来自律所对府令的整理（摘要），最终条文未读；入境方向是否属于跨境收纳代行未确认（见 REGULATION-10）。"
+    },
+    {
+      "id": "REGULATION-04",
+      "claim": "【事实】日本境内以业为目的为他人买卖、交换、媒介或管理 USDC 等外国电子决济手段，只能由登记的電子決済手段等取引業者进行：SBI VC Trade（第00001号，2025-03-04，USDC；2026-06-24 起 RLUSD；另流通 JPYSC），Coincheck（第00002号，2025-08-27，截至 2026-08 未见开始取扱 USDC）。未查到任何日本登记业者以電子決済手段身份处理 USDT。",
+      "confidence": "high",
+      "source": "https://www.fsa.go.jp/menkyo/menkyoj/denshikessaisyudan.pdf ；仓库 docs/11 2.2 节、STABLECOIN-INFRA.json、INSCREEN-law.json LAW-04、LAW-08、LAW-25",
+      "date": "2025-03-04 / 2025-08-27 / 2026-06-24",
+      "notes": "USDT ‘未查到’为低置信；登记一览只截至 2025-03 的版本被读到摘要。"
+    },
+    {
+      "id": "REGULATION-05",
+      "claim": "【未查到】SBI VC Trade 的 USDC 入出库支持哪些网络，本轮仍未查到；其 FAQ 目录摘要中出现 Sui（SUI）相关条目（含 SUI 的特殊入库处理）和 Polygon 入出库注意事项，说明 SUI 币作为暗号資産在其平台上有取扱，但不能说明 Sui 网络上的 USDC 可以入库。",
+      "confidence": "low",
+      "source": "https://www.sbivc.co.jp/faqs/category/o2s71dam5m （搜索摘要，WebFetch ENOTFOUND）",
+      "date": "2026-10-18（检索日）",
+      "notes": "同轮 sui.json SUI-20：SUI 币已在 bitbank（2025-08-14）、CoinTrade（2025-09-24）上架。须向 SBI VC Trade 直接确认 USDC 的 Sui 网络支持与法人入库规则。"
+    },
+    {
+      "id": "REGULATION-06",
+      "claim": "【推论】INSCREEN 在日本直收 Sui 上的 USDC（付款人钱包→商户自有 Sui 地址，INSPAY 不持钥、不兑换）在法律定性上与 docs/11 的设计(a)（Polygon）相同：商户为自己商品收币、INSPAY 不经手，原则上都不需要登録。但若 SBI VC Trade 不收 Sui 网络 USDC，商户只能自己把 USDC 跨链（如 Circle CCTP）到 SBI 支持的链再卖出；INSPAY 替商户做跨链或兑换就可能构成‘管理’或‘交換等’。Sui 协议层免 gas 稳定币转账（同轮 sui.json SUI-06）让 INSPAY 不必当 relayer，可能减轻 docs/11 提出的 relayer 定性风险。",
+      "confidence": "low",
+      "source": "仓库 docs/11 2.1 节、INSCREEN-law.json LAW-40、LAW-41；同轮 sui.json SUI-06、SUI-19、SUI-27",
+      "date": "2026-10-18",
+      "notes": "推论；Circle 在 Sui 上原生发行 USDC（2024 年起）凭记忆，未在本轮核实。须日本律师与金融庁 FinTech サポートデスク确认。"
+    },
+    {
+      "id": "REGULATION-07",
+      "claim": "【事实】USDsui 由 Bridge（Stripe 旗下）以 Open Issuance 平台为 Sui 发行，2026-03-04 主网上线，储备收益用于回购销毁 SUI 或 DeFi 激励，报道称按美国 GENIUS Act 合规设计。【未查到】任何日本登记的電子決済手段等取引業者经手 USDsui，因此它在日本与 USDT 一样没有已确认的合法换日元通道。",
+      "confidence": "medium",
+      "source": "https://www.sui.io/blog/sui-unveils-usdsui-native-stablecoin.md ; https://www.theblock.co/amp/post/378583/sui-launching-usdsui-stablecoin-via-bridge-amid-growing-adoption ; https://stablecoininsider.org/sui-usdsui-stablecoin/",
+      "date": "2025-11（公布）/ 2026-03-04（上线）",
+      "notes": "上线日期报道不一（另有 2025-12-03 一说），多数为 2026-03-04。‘日本无业者经手’为未查到，低置信。同轮 sui.json 称 INSPAY 在 WebX 2026（东京）实演中收了 265 笔 USDsui（公司说法）：若在日本商用，商户侧出金是阻断项。"
+    },
+    {
+      "id": "REGULATION-08",
+      "claim": "【事实】金融庁于 2023-11 依資金決済法对 KuCoin、Bybit、MEXC、LBank、Bitget 五家未登録的境外暗号資産交換业者发出警告并公布名称；2025-02 金融庁首次要求 Apple 和 Google 停止在日本提供这五家的 App，Apple 于 2025-02-06 前后下架（只影响新下载，网站交易仍可进行）。",
+      "confidence": "medium",
+      "source": "https://www.theblock.co/amp/post/339501/japan-apple-google-block-crypto-apps ; https://thedefiant.io/news/regulation/japan-s-fsa-requests-apple-to-remove-bybit-mexc-lbank-kucoin-bitget-apps-first-1669c3b1 ; https://bitbank.cc/knowledge/breaking/article/oq9z-d-e6r8 ; https://myforex.com/ja/news/myf25020703.html",
+      "date": "2023-11 / 2025-02",
+      "notes": "多家媒体一致；金融庁警告名单原文未打开。截至 2026-10 KuCoin 是否已在日本登録未查到（同轮 dcs.json DCS-25 也记为未登录、低）。"
+    },
+    {
+      "id": "REGULATION-09",
+      "claim": "【推论】INSCREEN × KuCoin Pay（经 DCSPay）在日本：不能面向日本居民（KuCoin 无登録，向居民提供交换或支付服务属無登録营业）；只面向外国游客时，INSPAY 和商户与一家被金融庁点名警告的业者合作，可能被视为协助其在日本招揽（媒介风险），也会影响与 PayPay、银行、SBI 等持牌伙伴的关系。对照：PayPay×HIVEX×Binance Pay（2026-09-30）明确排除日本居住的 Binance Japan 用户，Binance 另有日本登记实体，商户的日元由 PayPay 支付。",
+      "confidence": "low",
+      "source": "REGULATION-08 来源；https://paypay.ne.jp/notice-merchant/20260930/n-01/ ；同轮 alipayplus.json ALIPAYPLUS-19",
+      "date": "2026-10-18",
+      "notes": "推论；Binance Japan 的登録为记忆。外国游客人在日本境内使用境外 App 是否属‘在日本提供服务’，未见金融庁明文，须律师意见。"
+    },
+    {
+      "id": "REGULATION-10",
+      "claim": "【事实】2025 年改正資金決済法把跨境收纳代行明文规定为為替取引（第2条の2第2号），2026-06-01 施行；适用除外类型写在资金移动业者府令第1条の3第1項（2026-05-22 公布），律所整理为：再委托给银行或資金移動業者、伴随 escrow、平台事业者进行、与受款人有经济一体性等。律所与媒体给出的典型例是‘为海外 EC 代收的业者从日本国内顾客收款、汇给海外卖家’。",
+      "confidence": "medium",
+      "source": "https://amt-law.com/asset/pdf/bulletins2_pdf/260316.pdf ; https://www.businesslawyers.jp/articles/1476 ; https://www.fsa.go.jp/news/r7/sonota/20260522/04.pdf ; https://www.miyake.gr.jp/wp-content/uploads/2026/05/グローバル収納代行規制の完全解説（ニュースレター）.pdf",
+      "date": "2026-03 / 2026-05-22 / 2026-06-01",
+      "notes": "第2条の2的原文未取得；‘国外受款人’还是‘国内受款人’两个方向是否都覆盖，本轮仍未确认。金融庁 WG 资料（2024-11-07）的表述是‘国内与国外之间发生资金移动的收纳代行’（仓库 LAW-15）。"
+    },
+    {
+      "id": "REGULATION-11",
+      "claim": "【推论】若 DCS（DCSPay，香港或新加坡实体）作为日本商户的收款代理，在境外收外国付款人的稳定币、再向日本商户付日元：(i) 资金在国外与国内之间移动，可能被视为跨境收纳代行，须資金移動業登録或适用除外；(ii) 付款人付的是稳定币而不是金钱，是否属‘為替取引’未见权威解释；(iii) DCS 若被认定在与日本商户之间买卖电子决济手段或暗号資産，还可能涉電子決済手段等取引業或暗号資産交換業。DCS 在日本没有已知登録。",
+      "confidence": "low",
+      "source": "REGULATION-10 来源；仓库 docs/11 2.1 节设计(b)、INSCREEN-law.json LAW-41；同轮 dcs.json DCS-22",
+      "date": "2026-10-18",
+      "notes": "须日本律师意见，是 M2 的阻断项。"
+    },
+    {
+      "id": "REGULATION-12",
+      "claim": "【推论】M2 的低牌照结构：仿照 PayPay×HIVEX×Binance Pay——稳定币只在境外由 DCSPay 收取并换成法币；DCS 与一家日本持牌收单方（資金移動業者，如 PayPay 或 Netstars 的持牌通道）以法币结算；日本商户只从日本持牌收单方收日元；只服务非居民；INSCREEN 只显示该收单方的码。这样日本境内没有人经手外国稳定币，日本商户的收款也由持牌主体完成（可能落入‘再委托给資金移動業者’的除外）。代价是 INSCREEN 的价值只在终端与 SaaS，DCS 需要说服日本收单方接入。",
+      "confidence": "low",
+      "source": "推论：基于 REGULATION-04、REGULATION-08~11；https://paypay.ne.jp/notice-merchant/20260930/n-01/ ；仓库 docs/11 1.2 节（Netstars Stablecoin Pay 架构未公开）",
+      "date": "2026-10-18",
+      "notes": "Netstars 是否持資金移動業登録未查到；Netstars 收 USDT 的牌照架构未公开。"
+    },
+    {
+      "id": "REGULATION-13",
+      "claim": "【事实】日本对外国电子决济手段另有约束：经取引業者的外国稳定币转移有每次不超过 100 万日元的措施（第62条の12、府令第30条1項6号，二手）；SBI VC Trade 2026-06 说明书保留限制外国电子决济手段新规預託与購入的权利；顾客从日本取引業者转到商户自托管地址属 unhosted wallet，须收集收款方信息，可能被延迟或拦截。",
+      "confidence": "medium",
+      "source": "https://www.nishimura.com/sites/default/files/newsletters/file/finance_law_230807_ja.pdf ; https://www.sbivc.co.jp/assets/docs/comparison20260624_manual-ex_electric-payment-instrument.pdf ；仓库 INSCREEN-law.json LAW-20、LAW-24",
+      "date": "2023-08-07 / 2026-06-24",
+      "notes": "100 万日元措施的府令原文未核实（仓库 LAW-24 记为 low，另有 2026-08 放宽传闻、说法矛盾）。约束的是商户把收到的 USDC 存入 SBI，不约束游客自托管钱包直接付款。"
+    },
+    {
+      "id": "REGULATION-14",
+      "claim": "【推论】DeCard（DCS 发行、渣打支持的稳定币充值 Visa 卡）给日本商户带来的监管负担最低：持卡人在新加坡侧把 USDC/USDT 充值、在 POS 交易时转成法币，日本商户收到的是普通 Visa 卡交易，日元由其日本收单方支付，日本稳定币规则不触发。但 INSCREEN 要受理它就要做卡受理（EMV 认证、PCI、经割賦販売法登録的 PSP），这是 docs/11 已列的‘多通道终端’路线。",
+      "confidence": "medium",
+      "source": "https://www.theblock.co/post/378311/standard-chartered-stablecoin-credit-card ；同轮 dcs.json DCS-11、DCS-12；仓库 docs/11 1 节、3.4 节",
+      "date": "2025-11-11",
+      "notes": "DeCard 是 Visa 卡来自同轮 dcs.json（high）；DeCard 是否面向日本发卡、在日本是否可用未查到。"
+    },
+    {
+      "id": "REGULATION-15",
+      "claim": "【事实】日本 Travel Rule 自 2023-06-01 起适用于暗号資産交換業者与電子決済手段等取引業者，只对金融庁告示列明的同等规制法域通知，不设金额门槛（低）；与 unhosted wallet 交易须收集保存对方信息。一般零售商户不是犯収法特定事業者（推论，低），但外為法资产冻结支付规制适用于所有居民。",
+      "confidence": "medium",
+      "source": "https://www.fsa.go.jp/news/r4/sonota/20230526-2/20230526-2.html ；仓库 STABLECOIN-INFRA.json、INSCREEN-law.json LAW-16、LAW-19、LAW-22",
+      "date": "2023-05-26",
+      "notes": "沿用仓库已核实结论；‘不设门槛’为 low。"
+    },
+    {
+      "id": "REGULATION-16",
+      "claim": "【公司说法】DCS Card Centre 官网称自己是非银行机构，持 MAS 依《银行法》（Banking Act）发放的信用卡/签账卡发卡牌照；更名前是 Diners Club International 在新加坡的独家特许经营方，即唯一发卡方和收单方。【未查到】DCS 持有《支付服务法》（PS Act）MPI 或 DPT 牌照；一个第三方目录称其为 ‘MAS 持牌支付服务提供方’，与官网说法冲突。",
+      "confidence": "medium",
+      "source": "https://dcscc.com/about-us ; https://dcscc.com/dcs-rebranding-press-release ; https://capitalmarkets.sg/card-issuers/dcs-card-centre-pte-ltd/mas-licence/",
+      "date": "2023-08 / 2026-10-18（检索日）",
+      "notes": "MAS Financial Institutions Directory 未能直接查询。与同轮 dcs.json DCS-04 一致。"
+    },
+    {
+      "id": "REGULATION-17",
+      "claim": "【公司说法】DCS 2023 年更名新闻稿称，除 Mastercard、UnionPay、Visa 外，DCS 还将为 Alipay、SGQR、WeChat Pay 提供收单服务。写的是 Alipay 而不是 Alipay+，是否已上线未查到；未查到 DCS 是 Alipay+ ACQP，也未查到名为‘Alipay+ DCS’的产品。",
+      "confidence": "medium",
+      "source": "https://dcscc.com/dcs-rebranding-press-release ; https://technode.global/2023/08/02/diners-club-singapore-rebrands-to-dcs-card-centre-for-transformation/ ；同轮 alipayplus.json ALIPAYPLUS-02",
+      "date": "2023-08-02",
+      "notes": "同轮 alipayplus.json 只查到 Alipay+ D-store（2022-11），认为‘Alipay+ DCS’应理解为 Alipay+ 与 DCS 两方。"
+    },
+    {
+      "id": "REGULATION-18",
+      "claim": "【事实】DCS 在新加坡的数字资产环节一向交给持牌第三方：2024-09 起持卡人用数字资产为 DCS 虚拟账户充值，由 Triple-A（MAS 持牌数字支付代币服务商）做加密转法币；2025-11-11 渣打担任 DeCard 主要银行伙伴，负责充值处理、账户管理、法币与稳定币结算。",
+      "confidence": "high",
+      "source": "https://triple-a.io/newsroom/powered-by-triple-a-dcs-card-centre-customers-can-now-top-up-dcs-virtual-accounts-using-digital-assets ; https://thepaypers.com/cryptocurrencies/triple-a-partners-with-dcs-card-centre--1270118 ; https://www.theblock.co/post/378311/standard-chartered-stablecoin-credit-card",
+      "date": "2024-09-17 / 2025-11-11",
+      "notes": "【推论】这与 DCS 自身不持 DPT 牌照相符，也说明 DCSPay 放在香港实体运营可能与新加坡牌照有关（未证实）。"
+    },
+    {
+      "id": "REGULATION-19",
+      "claim": "【事实】在新加坡，稳定币目前按 PS Act 视为数字支付代币（DPT），经营 DPT 买卖（dealing）或促成 DPT 交换（facilitating exchange）属须持牌的 DPT 服务；MAS 计划另设‘稳定币发行服务’为新的受规制活动。【推论】替商户把稳定币换成新元并结算的网关属‘facilitating exchange’，须 SPI/MPI（DPT 服务）牌照。",
+      "confidence": "medium",
+      "source": "https://twobirds.com/en/capabilities/practices/digital-rights-and-assets/apac-dra/apac-dsd/crypto-assets/singapore/stablecoin-regulatory-framework ; https://www.allenovery.com/en-gb/global/news-and-insights/publications/mas-finalises-its-policy-position-on-the-regulation-of-stablecoin-related-activities ; https://www.mas.gov.sg/news/media-releases/2024/mas-expands-scope-of-regulated-payment-services",
+      "date": "2023-08 / 2024-04 / 2026-09",
+      "notes": "律所摘要；MAS 原文未打开。‘网关属 facilitating exchange’是推论。"
+    },
+    {
+      "id": "REGULATION-20",
+      "claim": "【推论】新加坡商户为自己商品或服务收稳定币，不属于向他人提供 DPT 服务，原则上不需要 PS Act 牌照；INSPAY 若只提供 INSCREEN 终端与软件、不经手资金和代币、不与商户签收单合同，原则上也不属于 merchant acquisition 或 DPT 服务。本轮未查到 MAS 对‘商户直收稳定币’的明文。",
+      "confidence": "low",
+      "source": "推论：基于 REGULATION-19；https://www.sidley.com/en/insights/newsupdates/2022/12/singapore-payments-update-december-2022",
+      "date": "2026-10-18",
+      "notes": "须新加坡律师确认。"
+    },
+    {
+      "id": "REGULATION-21",
+      "claim": "【事实】新加坡已有持牌方让商户受理稳定币并收法币的先例：dtcpay（MPI，DPT）2025-07 在 SGQR/NETS 受理点推出扫码付、即时兑换法币；StraitsX × Ant International（Alipay+）× Grab（2024-11-05）后台用 XSGD + PBM 在 Avalanche 上清结算；OKX SG 2025-09 在 GrabPay 商户受理 USDC/USDT、先兑换成 XSGD；HitPay × Triple-A 称让 2 万多家商户受理稳定币。",
+      "confidence": "medium",
+      "source": "仓库 docs/research/SG-MY.json、ALIPAY-VERIFY.json；https://www.straitsx.com/case-study/alipay-grab ；同轮 dcs.json DCS-24",
+      "date": "2024-11 / 2025-07 / 2025-09",
+      "notes": "说明新加坡监管允许‘持牌方兑换 + 商户收法币’的结构；兑换方都持 DPT 牌照。"
+    },
+    {
+      "id": "REGULATION-22",
+      "claim": "【事实】MAS 2026-09-01 就修改 PS Act、落地稳定币框架征求意见（2026-10-16 截止）：新设稳定币发行牌照，只有持牌者可用‘MAS-regulated stablecoin’标签，拟认可监管等效的外国稳定币，可指定系统性稳定币，禁止付息。2023-08 的单一货币稳定币（SCS）框架只涵盖在新加坡发行、锚定新元或 G10 货币的稳定币。截至 2026-10-18 终稿未见。",
+      "confidence": "high",
+      "source": "https://www.bakermckenzie.com/en/insight/publications/2026/09/singapore-mas-introduces-stablecoins-framework-under-payments-legislation ；仓库 SG-MY.json、STABLECOIN-INFRA.json",
+      "date": "2026-09-01 / 2023-08",
+      "notes": "Baker McKenzie 页面 WebFetch 失败，只见摘要；咨询细节沿用仓库已核实条目。【推论】USDC、USDsui 在新加坡仍可作为 DPT 使用，只是不能标‘MAS-regulated’。"
+    },
+    {
+      "id": "REGULATION-23",
+      "claim": "【事实】新加坡 DTSP 制度（FSMA 第 9 部分）2025-06-30 生效：在新加坡设立或经营、只向境外客户提供数字代币服务者须持牌，无过渡期；已持 PS Act 牌照或豁免者不受影响。【推论】DCS（新加坡集团）或 INSPAY 的新加坡实体若为日本等境外商户收付稳定币，即使不服务新加坡客户也须持牌。",
+      "confidence": "medium",
+      "source": "仓库 docs/06 6.3、docs/research/SG-MY.json",
+      "date": "2025-06-30",
+      "notes": "沿用仓库结论，本轮未重复检索。"
+    },
+    {
+      "id": "REGULATION-24",
+      "claim": "【记忆】PS Act 下的 merchant acquisition service 是须持牌（SPI/MPI 或豁免）的支付服务；MAS《SGQR 计划参与指引》（2023-12-01 生效）适用于在商户实体场所以静态码提供收单的 MPI/豁免机构。MAS 2022-01 的 DPT 服务指引（PS-G02）限制 DPT 服务商在公共场所向公众营销。【推论】DCS 要在新加坡做 Alipay+/SGQR/DCSPay 收单须先确认其 MPI 或豁免身份；INSCREEN 在柜台展示‘用稳定币付’是否算 DPT 公众营销，须律师确认。",
+      "confidence": "low",
+      "source": "仓库 docs/research/SG-MY.json（SGQR 指引，medium）；merchant acquisition 与 PS-G02 为记忆，本轮未检索",
+      "date": "2019 / 2022-01 / 2023-12-01",
+      "notes": "须新加坡律师确认；dtcpay、Grab 已在公开受理点运营，说明持牌方在受理点展示支付方式在实务中存在（推论）。"
+    },
+    {
+      "id": "REGULATION-25",
+      "claim": "【事实】香港《稳定币条例》（Cap. 656）2025-05-21 立法会通过、2025-05-30 刊宪，2025-08-01 生效。受规制活动是：在香港发行法币稳定币、在任何地方发行港元挂钩稳定币、向香港公众主动推广其发行；未获 HKMA 牌照不得经营或自称经营。",
+      "confidence": "high",
+      "source": "https://www.bclplaw.com/en-US/events-insights-news/hong-kong-stablecoins-bill-passed-by-legco.html ; https://www.mayerbrown.com/es/insights/publications/2025/07/hong-kongs-stablecoin-bill-key-amendments-and-next-steps-following-legislative-passage ; https://sumsub.com/blog/hong-kong-stablecoin-regulation/ ; https://www.hkma.gov.hk/eng/news-and-media/press-releases/2026/04/20260410-4/",
+      "date": "2025-05-21 / 2025-05-30 / 2025-08-01",
+      "notes": "2025-08-01 生效日沿用任务背景与仓库（ALIPAYPLUS-16），本轮摘要未直接显示；部分来源误写 Cap. 566。"
+    },
+    {
+      "id": "REGULATION-26",
+      "claim": "【事实】HKMA 于 2026-04-10 向 Anchorpoint Financial（渣打香港、HKT、Animoca Brands 合资）和 HSBC 发出首批稳定币发行人牌照（登记号 FRS01、FRS02），共 36 家申请；两家称 2026 下半年推出港元稳定币。截至 2026-10-18 未查到新增牌照。",
+      "confidence": "high",
+      "source": "https://www.hkma.gov.hk/eng/news-and-media/press-releases/2026/04/20260410-4/ ; https://www.charltonslaw.com/hkma-issues-first-stablecoin-issuer-licences/",
+      "date": "2026-04-10",
+      "notes": "‘之后无新增’为未查到（低）。仓库另有：Anchorpoint 的 HKDAP 第一阶段只面向机构分销商和专业投资者（medium）。"
+    },
+    {
+      "id": "REGULATION-27",
+      "claim": "【记忆/部分事实】香港只有‘许可要约人’可向公众要约指明稳定币：持牌发行人、认可机构（银行）、SFC 持牌法团、储值支付工具持牌人（立法时新增，摘要可见）；向零售要约只限 HKMA 持牌发行人的稳定币。【推论】商户把 USDC/USDT 作为货款收取不属于‘要约’，香港商户收稳定币本身不需要稳定币牌照。",
+      "confidence": "low",
+      "source": "https://www.mayerbrown.com/es/insights/publications/2025/07/hong-kongs-stablecoin-bill-key-amendments-and-next-steps-following-legislative-passage ; https://www.gibsondunn.com/hong-kong-gets-ready-for-stablecoin-regulation-hkma-prepares-for-enactment-of-the-regime/",
+      "date": "2025-07",
+      "notes": "许可要约人名单与零售限制的最终条文未在摘要中确认；‘商户收款非要约’是推论，须香港律师确认。"
+    },
+    {
+      "id": "REGULATION-28",
+      "claim": "【事实/二手】香港 VA 交易商与托管牌照：咨询已结束，将以修订《打击洗钱条例》（AMLO）实施、由 SFC 发牌；交易商最低实缴资本 HK$500 万、须把客户 VA 存放于 SFC 监管的托管人；托管人最低 HK$1,000 万；无视为持牌安排。据二手来源引用 2026 施政报告补充，截至 2026-09-29 尚无法例，法案预计 2026 Q4 提交立法会。",
+      "confidence": "medium",
+      "source": "https://www.gibsondunn.com/hong-kong-concludes-consultations-on-regulation-of-virtual-asset-dealing-and-custodian-services-with-yet-more-to-come/ ; https://wiki.private.law/en/hk-virtual-asset-dealing-custody ; https://www.scmp.com/tech/article/3337703/hong-kong-broaden-crypto-rules-new-licences-dealers-and-custodians ; https://www.theblock.co/post/391172/hong-kong-first-stablecoin-license",
+      "date": "2026-02（预算案）/ 2026-09-29",
+      "notes": "‘2026 Q4 提交’来自 wiki.private.law 二手引用，施政报告原文未读；法案刊宪状态未查到。"
+    },
+    {
+      "id": "REGULATION-29",
+      "claim": "【公司说法】DCSPay 由 DCS Fintech (Hong Kong) Limited 运营、DCS Group 支持，让商户受理稳定币并以法币结算；KuCoin 公告称 DCS Group 有 50 多年持牌支付经验，但未写明 DCSPay 或 DCS Fintech（香港）持有哪项牌照。【未查到】DCS Fintech（香港）的 HKMA、SFC 或海关 MSO 牌照。",
+      "confidence": "medium",
+      "source": "https://www.kucoin.com/fr/announcement/fr-KuCoinPay-DCSPay-Partnership-Announcement ; https://www.mexc.com/news/944588",
+      "date": "2026-08（KuCoin Pay × DCSPay，同轮 dcs.json 记为 2026-08-12）",
+      "notes": "未查到≠不存在；须直接查 SFC 持牌人名册、海关 MSO 名册，或请 DCS 提供牌照号。"
+    },
+    {
+      "id": "REGULATION-30",
+      "claim": "【推论】DCS Fintech（香港）做‘商户收稳定币、托管后兑换并付法币’：它不是 VA 交易平台，目前大概不落入 SFC VATP 牌照；但在交易商/托管法案生效后，以业为目的买卖稳定币、替客户保管私钥很可能分别须交易商、托管牌照，且无视为持牌安排；向商户付法币一段可能涉 MSO（汇款）或须经银行；它不发行稳定币，也不需要 HKMA 发行人牌照。",
+      "confidence": "low",
+      "source": "推论：基于 REGULATION-25、REGULATION-28、REGULATION-29",
+      "date": "2026-10-18",
+      "notes": "须香港律师确认。对 INSPAY 的含义：与 DCSPay 合作前，要求 DCS 说明其香港、新加坡及各结算地的牌照与法律意见。"
+    },
+    {
+      "id": "REGULATION-31",
+      "claim": "【报道】FT（2025-10）称人民银行与网信办指示蚂蚁集团、京东暂停香港稳定币计划；截至 2026-10 未见 Ant 获得香港或新加坡稳定币牌照。卢森堡 CSSF 2025-09-16 授予 Alipay (Europe) 的 MiCA EMT（BREUR）只限 Ant International 关联方之间批发使用。",
+      "confidence": "medium",
+      "source": "仓库 docs/research/ALIPAY-VERIFY.json；同轮 alipayplus.json ALIPAYPLUS-16",
+      "date": "2025-09-16 / 2025-10",
+      "notes": "Reuters 转述时称未能独立核实；对合作的含义（推论）：短期内不能指望 Ant 一侧提供面向第三方的稳定币结算。"
+    },
+    {
+      "id": "REGULATION-32",
+      "claim": "【未查到】日本、新加坡、香港的法规或监管文件中，未见按链名禁止或指定稳定币可用区块链的条文。【推论】链的选择受三方面约束：发行方是否在该链原生部署并承担赎回；持牌机构对所用链的技术与风险评估（如 MAS TRM、HKMA 对持牌发行人的技术风险要求，凭记忆）；日本登记业者是否支持该链（报道称日本版 RLUSD 只上 Ethereum，说明按链逐一取扱）。",
+      "confidence": "low",
+      "source": "仓库 STABLECOIN-INFRA.json（RLUSD 只上 Ethereum，medium）；MAS TRM、HKMA 技术要求为记忆",
+      "date": "2026-10-18",
+      "notes": "未查到≠不存在；金融庁 2026-05 事務ガイドライン改正案把能否与外国监管合作列为 4 号电子决济手段的判断要素（仓库 LAW-03），与链无关。"
+    },
+    {
+      "id": "REGULATION-33",
+      "claim": "【事实/未查到】亚洲受监管法币稳定币未见在 Sui 上：XSGD 在 Ethereum、Polygon、XRPL 等，XUSD 在 Ethereum、BSC；JPYC 在 Ethereum、Polygon、Avalanche、Kaia；日本版 RLUSD 只在 Ethereum；港元持牌稳定币用链未查到。Sui 上可用的是原生 USDC（Circle，记忆）、USDsui（Bridge）及 FDUSD、AUSD 等。",
+      "confidence": "medium",
+      "source": "仓库 STABLECOIN-INFRA.json、docs/11 2.2 节；同轮 sui.json SUI-16、SUI-17",
+      "date": "2025-12 / 2026-10-18",
+      "notes": "所以机构间 Sui 结算腿实际只能用 USD 稳定币，日元、新元、港元腿仍须法币或其他链。"
+    },
+    {
+      "id": "REGULATION-34",
+      "claim": "【事实】Ant International 的机构间结算链路是自有与银行系：Whale/WhaleRTP（20 家以上银行伙伴）、HSBC 代币化存款服务（2025-05 首个企业客户，2026-10-06 扩展到 UAE↔香港）、只限关联方使用的 BREUR、Avalanche 上 StraitsX 的 XSGD；据报与 Circle 合作接入 USDC（2025-07）。未查到 Ant International 与 Sui 的关联；Sui 的蚂蚁系伙伴是蚂蚁数科/ZAN（2024-12 ESG RWA），与 Ant International 是不同公司。",
+      "confidence": "medium",
+      "source": "仓库 ALIPAY-VERIFY.json；同轮 alipayplus.json ALIPAYPLUS-15、ALIPAYPLUS-17；sui.json 摘要",
+      "date": "2024-10 / 2025-05 / 2025-07 / 2026-10-06",
+      "notes": "未查到≠不存在。"
+    },
+    {
+      "id": "REGULATION-35",
+      "claim": "【事实】Alipay+ 对收单方（ACQP）的结算币种按合同约定（pay 请求的 settlementStrategy/settlementCurrency），默认 T+2，扣除 wallet interchange 与 Alipay+ 服务费后结算净额。【推论】Alipay+ 伙伴不能单方面把与 Ant 的结算改成 Sui 上的稳定币；‘DCS ↔ Alipay+ 伙伴’的 Sui 腿只能发生在 Alipay+ 合同之外（如 DCS 与某个东南亚收单方之间另签的结算安排）。",
+      "confidence": "medium",
+      "source": "仓库 ALIPAY-VERIFY.json（Alipay+ 开发文档，high）",
+      "date": "2026-10-18（文档检索日）",
+      "notes": "前半为事实（high），后半为推论（low）。"
+    },
+    {
+      "id": "REGULATION-36",
+      "claim": "【事实】机构间稳定币转账的 Travel Rule：新加坡 MAS Notice PSN02 门槛 S$1,500（低于门槛只需姓名与账号），2020-01-28 起；日本无金额门槛（低），只对告示列明法域的业者通知；菲律宾 PHP 50,000 及以上。香港 AMLO 下 VASP 也有 Travel Rule（门槛凭记忆约 HK$8,000）。Travel Rule 方案（TRUST、Notabene、Sygna 等）是否支持 Sui 未核实。",
+      "confidence": "medium",
+      "source": "仓库 STABLECOIN-INFRA.json；香港门槛为记忆",
+      "date": "2020-01-28 / 2023-06-01",
+      "notes": "Sui 支持须向 Travel Rule 供应商确认。"
+    },
+    {
+      "id": "REGULATION-37",
+      "claim": "【推论】Sui 结算腿的最小合规结构：只在新加坡或香港两家持牌机构之间（例如 DCSPay 一侧与持 MPI-DPT 牌照的新加坡伙伴，或香港法案生效后的持牌交易商），以 Sui 原生 USDC 净额结算，两端各自执行 Travel Rule 与链上筛查；日本侧不接收 Sui 稳定币，保持日元经日本持牌主体支付。与仓库 docs/06 6.1 的原则一致：‘稳定币只在持牌机构之间，日本侧日元在境内结算’。",
+      "confidence": "low",
+      "source": "推论：基于 REGULATION-04、REGULATION-05、REGULATION-19、REGULATION-23、REGULATION-28、REGULATION-33~36；仓库 docs/06 6.1、6.2",
+      "date": "2026-10-18",
+      "notes": "Sui 相对已在用的 Avalanche、Polygon、Ethereum 没有监管上的优势；选 Sui 的理由只能是成本、速度或 Sui 生态资金，须由对端持牌机构接受。"
+    },
+    {
+      "id": "REGULATION-38",
+      "claim": "【推论】INSPAY 在任何一个市场都不宜自己持有、兑换或转移结算稳定币：在日本会落入電子決済手段等取引業（设计 b）及跨境收纳代行，在新加坡会落入 PS Act DPT 服务或 DTSP，在香港会落入将来的交易商/托管牌照。INSPAY 在这四方合作中的合规位置是‘终端与软件提供方 + 订单与对账数据层’，资金与代币由各地持牌方经手。",
+      "confidence": "low",
+      "source": "推论：基于 REGULATION-04、REGULATION-11、REGULATION-19、REGULATION-23、REGULATION-28；仓库 docs/11 2.1 节",
+      "date": "2026-10-18",
+      "notes": "若 INSPAY 决定自己取得牌照，是另一条商业路线，须重新评估成本。"
+    }
+  ],
+  "key_claims": [
+    "M1（日本、经日本 Alipay+ 收单方受理 Alipay+ 钱包、无稳定币）监管上最可行：牌照与商户审核都在收单方（PayPay 为資金移動業者），INSPAY 只做展示终端或收单方的 TSP、不经手资金时原则上不需登録（推论，低）；瓶颈在收单方的接入与商务意愿。",
+    "M2（日本受理 DCSPay/KuCoin Pay 或 Sui 上 USDC/USDsui）阻力最大：KuCoin 被金融庁警告（2023-11）并被要求下架 App（2025-02）；DCS 在日本无已知登録，由境外向日本商户付日元可能落入 2026-06-01 跨境收纳代行（方向与标的未确认）；Sui 网络 USDC 的境内出金未确认，USDsui 无日本通道。",
+    "日本侧可行的结构是仿 PayPay×HIVEX×Binance Pay：稳定币在境外由 DCS 换成法币，经日本持牌收单方付日元，只服务非居民；或走 DeCard 卡通道，让日本稳定币规则不触发（推论）。",
+    "M3（新加坡）可行但每个环节都须持牌：稳定币换新元属 DPT 服务（SPI/MPI），收单属 merchant acquisition；DCS 只查到《银行法》信用卡/签账卡牌照，未查到 MPI/DPT，其数字资产环节此前交给持牌的 Triple-A 和渣打；商户直收稳定币原则上不需牌照（推论）。",
+    "M4（香港）：稳定币条例只管发行与推广，首批牌照仅 Anchorpoint、HSBC（2026-04-10）；VA 交易商/托管法案预计 2026 Q4 提交、无视为持牌安排；DCS Fintech（香港）牌照未查到，DCSPay 处在立法空档，生效后很可能需交易商牌照（推论）。",
+    "M5（Sui 机构间结算腿）：未查到任何法规按链名禁止或指定链；但亚洲受监管法币稳定币都不在 Sui 上，Ant International 结算走自有链路与法币合同、未见与 Sui 关联，所以 Sui 腿只能是新加坡或香港两家持牌机构之间的 USD 稳定币腿，日本侧保持日元。",
+    "INSPAY 在四方合作中的合规位置是终端与软件、订单与对账数据层；不应自己持有、兑换或转移稳定币，否则在日、新、港分别触发取引業/收纳代行、DPT/DTSP、交易商/托管牌照。"
+  ],
+  "open_questions": [
+    "跨境收纳代行（資金決済法第2条の2第2号）是否覆盖‘境外收款代理从外国付款人收款、向日本受款人付日元’这一方向？付款人付的是稳定币而非金钱时是否适用？须读条文与府令第1条の3并取得日本律师意见。",
+    "SBI VC Trade 是否支持 Sui 网络 USDC 的入出库与法人入库？Coincheck 何时开始取扱 USDC、支持哪些链？",
+    "DCS Card Centre 是否持有 PS Act 的 MPI（merchant acquisition、DPT 服务）牌照或豁免？须查 MAS Financial Institutions Directory。DCS 是否已为 Alipay（或 Alipay+）、SGQR 做收单？",
+    "DCS Fintech (Hong Kong) Limited 持有哪些牌照（SFC、海关 MSO、其他法域）？DCSPay 在各结算地由谁兑换、谁付法币？须要求 DCS 提供牌照号与法律意见。",
+    "KuCoin 截至 2026-10 是否已在日本登録或另有日本合规安排？KuCoin Pay × DCSPay 是否已排除日本居民？",
+    "香港 VA 交易商/托管法案的刊宪与生效时间、过渡安排；‘许可要约人’与零售要约限制的最终条文；港元持牌稳定币（HKDAP、HSBC）用哪些链、何时开放零售。",
+    "MAS 2026-09 稳定币咨询终稿：外国稳定币认可机制如何处理 USDC；MAS PS-G02 的公共营销限制是否涉及商户终端上的‘用稳定币付’展示。",
+    "Netstars Stablecoin Pay 收 USDT 并付日元的牌照架构（是否有資金移動業登録、由哪家取引業者或境外实体兑换）——可作为 M2 的合规模板。",
+    "Alipay+ 是否愿意让 DCS 或其他伙伴在 Alipay+ 合同外用 Sui 稳定币做净额结算；Ant International 是否评估过 Sui。",
+    "Travel Rule 供应商（TRUST、Notabene、Sygna 等）是否支持 Sui 链地址与交易。",
+    "INSPAY 与 Mysten Labs 的 MOU（同轮 sui.json，2026-07-10，公司说法）下，WebX 实演收 USDsui 的商户主体与出金方式是什么？若要在日本商用，须先解决出金通道。"
+  ]
+}

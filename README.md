@@ -44,6 +44,7 @@ Phase 1 选**泰国**（理由见 [05 章 5.1](docs/05-country-playbooks.md)、[
 | [11 INSCREEN 受理稳定币](docs/11-inscreen-stablecoin-acceptance.md) | 日本商户经 INSCREEN 收稳定币：三类通道对比、非托管做法、商户成本与单台经济、竞品（Netstars Stablecoin Pay、PayPay×HIVEX×Binance Pay） |
 | [12 东南亚动态码需求](docs/12-inscreen-sea-dynamic-qr.md) | 静态码升级动态码的需求有多强、现有音箱与设备、INSCREEN 的接入方式与商业模式 |
 | [13 参考案例](docs/13-wallet-cases-paytm-truemoney-dana.md) | Paytm、TrueMoney、DANA 的现状、商户设备模式、监管、跨境与稳定币，及对 INSPAY 的启示 |
+| [14 四方合作](docs/14-alipayplus-dcs-inspay-sui.md) | Alipay+、DCS、INSPAY、Sui 各能给什么、四种合作模式的资金流与牌照、可行性排序与第一步 |
 
 ## 代码
 

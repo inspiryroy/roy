@@ -1,0 +1,271 @@
+{
+ "topic": "Sui 作为支付链与生态伙伴（INSPAY × Alipay+ × DCS × Sui 合作子题）",
+ "searches_used": 12,
+ "method_notes": "WebSearch 12/12 次已用完；WebFetch 对 www.sui.io、blog.sui.io、prtimes.jp 均 getaddrinfo ENOTFOUND，curl 经代理 CONNECT 403，全部依据搜索摘要；仓库已核实内容未重复检索。",
+ "summary": "（1）最重要的发现：INSPAY 和 Sui 已经有合作，不是待开拓的对象。2026-07-10 INSPAY 宣布与 Sui 的原始贡献方 Mysten Labs 签署战略协作备忘录（MOU），要把 Sui 上的稳定币接入 INSPAY 的线下支付网络（自动售货机、餐厅、店铺、活动会场），长期目标是亚太；2026-07-13–14 在 WebX 2026（东京）展位实演，INSPAY 称两天 470 笔（USDC 205、USDsui 265），钱包确认多为 0.6–1 秒，用 Slush 钱包，含自动售货机和夹娃娃机（公司说法）。仓库现有 11 章 INSCREEN 方案只按 EVM（Polygon/Kaia/Avalanche + JPYC/USDC、EIP-3009 relayer）设计，没有写入 Sui 和这份 MOU，须补。（2）Sui 的支付属性（事实为主，部分凭记忆）：2026-05/06 起主网在协议层免 gas 转账 7 种稳定币（USDC、USDsui、suiUSDe、USDY、FDUSD、AUSD、USDB；起始日期报道有 5-20 与 6-10 两种说法），拥堵时付 gas 的交易优先；原生 sponsored transaction（记忆）；Mysten 的 Payment Kit SDK 用 nonce+金额+币种+收款人做防重、发 PaymentReceipt，正好对应动态码订单匹配；zkLogin（Google/Apple 等登录生成地址）与 passkey 降低游客开户门槛；未查到 Sui 的 NFC 或离线支付方案。（3）稳定币：USDsui 由 Bridge（Stripe 旗下）用 Open Issuance 发行，2025-11-12 公布、2026-03-04 主网上线，储备收益回流 Sui 生态；USDC 在 Sui 原生发行。未查到 JPYC、XSGD 或任何日元、新元稳定币在 Sui 上；韩国 T'order（桌面点单平板）曾宣布接入一个将在 Sui 上发行的韩元稳定币（二手，约 2025-09）。（4）日本：bitbank（2025-08-14）、CoinTrade（2025-09-24）已上架 SUI，INSPAY 可以在境内合法买 SUI 付 gas（推断）；但未查到任何日本登记的電子決済手段等取引業者经手 USDsui，也未查到 SBI VC Trade 是否支持 Sui 网络的 USDC 出入库，所以日本商户收到的 Sui 稳定币目前没有已确认的境内换日元通道（推断，关键阻断项）。除 INSPAY 外，未查到 Sui Foundation 或 Mysten 的日本合作方或日本实体。（5）与 Alipay+、DCS 的关系：Sui 的蚂蚁系合作方是蚂蚁数科/ZAN（2024-08 起任 Sui RPC 节点；2024-12 ESG RWA 代币化），不是运营 Alipay+ 的 Ant International；未查到 Sui 与 Ant International/Alipay+ 或与 DCS（DeCard、DCSPay、DUS）的任何关联。2026-10-07 Sui 与阿里云合作（Sui Agent Payments 的按次稳定币计费），阿里云与蚂蚁是不同公司，不构成 Alipay+ 关联。Sui 公开的支付 BD 集中在非洲（Paga、Daya）和 AI 代理支付（Google AP2、阿里云），未查到东南亚收单方或 PSP 合作。（6）判断（推断）：Sui 相对 EVM 链真正多出的是协议层免 gas 稳定币转账（INSPAY 可以不当 relayer，可能减轻 11 章提到的 relayer 定性问题，须律师确认）、Payment Kit 的订单防重和亚秒确认；缺的是日元稳定币、日本境内出金和与 Alipay+/DCS 的现成连接。Mysten 想从 INSPAY 得到的是日本/亚太的真实线下交易量、终端覆盖（INSPAY 自称 1 万台以上）和 USDsui 的使用场景。四方合作没有现成框架，应以 INSPAY 为中心分别谈：Sui 做链上受理链和生态资金；DCSPay 若加 Sui 支持可做日本境外的稳定币→法币结算；Alipay+ 只做外国法币钱包受理；日本境内出金仍须找登记业者。所有检索结果来自 WebSearch 摘要；WebFetch 对 sui.io、blog.sui.io、prtimes.jp 均 DNS 失败，curl 被代理 403，未读到原文。12/12 次检索已用完。",
+ "facts": [
+  {
+   "id": "SUI-01",
+   "claim": "【公司说法】INSPAY 于 2026-07-10 宣布与 Sui 的原始贡献方 Mysten Labs 签署战略协作备忘录（MOU），计划把 Sui 上的稳定币接入 INSPAY 的线下支付网络，场景为自动售货机、餐厅、店铺和活动会场，长期目标是亚太扩展。",
+   "confidence": "high",
+   "source": "https://finance.yahoo.co.jp/news/detail/f2b55adb6fc30c3a77aeb667f419136a6b63d1e9 ; https://www.neweconomy.jp/posts/591135 ; https://coinpost.jp/?p=723771 ; https://prtimes.jp/main/html/rd/p/000000002.000186424.html（时事通信镜像 https://www.jiji.com/jc/article?k=000000002.000186424&g=prt）",
+   "date": "2026-07-10",
+   "notes": "MOU 的存在有多家媒体转载，置信度高；条款（排他性、资金、Mysten 的承诺）未见公开。WebFetch 打不开 prtimes.jp，只依据搜索摘要。仓库 docs/11 未提到这份 MOU。"
+  },
+  {
+   "id": "SUI-02",
+   "claim": "【公司说法】WebX 2026（2026-07-13–14，东京 The Prince Park Tower，展位 G-42）上 INSPAY 实演 Sui 稳定币线下支付：两天 470 笔，其中 USDC 205 笔、USDsui 265 笔；钱包确认多为约 0.6–1 秒；付款用 Slush 钱包；演示含自动售货机和夹娃娃机；用户不必持有 SUI 付 gas。",
+   "confidence": "medium",
+   "source": "https://prtimes.jp/main/html/rd/p/000000003.000186424.html ; https://coinpost.jp/?post_type=pressrelease&p=731751 ; https://news.yahoo.co.jp/articles/ea47b612b290db2d856db1a086ce9f91e1536bbd",
+   "date": "2026-07（WebX 之后发布）",
+   "notes": "笔数和速度是 INSPAY 自报，未经第三方核实。加密行业展会的参会者不代表零售需求，不能用来推算商户场景的笔数（推断）。"
+  },
+  {
+   "id": "SUI-03",
+   "claim": "【公司说法】INSPAY 称在日本超过 1 万台终端上运行 QR 支付系统，计划把 Sui 稳定币支付加到这套现有网络上。",
+   "confidence": "medium",
+   "source": "https://coinpost.jp/?post_type=pressrelease&p=731751",
+   "date": "2026-07",
+   "notes": "仓库 11 章的单台经济按 200 台规模测算，与「1 万台以上 QR 终端」口径不同（可能包括非 INSCREEN 的 QR 系统），须内部统一口径后再对外使用。"
+  },
+  {
+   "id": "SUI-04",
+   "claim": "【报道】INSPAY 与 JPYC、HashPort、饮料厂商 Chério 在京都做自动售货机 JPYC 支付实证，期间 2026-07-01 至 2026-09-30。",
+   "confidence": "medium",
+   "source": "https://ascii.jp/elem/000/004/416/4416506/",
+   "date": "2026-07",
+   "notes": "使用的链未查到；JPYC 目前不在 Sui 上（见 SUI-17），所以 INSPAY 实际同时在跑 EVM（JPYC）和 Sui 两条线（推断）。HashPort 是日本的 Web3 钱包与区块链服务公司（记忆）。"
+  },
+  {
+   "id": "SUI-05",
+   "claim": "【仓库事实】仓库 docs/11-inscreen-stablecoin-acceptance.md 的首发方案只用 EVM：JPYC 走 Kaia/Polygon/Avalanche，USDC 先上 Polygon，靠 EIP-3009 签名 + INSPAY relayer 代付 gas，「首发只用确定性终局 ≤ 5 秒的链」；Sui 只在 INSCREEN-tech.json 的 USDC 链清单（记忆、低）里出现，没有 Sui 的设计。",
+   "confidence": "high",
+   "source": "/home/user/roy/docs/11-inscreen-stablecoin-acceptance.md（2.2、2.4 节）；/home/user/roy/docs/research/INSCREEN-tech.json（TECH-10）",
+   "date": "2026-10-18",
+   "notes": "与 SUI-01/02 的已公开合作不一致，11 章须补 Sui 路径（Move 链，签名格式、免 gas 机制、订单匹配都与 EIP-3009 不同）。"
+  },
+  {
+   "id": "SUI-06",
+   "claim": "【事实】Sui 主网在协议层支持免 gas 稳定币转账：基于新的 Address Balances 余额机制，合格的点对点转账手续费为 0；首批 7 种稳定币为 USDC、USDsui、suiUSDe、USDY、FDUSD、AUSD、USDB；每笔最低 0.01 枚；网络拥堵时付 gas 的交易优先；Fireblocks 支持，其他托管方和消费者钱包「预计跟进」。",
+   "confidence": "medium",
+   "source": "https://blog.sui.io/sui-launches-gasless-stablecoin-transfers/ ; https://cryptobriefing.com/sui-gasless-stablecoin-transfers-mainnet/ ; https://blockonomi.com/sui-launches-gasless-stablecoin-transfers-cutting-costs-for-global-blockchain-payments/",
+   "date": "2026-05-20（Crypto Briefing）；另一报道称 2026-06-10",
+   "notes": "起始日期两种说法：Crypto Briefing 称 2026-05-20 主网支持；bitcoin.com 的 Evan Cheng 访谈称 Mysten 从 6-10 起在协议层取消稳定币 gas。可能是公告日与主网生效日之差，未核实。Sui 官方博客原文无法打开。「首个取消点对点稳定币转账 gas 的 L1」是媒体说法，未核实。"
+  },
+  {
+   "id": "SUI-07",
+   "claim": "【公司说法】Mysten Labs 联合创始人 Evan Cheng 称，自 6-10 取消稳定币 gas 后约两个月，Sui 上免费转移的稳定币超过 650 亿美元。",
+   "confidence": "low",
+   "source": "https://news.bitcoin.com/crypto-news/sui-evan-cheng-digital-payments-prediction/",
+   "date": "2026-08（推算）",
+   "notes": "公司方说法，未见链上数据核对；转账额包含 DeFi、做市和自转，不能当作支付量（推断）。"
+  },
+  {
+   "id": "SUI-08",
+   "claim": "【记忆/推断】Sui 自主网起原生支持 sponsored transaction（交易可由第三方付 gas，付款人只签名）；协议层免 gas 只覆盖「合格的点对点转账」，如果商户流程要调用合约（例如 Payment Kit 的 registry 记录），这部分仍要付 gas 或由 INSPAY 代付。",
+   "confidence": "medium",
+   "source": "记忆（docs.sui.io sponsored transactions）；免 gas 范围见 SUI-06 的来源",
+   "date": "2023 起（sponsored tx）",
+   "notes": "本轮未检索 sponsored transaction 的官方文档。Payment Kit 调用是否在免 gas 范围内未查到，是技术核对项。"
+  },
+  {
+   "id": "SUI-09",
+   "claim": "【事实】Mysten Labs 的 Payment Kit（TypeScript SDK）用于在 Sui 上收款，有两种模式：registry 模式在链上保存付款记录、防止重复付款，适用于电商结账、订阅、发票；ephemeral 模式不存储。防重键由 nonce、金额、币种、收款人组成，任一项不同即视为新付款；每笔发出 PaymentReceipt，可存到链下核对；支持任意 Sui 币种，记录有效期可配置。社区已有 EVM 移植版。",
+   "confidence": "high",
+   "source": "https://sdk.mystenlabs.com/payment-kit ; https://sdk.mystenlabs.com/payment-kit/payment-processing ; https://github.com/the3rdweblabs/payment-kit.evm",
+   "date": "2025–2026（文档未见日期）",
+   "notes": "与 11 章的订单匹配问题直接对应：11 章说 EIP-681 没有发票号字段、要用 EIP-3009 nonce = hash(invoiceId)；Sui 上可以把 INSCREEN 的订单号作 nonce，链上防重并出回执（推断）。官方原生仓库为 github.com/MystenLabs/sui-payment-kit。"
+  },
+  {
+   "id": "SUI-10",
+   "claim": "【公司说法/记忆】确认速度：INSPAY 的 WebX 实演称钱包确认多为 0.6–1 秒；按记忆，Sui 于 2024 年在主网启用 Mysticeti 共识，官方称共识延迟约 0.4–0.5 秒。本轮未查到独立实测的终局时间。",
+   "confidence": "low",
+   "source": "https://prtimes.jp/main/html/rd/p/000000003.000186424.html ；Mysticeti 数据为记忆",
+   "date": "2026-07（实演）；2024（Mysticeti，记忆）",
+   "notes": "对自动售货机、夹娃娃机这类「终局后才出货」的场景，亚秒确认比 11 章设的「≤ 5 秒」宽裕；但 Sui 主网在 2024-11 曾停摆约 2 小时（记忆，未核实），无人机台仍要有超时取消。"
+  },
+  {
+   "id": "SUI-11",
+   "claim": "【事实/二手】Sui 原生支持 zkLogin：用 Google、Apple、Facebook、Twitch 等账号登录，经零知识证明派生 Sui 地址，登录服务商不知道钱包地址、也不能动用资金；代价是丢失底层登录账号就可能失去钱包。也支持 passkey（手机指纹/面容作签名钥匙）。Mysten 的官方钱包 Slush 于 2025-04 取代 Sui Wallet 并并入 Stashed，有浏览器扩展、iOS、Android 和网页版。",
+   "confidence": "medium",
+   "source": "https://blog.sui.io/sui-wallets/ ; https://whatssui.com/ ; https://play.google.com/store/apps/details?id=com.mystenlabs.suiwallet&hl=en_US ; https://stakin.com/blog/overview-of-best-sui-wallets",
+   "date": "2025–2026",
+   "notes": "zkLogin 的说明出自 Sui 博客和第三方指南；passkey 只有通俗解说来源，未读到 Sui 规范原文。对游客或首次用户：不需要助记词、不需要持有 SUI，开户门槛比 MetaMask 低（推断）。Slush 在日本的用户数未查到。"
+  },
+  {
+   "id": "SUI-12",
+   "claim": "【未查到】本轮未查到 Sui 或 Mysten 的 NFC 碰一碰付款、离线支付或 POS 终端规范。",
+   "confidence": "low",
+   "source": "WebSearch（Sui offline payments NFC tap point of sale …），无相关结果",
+   "date": "2026-10-18",
+   "notes": "未查到不等于不存在。11 章 2.5 的「付款人离线签名、终端在线提交」在 Sui 上同样要靠自有钱包或与 Slush 共定格式（推断）；可列为向 Mysten 提的共同开发项目。"
+  },
+  {
+   "id": "SUI-13",
+   "claim": "【公司说法】Mysten 联合创始人称 2026 年内在 Sui 上推出机密交易（confidential transactions），对授权审计方选择性披露，面向受监管的链上支付；另有报道称 Sui/Mysten 与 Google 合作 Agentic Payments Protocol（AP2）。",
+   "confidence": "medium",
+   "source": "https://www.bitget.com/news/detail/12560605405798 ; https://cryptonews.net/news/altcoins/32208453/ ; https://coinengineer.net/blog/sui-and-mysten-labs-join-forces-with-google-on-next-gen-payments-protocol/",
+   "date": "2026",
+   "notes": "是否已上线未核实。对商户的意义：竞争对手看不到某店的链上营业额（推断）；但对 KYT/资产冻结筛查的影响要再评估。"
+  },
+  {
+   "id": "SUI-14",
+   "claim": "【事实】Sui 与阿里云合作，把阿里云服务接入 Sui Agent Payments，提供按次计费的稳定币结算；2026-10-07 在 Sui Basecamp 上公布。",
+   "confidence": "medium",
+   "source": "https://en.cryptonomist.ch/2026/10/07/sui-alibaba-cloud-partnership/ ; https://www.kucoin.com/news/flash/sui-partners-with-alibaba-cloud-to-enable-stablecoin-payments",
+   "date": "2026-10-07",
+   "notes": "阿里云属阿里巴巴集团，蚂蚁集团（含 Ant International/Alipay+）是关联但独立的公司；这不是 Sui 与 Alipay+ 的合作（推断）。"
+  },
+  {
+   "id": "SUI-15",
+   "claim": "【事实】USDsui（Sui Dollar）是 Sui 的原生美元稳定币，由 Bridge（Stripe 旗下）用其 Open Issuance 平台发行；2025-11-12 公布，2026-03-04 主网上线。储备为现金和美国国债（报道称托管/管理方有 BlackRock、Fidelity、Superstate）；储备利息按约定分给 Sui 生态，Sui 方称每个基点都将用于生态增长（回购 SUI、DeFi 流动性等）。上线时接入 Slush、Aftermath、Bluefin、Cetus、NAVI、Scallop、Suilend 等，可与其他链上 Bridge 系稳定币互通。",
+   "confidence": "high",
+   "source": "https://blog.sui.io/sui-unveils-usdsui-native-stablecoin/ ; https://blog.sui.io/sui-dollar-launch-bridge/ ; https://www.coindesk.com/business/2026/03/04/sui-s-native-stablecoin-goes-live-with-promise-of-treasury-yield-going-back-to-the-network",
+   "date": "2025-11-12（公布）；2026-03-04（主网）",
+   "notes": "发行方与上线日期有官方博客和 CoinDesk，高；储备托管方名单与收益用途是公司说法（中）。Bridge 是否在日本取得任何登记、USDsui 能否作为「外国電子決済手段」在日本流通，未查到（见 SUI-19）。"
+  },
+  {
+   "id": "SUI-16",
+   "claim": "【事实/记忆】USDC 在 Sui 上由 Circle 原生发行（2024 年起，记忆）；INSPAY 的 WebX 实演中 205 笔用的是 Sui 上的 USDC。其他已在 Sui 上的美元类币：FDUSD、AUSD（Agora）、USDY（Ondo，生息代币化票据）、suiUSDe（Ethena 体系）、USDB。",
+   "confidence": "medium",
+   "source": "SUI-06、SUI-02 的来源；Circle 链清单为记忆（仓库 INSCREEN-tech.json TECH-10，低）",
+   "date": "2024–2026",
+   "notes": "USDY、suiUSDe 是生息或合成美元，不是常规支付稳定币，日本法下更不可能作为電子決済手段（推断）。这些币在 Sui 上的发行方、规模本轮未逐一核实。"
+  },
+  {
+   "id": "SUI-17",
+   "claim": "【未查到】未查到 JPYC、XSGD 或任何日元、新元、港元稳定币在 Sui 上发行。JPYC 的链为 Ethereum、Polygon、Avalanche、Kaia；XSGD 已知在 Ethereum、Polygon、XRPL、Base 等，Alipay+ × Grab 个案用 Avalanche。",
+   "confidence": "medium",
+   "source": "https://reports.tiger-research.com/p/2026-asia-stablecoin-market-overview-eng ；仓库 docs/11（JPYC 四链，来自 JPYC 官方 GitHub）、STABLECOIN-INFRA.json（XSGD）",
+   "date": "2026-10-18",
+   "notes": "未查到不等于不存在。没有日元稳定币是 Sui 在日本零售场景的最大短板：日本居民主要的稳定币选择是 JPYC，而它不在 Sui 上（推断）。"
+  },
+  {
+   "id": "SUI-18",
+   "claim": "【二手】韩国桌面点单平板公司 T'order 宣布与 Sui 合作，计划接入一个将在 Sui 上发行的韩元稳定币。",
+   "confidence": "low",
+   "source": "https://beincrypto.com/sui-expands-real-world-reach-with-new-partners/",
+   "date": "约 2025-09（搜索摘要称约 387 天前）",
+   "notes": "这是与 INSPAY 最像的先例（亚洲的店头硬件 SaaS × Sui），可向 Mysten 索取进展和条款作参照；韩元稳定币是否已发行未查到。"
+  },
+  {
+   "id": "SUI-19",
+   "claim": "【推断】日本境内出金缺口：未查到任何日本登记的電子決済手段等取引業者经手 USDsui；SBI VC Trade 是境内唯一在卖 USDC 的业者（仓库已核实），但它是否支持 Sui 网络的 USDC 出入库未查到。因此日本商户收到 Sui 上的 USDsui 或 USDC 后，目前没有已确认的境内合法换日元通道。",
+   "confidence": "medium",
+   "source": "仓库 docs/11 2.2 节（SBI VC Trade、USDC 链清单未查到）；本轮检索未见 USDsui 的日本登记业者",
+   "date": "2026-10-18",
+   "notes": "这是在日本把 Sui 稳定币推给一般商户的阻断项。可行替代（推断）：①只对想持币的商户；②境外持牌方（如 DCSPay）兑换、在境外结算，但日本商户收境外法币结算涉外汇和资金移動业问题，须律师意见；③推动 SBI VC Trade 加 Sui 网络。USDsui 的储备收益分给网络的设计，能否满足日本对外国电子决济手段的要件，未查到，须律师确认。"
+  },
+  {
+   "id": "SUI-20",
+   "claim": "【事实】SUI 代币已在日本登记的暗号資産交換業者上架：bitbank 2025-08-14 开始取扱（含借贷服务）；CoinTrade（运营方 Mercury）2025-09-24 上架；CoinTrade Stake 2026-02-04 开始。",
+   "confidence": "high",
+   "source": "https://bitbank.cc/blog/articles/180660873 ; https://www.zaikei.co.jp/releases/3107130/ ; https://media.ceres-inc.jp/news/2025/08/20250814_v2.pdf",
+   "date": "2025-08-14；2025-09-24；2026-02-04",
+   "notes": "意味着 INSPAY 可以在境内合法采购 SUI，作为 sponsored transaction 的 gas（推断）。其他交易所（bitFlyer、SBI VC Trade、Binance Japan 等）是否上架未逐一核实。"
+  },
+  {
+   "id": "SUI-21",
+   "claim": "【未查到】除 INSPAY 的 MOU 外，未查到 Sui Foundation 或 Mysten Labs 的日本法人、日本团队或其他日本企业合作。",
+   "confidence": "low",
+   "source": "WebSearch（Sui Foundation Japan partnership 2026 …；SUI 取扱開始 … Sui Foundation 日本 提携）",
+   "date": "2026-10-18",
+   "notes": "未查到不等于不存在。若属实，INSPAY 可能是 Sui 在日本线下支付的首个标杆伙伴，这是谈判筹码（推断）。"
+  },
+  {
+   "id": "SUI-22",
+   "claim": "【事实】Sui 与蚂蚁数科（Ant Digital Technologies）及其 Web3 品牌 ZAN 合作：ZAN 自 2024-08 起作为 Sui 的 RPC 节点运营方（与 Mysten Labs 集成）；2024-12-13 宣布把 ESG 类真实世界资产（一家未具名中国光伏材料制造商的「notes」）代币化上 Sui。ZAN 2023-09 推出，基于 AntChain Open Labs TrustBase，提供发行管理与 KYC/AML 工具。",
+   "confidence": "high",
+   "source": "https://chainwire.org/2024/12/13/sui-partners-with-ant-digital-technologies-on-its-rwa-project/ ; https://cointelegraph.com/news/sui-ant-digital-tokenized-esg-assets",
+   "date": "2024-08；2024-12-13",
+   "notes": "蚂蚁数科与运营 Alipay+ 的 Ant International 是蚂蚁集团下不同业务单元（Cointelegraph 称蚂蚁数科自 2024-04 起独立运营），不能推出 Alipay+ 支持 Sui。未查到 2025–2026 的后续。"
+  },
+  {
+   "id": "SUI-23",
+   "claim": "【未查到】未查到 Sui（Mysten Labs、Sui Foundation）与 Ant International、Alipay+ 或 Antom 的任何合作；Alipay+ 唯一公开的稳定币清算个案（StraitsX × Grab，XSGD）在 Avalanche 上。",
+   "confidence": "medium",
+   "source": "WebSearch（Sui Ant Digital … Ant International Alipay+ Sui）；仓库 docs/01 1.1、ALIPAY-VERIFY.json",
+   "date": "2026-10-18",
+   "notes": "与同轮 alipayplus.json（ALIPAYPLUS-06）结论一致。"
+  },
+  {
+   "id": "SUI-24",
+   "claim": "【未查到】未查到 Sui 与 DCS（DeCard、DCSPay、DUS）的任何关联。DCS 已知用链为 PlatON（DUS）、Ethereum（DUSD）、Polygon（DeCard 充值，2025-10 与 Polygon Labs 合作）；渣打 2025-11-11 担任 DeCard 主要银行伙伴（USDC/USDT 充值、POS 时转法币）。",
+   "confidence": "medium",
+   "source": "https://www.sc.com/en/press-release/standard-chartered-to-power-decard-in-singapore-through-partnership-with-dcs/ ; https://www.theblock.co/post/378311/standard-chartered-stablecoin-credit-card ; 同轮 dcs.json（DCS-12、DCS-23）",
+   "date": "2026-10-18",
+   "notes": "DCSPay 支持哪些链未公开（dcs.json）。要让 DCSPay 给 INSCREEN 上的 Sui 稳定币做法币结算，须 DCS 新增 Sui 支持（推断）。"
+  },
+  {
+   "id": "SUI-25",
+   "claim": "【公司说法】Sui 已公开的支付合作集中在非洲和 AI 代理支付：尼日利亚 Paga 把 USDsui 接入其企业 API 和消费者 App（2026-05，称月处理 15 亿美元支付）；Daya 把 Sui 作为其产品线的结算基础设施，做非洲免 gas 稳定币支付（2026-09）；另有 Google AP2、阿里云 Agent Payments（见 SUI-13、SUI-14）。",
+   "confidence": "medium",
+   "source": "https://en.cryptonomist.ch/2026/05/08/paga-sui-partnership/ ; https://www.sui.io/blog/shaping-the-way-money-moves-across-continents-with-sui-and-paga ; https://www.sui.io/blog/daya-partners-with-sui-for-gasless-stablecoin-payments-in-africa",
+   "date": "2026-05；2026-09",
+   "notes": "未查到 Sui 在日本、韩国（T'order 除外）、香港、新加坡、东南亚的收单方或 PSP 合作，也未查到面向支付或硬件项目的专门 grant（未查到不等于不存在）。"
+  },
+  {
+   "id": "SUI-26",
+   "claim": "【记忆，未核实】2025 年曾有 xMoney/xPortal 发行 Sui 品牌 Mastercard 卡（欧洲/美国）的报道。本轮检索未查到 2026 年 Sui 品牌卡或 xMoney 的进展。",
+   "confidence": "low",
+   "source": "记忆；本轮 WebSearch 未命中",
+   "date": "2025（记忆）",
+   "notes": "与 INSPAY 的线下受理关系不大：卡路线让持币者在任何刷卡终端消费，是 INSCREEN 链上受理的替代品而不是互补（推断）。"
+  },
+  {
+   "id": "SUI-27",
+   "claim": "【推断】Sui 相对 EVM 链（Polygon/Kaia/Avalanche）给 INSCREEN 多出的东西：①协议层免 gas 稳定币转账，付款人钱包可直接提交、INSPAY 不必当 relayer，可能减轻 11 章提出的「relayer 能选择提交与否」的定性风险，也省掉 gas 钱包运营（须日本律师确认）；②Payment Kit 用订单号作 nonce 防重、出回执，解决动态码订单匹配；③zkLogin/passkey 让游客不用助记词、不用持 SUI；④亚秒确认适合售货机、夹娃娃机；⑤USDsui 储备收益回流生态，Sui 方有资金做商户与用户激励。",
+   "confidence": "low",
+   "source": "基于 SUI-06、SUI-08、SUI-09、SUI-10、SUI-11、SUI-15 与仓库 docs/11 的推断",
+   "date": "2026-10-18",
+   "notes": "EVM 侧也有相近方案（EIP-3009 代付、Circle Paymaster、Arc 用 USDC 付 gas），所以差异是程度而非独有（推断）。免 gas 只在拥堵时让位于付费交易，柜台场景要有降级（付费或 sponsored）路径。"
+  },
+  {
+   "id": "SUI-28",
+   "claim": "【推断】Sui 缺的东西：日元稳定币（JPYC 不在 Sui 上）；日本境内 USDsui/Sui-USDC 的登记出金通道；与 Alipay+、DCS 的现成连接；日本用户多把币放在交易所，Slush 的日本用户基数未知。所以 Sui 在日本短期只适合游客、加密用户和想持币的商户，不能替代 JPYC + EVM 和 QR 网关通道。",
+   "confidence": "low",
+   "source": "基于 SUI-17、SUI-19、SUI-21、SUI-23、SUI-24 与仓库 docs/11 的推断",
+   "date": "2026-10-18",
+   "notes": "首要验证：SBI VC Trade 是否支持 Sui 网络 USDC；Bridge 或 Mysten 是否有日本登记业者合作计划；JPYC 是否计划上 Sui。"
+  },
+  {
+   "id": "SUI-29",
+   "claim": "【推断】Mysten/Sui 想从 INSPAY 得到：日本和亚太的真实线下交易量与案例（Sui 公开支付合作多在非洲，亚洲线下几乎空白）；终端覆盖（INSPAY 自称 1 万台以上 QR 终端）；USDsui 的使用场景（流通越多，网络分到的储备收益越多）；售货机、夹娃娃机这类可展示的「免 gas 支付」场景。INSPAY 可以要：集成资金或 grant、联合市场费用、对 USDsui/USDC 的商户和用户激励、对接日本登记出金业者、联合开发离线/NFC 签名格式和 Slush 的扫码支付、引荐 Sui 生态在东南亚的钱包。",
+   "confidence": "low",
+   "source": "基于 SUI-01–03、SUI-15、SUI-21、SUI-25 的推断",
+   "date": "2026-10-18",
+   "notes": "MOU 的实际条款未公开，INSPAY 方应以 MOU 原文为准。"
+  },
+  {
+   "id": "SUI-30",
+   "claim": "【推断】四方合作没有现成框架，未查到 Alipay+–DCS–Sui 三者之间任何两两合作（DCS 执行主席贾航曾主导 Alipay+ 扩张，是唯一人事关联）。可行分工是以 INSPAY 为中心分别签：Sui 做 INSCREEN 的链上稳定币受理链和生态资金来源；DCS 的 DCSPay 若新增 Sui 支持，可在日本境外做 Sui 稳定币→法币结算（新加坡等），DCS 的新加坡收单商户也可装 INSCREEN；Alipay+ 只经日本现有 ACQP（如 PayPay）做外国法币钱包受理，不涉及 Sui；日本境内的稳定币出金仍须日本登记业者。",
+   "confidence": "low",
+   "source": "基于 SUI-22–SUI-24 及同轮 alipayplus.json（ALIPAYPLUS-21）、dcs.json 的推断",
+   "date": "2026-10-18",
+   "notes": "对 DCS 的具体提议：把 Sui（USDsui、USDC）加入 DCSPay 支持链，并由 Mysten 出集成激励；借贷航的 Ant 人脉接触 Alipay+，但不能当作 Alipay+ 对稳定币通道的背书。"
+  }
+ ],
+ "key_claims": [
+  "INSPAY 已于 2026-07-10 与 Mysten Labs 签战略协作 MOU，并在 WebX 2026 实演 Sui 稳定币线下支付（自报 470 笔、USDC 205/USDsui 265、0.6–1 秒、Slush 钱包）；Sui 是已有伙伴，不是待选链。",
+  "仓库 11 章的 INSCREEN 稳定币方案只按 EVM（JPYC/USDC、EIP-3009 relayer）设计，须补 Sui 路径。",
+  "Sui 2026 年起在协议层免 gas 转账 7 种稳定币（含 USDC、USDsui），拥堵时让位于付费交易；起始日期有 5-20 与 6-10 两种报道。",
+  "USDsui 由 Bridge（Stripe）发行，2026-03-04 主网上线，储备收益回流 Sui 生态。",
+  "未查到 JPYC、XSGD 等亚洲本币稳定币在 Sui 上；未查到日本登记业者经手 USDsui，也未查到 SBI VC Trade 支持 Sui 网络 USDC，日本境内出金是阻断项（推断）。",
+  "SUI 代币已在 bitbank、CoinTrade 上架，INSPAY 可在境内采购 gas 用的 SUI（推断）。",
+  "Sui 的蚂蚁系合作方是蚂蚁数科/ZAN（RPC 节点、ESG RWA），不是 Ant International；未查到 Sui 与 Alipay+ 或 DCS 的任何关联。",
+  "Payment Kit 的 nonce 防重与回执、zkLogin/passkey、亚秒确认是 Sui 对线下受理的实际增益；未查到 NFC/离线方案。",
+  "Mysten 想要的是日本/亚太线下交易量、终端覆盖和 USDsui 场景；INSPAY 可要集成资金、激励、出金对接与联合开发（推断）。"
+ ],
+ "open_questions": [
+  "INSPAY–Mysten MOU 的条款：排他性、资金或 grant、联合市场、Mysten 对日本出金和钱包的承诺（INSPAY 内部文件可答；本轮未查邮件）。",
+  "SBI VC Trade（或 Coincheck 等）是否支持 Sui 网络的 USDC 出入库？Bridge/Mysten 是否在推动日本登记业者经手 USDsui？",
+  "USDsui（储备收益分给网络）能否满足日本「外国電子決済手段」的要件；日本商户直接收 USDsui 的法律与税务定性（须律师、税理士）。",
+  "Sui 协议层免 gas 的生效日期（2026-05-20 还是 06-10）、合格交易的确切条件，Payment Kit 的 registry 调用是否也免 gas。",
+  "Sui 主网的终局时间实测和停摆历史（2024-11 停摆约 2 小时为记忆，未核实），对无人机台的超时策略影响。",
+  "JPYC 是否计划部署到 Sui？韩国 T'order × Sui 韩元稳定币是否已上线、条款如何？",
+  "DCSPay 支持哪些链、是否愿意加 Sui；DCSPay 在日本境外为日本商户结算是否可行（外为法、资金移動业）。",
+  "Sui Foundation 是否有面向支付/硬件的专门 grant 或亚太支付团队；是否有日本法人。",
+  "Slush 在日本的用户数、日语支持，以及 Slush 能否扫 INSCREEN 动态码并走 Payment Kit。",
+  "Sui 机密交易上线后，对商户侧 KYT、资产冻结筛查（外為法）的影响。"
+ ]
+}

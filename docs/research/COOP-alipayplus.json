@@ -1,0 +1,200 @@
+{
+  "topic": "Alipay+ / Ant International 作为硬件 SaaS 终端公司（INSPAY / INSCREEN）与稳定币流程的合作方；与 DCS、Sui 的关系",
+  "as_of": "2026-10-18",
+  "method": "WebSearch 12/12 次（额度用完）；WebFetch 试了 alipayplus.com、fintechnews.sg、antom.com、alvinology.com、paymentnavi.com，全部 DNS 失败（getaddrinfo ENOTFOUND），新事实只来自搜索摘要。仓库已核实事实（ALIPAY-VERIFY、ALIPAYPLUS、INSCREEN-*、STABLECOIN-INFRA）直接引用，未重复检索，notes 中标【沿用】。",
+  "summary": "（1）「Alipay+ DCS」不是 Alipay+ 的产品名：只查到 Alipay+ D-store（2022-11，数字门店方案），应理解为 Alipay+ 与 DCS 两方。（2）截至 2026-10-18 未查到 Ant International / Alipay+ 与 DCS、或与 Sui 的公司级合作（未查到不等于不存在）。唯一关联是人事：前蚂蚁集团东南亚与欧洲区总经理、主导 Alipay+ 全球扩张的贾航（Jia Hang）2025-11 出任 DCS 执行主席（公司新闻稿）。Sui 的蚂蚁系合作方是蚂蚁数科（Ant Digital Technologies / ZAN，2024-12，ESG RWA），不是 Ant International。（3）Alipay+ 不对终端厂商单独开放：第三方以 MPP（钱包）、ACQP（收单）或 TSP（为 ACQP 提供开发测试等技术服务）身份接入，商户经收单服务商（如 Antom）或直连接入；未查到「Alipay+ 认证终端 / SaaS」计划或公开的 Antom ISV 伙伴计划，只见 Alipay 线下开发者中心有 ISV / 系统集成商角色（须先签约）。（4）日本：Alipay+ 经 40 多家本地收单方接入（2024-03），PayPay 为主（商户费 1.98% 税別、按店申请并审核、仅用户扫店铺码），其他收单方名单本轮未查到。INSCREEN 最现实的接法是作为 PayPay、Netstars 等现有 ACQP 的展示终端或其 TSP，而不是和 Ant 直签（推断）。（5）Ant 自己在新加坡（2025-11）和马来西亚（2026-01，经 TNG）推出 EPOS360 应用 + EPOS360 Bluetap 柜台终端（QR + 卡），是 INSCREEN 在东南亚的同类竞品。（6）稳定币：Ant 的布局在机构间 treasury（Whale、HSBC 代币化存款、只限关联方批发使用的 BREUR、MAS BLOOM、据报与 Circle 合作）。面向商户的稳定币清算只见新加坡 StraitsX × Grab 的 XSGD 个案。2025-10 有报道称内地监管叫停蚂蚁的香港稳定币计划；截至 2026-10 未见 Ant 获得香港或新加坡稳定币牌照，也未查到 UBS 代币化存款合作。（7）Alipay+ 合作钱包中未见加密或稳定币钱包；稳定币钱包付日本商户的先例是 HIVEX × Binance Pay（2026-09-30），不是 Alipay+。结论（推断）：四方合作里，Alipay+ 只能做 INSCREEN 的「外国钱包受理通道」（经日本现有 ACQP）；稳定币腿要靠 DCS（DCSPay）或其他持牌方；Sui 与 Alipay+ 没有直接接口，只能是 INSPAY 稳定币受理侧的一条可选链。",
+  "facts": [
+    {
+      "id": "ALIPAYPLUS-01",
+      "claim": "【事实/未查到】检索「Alipay+ DCS」只得到 Alipay+ D-store：蚂蚁集团 2022-11 在新加坡金融科技节推出的数字门店方案，供线下商户在多个平台建 mini program / H5 门店，并提供支付、运营、营销工具；称 F&B 领域已有 2,000 多家餐厅在新、马、港、中等市场采用。未查到名为「Alipay+ DCS」的产品。",
+      "confidence": "medium",
+      "source": "https://www.fintechfutures.com/press-releases/ant-group-launches-alipay-d-store-solution-at-singapore-fintech-festival-2022 ; https://fintechnews.sg/66181/payments/ant-group-launches-alipay-digital-store-solutions/",
+      "date": "2022-11",
+      "notes": "推断：创始人问题中的「Alipay+ DCS」应读作 Alipay+ 与 DCS 两方（与题目逗号分隔一致），不是单一产品；D-store 误写的可能性低。WebSearch 摘要，原文未读到。"
+    },
+    {
+      "id": "ALIPAYPLUS-02",
+      "claim": "【未查到】截至 2026-10-18，未查到 Ant International / Alipay+ / Antom 与 DCS Card Centre 或 DCS Fintech Holdings 的公开合作（钱包接入、收单、DCSPay 结算或 DeCard 等）。",
+      "confidence": "medium",
+      "source": "WebSearch 2026-10-18（「Alipay+」DCS Card Centre / DCS Fintech / DCSPay Ant International；Jia Hang DCS Alipay+ DCSPay）",
+      "date": "2026-10-18",
+      "notes": "未查到不等于不存在；只覆盖英文公开报道。两次搜索的摘要都没出现 DCSPay 一词，DCSPay 的事实以 DCS 专题为准。"
+    },
+    {
+      "id": "ALIPAYPLUS-03",
+      "claim": "【公司说法】DCS 于 2025-11-25 宣布贾航（Jia Hang）出任 DCS 执行主席，称这是公司史上最高层级的任命，负责 DCS 集团（含全球金融科技业务与新加坡核心业务），并主导「传统金融与区块链生态之间可互操作的支付流」。贾航此前任阿里巴巴国际支付与金融服务全球负责人；更早在蚂蚁集团任东南亚与欧洲区区域总经理，主导 Alipay+ 的全球扩张。",
+      "confidence": "high",
+      "source": "https://alvinology.com/2025/11/25/alibaba-group-veteran-payments-leader-jia-hang-joins-dcs-to-accelerate-a-new-era-of-payments-innovation/ ; https://fintechnews.sg/122625/payments/dcs-executive-chairman/ ; https://www.malaymail.com/news/money/mediaoutreach/2025/11/25/alibaba-group-veteran-payments-leader-jia-hang-joins-dcs-to-accelerate-a-new-era-of-payments-innovation/431111",
+      "date": "2025-11-25",
+      "notes": "任命本身为 high（多家媒体转载同一份 Media OutReach 付费新闻稿）；职责描述是公司说法。这是 DCS 与 Alipay+ 之间唯一查到的联系，属个人关系，不是公司合作。推断（低）：DCS 高层熟悉 Alipay+ 的钱包与交换机网络，可作为 INSPAY 接触 Ant International 的引荐渠道，但不能当作 DCS 能代表 Alipay+ 谈合作。"
+    },
+    {
+      "id": "ALIPAYPLUS-04",
+      "claim": "【事实】DCS Card Centre 是新加坡受监管的发卡机构，前身为 Diners Club Singapore，2022-10 正式更名，由 DCS Fintech Holdings 持有；同一份新闻稿称 DCS 2025 年推出 DeCard Visa 卡，让 Web3 用户把稳定币转成日常消费。",
+      "confidence": "medium",
+      "source": "https://dcscc.com/dcs-rebranding-press-release ; https://dcscc.com/about-us ; https://technode.global/2023/08/02/diners-club-singapore-rebrands-to-dcs-card-centre-for-transformation/ ; https://alvinology.com/2025/11/25/alibaba-group-veteran-payments-leader-jia-hang-joins-dcs-to-accelerate-a-new-era-of-payments-innovation/",
+      "date": "2022-10 / 2025-11-25",
+      "notes": "WebSearch 摘要；DeCard 的发卡伙伴（任务背景称与渣打合作）本轮未核实。DCS 的其他事实（DCSPay、DUS、KuCoin Pay 合作）不在本专题范围。"
+    },
+    {
+      "id": "ALIPAYPLUS-05",
+      "claim": "【事实】Sui 于 2024-12-13 宣布与蚂蚁数科（Ant Digital Technologies）及其 Web3 品牌 ZAN 合作，把 ESG 类真实世界资产代币化上 Sui；首个项目是一家未具名的中国光伏材料制造商（财富中国 500 强）的「notes」；ZAN 平台基于 AntChain，提供发行、管理与 KYC/AML 工具。",
+      "confidence": "high",
+      "source": "https://blog.sui.io/ant-digital-esg-focused-rwa/ ; https://cointelegraph.com/news/sui-ant-digital-tokenized-esg-assets",
+      "date": "2024-12-13",
+      "notes": "Sui 官方博客 + Cointelegraph。The Defiant 的版本标注为 AI 生成，未采用。2024-12 以后的进展未查。"
+    },
+    {
+      "id": "ALIPAYPLUS-06",
+      "claim": "【未查到/推断】未查到 Ant International、Alipay+ 或 Antom 与 Sui（Mysten Labs / Sui Foundation）的合作。蚂蚁数科（中国境内的区块链科技单元）和 Ant International（新加坡总部，运营 Alipay+、Antom、WorldFirst）是蚂蚁集团下不同的业务单元，Sui × 蚂蚁数科的 RWA 合作不代表 Alipay+ 支持 Sui 或在 Sui 上结算。",
+      "confidence": "medium",
+      "source": "WebSearch 2026-10-18（Ant International OR Ant Digital Sui）；结合 ALIPAYPLUS-05",
+      "date": "2026-10-18",
+      "notes": "前半句为未查到；后半句是基于公开组织结构的推断。Alipay+ 公开的唯一稳定币清算个案在 Avalanche 上（XSGD，见 ALIPAYPLUS-17）；Ant 自有链为 AntChain / Whale。"
+    },
+    {
+      "id": "ALIPAYPLUS-07",
+      "claim": "【事实·官方文档】Alipay+ 的参与角色有 ACQP（为商户处理支付的收单服务商）、MPP（移动支付提供方，通常是钱包）、TSP（为 ACQP 提供开发、测试等技术服务的机构）和商户；TSP 模式支持 AutoDebit、用户出示码（UPM/CPM）和商户出示码（MPM）三类产品。部分国家和地区出于法律或合规原因，要求商户信息先由 ACQP 登记、经 MPP 审批后才能付款。",
+      "confidence": "high",
+      "source": "https://docs.alipayplus.com/alipayplus/alipayplus/integration_tsp/overview ; https://docs.alipayplus.com/alipayplus/alipayplus/registration_acq",
+      "date": "页面未标日期（仓库 2026-10-18 检索）",
+      "notes": "【沿用 ALIPAYPLUS.json】。推断：对没有收单牌照的终端 / SaaS 公司，文档里最接近的角色是 TSP，即为某个 ACQP 做技术接入，而不是直接和 Alipay+ 结算。"
+    },
+    {
+      "id": "ALIPAYPLUS-08",
+      "claim": "【公司说法】Alipay+ FAQ 称，商户可经收单服务商（如 Antom）或直接合作接入 Alipay+。Alipay 线下开发者中心设有「系统集成商 / ISV」角色，代商户集成，前提是先在 Alipay Global Merchant 门户注册并签约，开发者中心账号须与签约账号一致。零售指南称收单方或 ISV 可经现有或新 API 把 Alipay 接入商户的 ECR，收单方也可复用现有 POS 终端设施；扫码设备可以是扫码枪、手机 App 或带摄像头的 mPOS。",
+      "confidence": "medium",
+      "source": "https://www.alipayplus.com/faq/ ; https://global.alipay.com/docs/devcenter ; https://iopenhome.alipay.com/docs/ac/retailstore/integration ; https://iopenhome.alipay.com/docs/glossary",
+      "date": "页面未标日期（2026-10-18 检索）",
+      "notes": "WebSearch 摘要；WebFetch alipayplus.com 失败。这些开发者中心页面属于 Alipay（Antom 前身的 Alipay 跨境商户服务），不一定等同于 Alipay+ 网络的 ACQP 规则。"
+    },
+    {
+      "id": "ALIPAYPLUS-09",
+      "claim": "【未查到】未查到「Alipay+ 认证终端 / 认证 SaaS」计划、公开的 Antom ISV 或硬件伙伴计划及其准入条件、费用或分润条款。",
+      "confidence": "low",
+      "source": "WebSearch 2026-10-18（Antom partner program ISV POS terminal partners Alipay+ certified in-store）",
+      "date": "2026-10-18",
+      "notes": "未查到不等于不存在；这类条款多在合同或 BD 阶段才给。须直接问 Ant International 或日本 ACQP。"
+    },
+    {
+      "id": "ALIPAYPLUS-10",
+      "claim": "【公司说法】Ant International 旗下 Antom 于 2025-11-12 在新加坡推出面向中小微商户的 EPOS360 应用（POS、支付、银行、贷款与增长工具一体；由 ANEXT Bank 支持，合格商户注册时可即时获批最高 S$5,000 贷款），可配对 EPOS360 Bluetap 智能柜台终端（受理 QR 与卡）。2026-01-15，TNG Digital 与 EPOS 在马来西亚以 TNG eWallet 小程序形式推出 EPOS360 与 Bluetap：Bluetap 支持 TNG eWallet 碰一碰付款，同时受理 DuitNow QR 与主要钱包，卡支付「即将推出」。报道称 EPOS 在新加坡服务 6,000 多家商户。",
+      "confidence": "medium",
+      "source": "https://www.antom.com/news/antom-launches-ai-powered-msme-app-for-finance-and-business-operations ; https://technode.com/2025/11/12/ant-internationals-antom-launches-all-in-one-finance-and-business-operations-app-for-msmes/ ; https://www.businesswire.com/news/home/20260115763131/en/TNG-Digital-and-EPOS-Launch-EPOS360-and-EPOS360-BlueTap-in-Malaysia-to-Help-Local-SMEs-Grow-with-AI-and-Unique-Payment-Capabilities ; https://fintechnews.my/56069/e-wallets-malaysia/tng-ant-epos360/",
+      "date": "2025-11-12 / 2026-01-15",
+      "notes": "公司新闻稿，经 WebSearch 摘要；Bluetap 的价格、费率与上市日期未查到。两份稿件对新加坡的状态说法不一（Antom 稿写已推出，TNG 稿写「新加坡即将推出」）。推断：Ant 自己在新马做「终端 + SaaS + 金融」，与 INSCREEN 同类，在这两个市场更可能是竞争对手而不是渠道；日本未见 EPOS360。paymentnavi 另报道 SFF2025 上展示了虹膜认证的 Alipay+ GlassPay（仅见标题）。"
+    },
+    {
+      "id": "ALIPAYPLUS-11",
+      "claim": "【事实】Alipay+ 在日本：2024-03 时经 40 多家本地收单方连接 200 万以上商户，16 个钱包或银行 App 可用。PayPay 是主要的 Alipay+ 收单方：2024-11 称把受理扩展到 300 万以上商户；截至 2026-06-29，作为 Alipay+ 收单方共受理 17 个国家和地区的 35 项服务。",
+      "confidence": "high",
+      "source": "https://www.businesswire.com/news/home/20240327604903/en ; https://www.silicon.co.uk/press-release/paypay-and-alipay-extend-enhanced-e-wallet-payment-options-to-over-3-million-merchants-across-japan-with-expanded-partnership ; https://about.paypay.ne.jp/en/pr/20260629/01/",
+      "date": "2024-03-27 / 2024-11 / 2026-06-29",
+      "notes": "【沿用 INSCREEN-competitors / ALIPAY-VERIFY】。其余约 40 家日本收单方的名单本轮未查到；对 SB Payment Service、GMO、楽天的检索没有结果。2016 年报道称 Orico 做过 Alipay 收单（旧信息，现状未核实）。Netstars 自称 StarPay 支持 WeChat Pay、Alipay/Alipay+（公司说法，INSCREEN-competitors）。"
+    },
+    {
+      "id": "ALIPAYPLUS-12",
+      "claim": "【事实·加盟店规则】经 PayPay 受理 Alipay / Alipay+：无初期费用；按店铺在 PayPay 管理工具「サービス設定」申请，须经审核；决済システム利用料 1.98%（税別），自动从货款中扣除；只支持用户扫店铺码（MPM）；新增服务自动适用于所有已签 Alipay+ 的店铺（例：2025-04 新增泰国 K PLUS、哈萨克斯坦 Kaspi.kz）。",
+      "confidence": "high",
+      "source": "https://paypay.ne.jp/help-merchant/b0076/ ; https://paypay.ne.jp/notice-merchant/20250414/n-01/ ; https://paypay.ne.jp/notice-merchant/20240129/n-01/",
+      "date": "2024-01-29 / 2025-04-14",
+      "notes": "1.98% 与 MPM 限制【沿用 INSCREEN-fees FEES 条目】；2025-04 新增服务为本轮 WebSearch 摘要。对比：HIVEX 与 PayPay 同率（1.60% / 1.98%）；Netstars Stablecoin Pay 0.98%（INSCREEN-competitors）。Alipay+ 批发层的 wallet interchange 与 service fee 由 ACQP 承担、从结算款中扣除，费率未公开（ALIPAY-VERIFY #29）。"
+    },
+    {
+      "id": "ALIPAYPLUS-13",
+      "claim": "【事实·官方文档】终端怎么接入：MPM 下，商户出示 ACQP 生成的码（entry code / order code），ACQP 侧的 pay 接口为 POST /aps/api/v1/payments/pay。文档还有私有订单码流程：钱包扫到 ACQP 自有格式的订单码时，由 Alipay+ 调用 ACQP 解码。UPM（CPM）下，商户扫用户付款码交给 ACQP，再由 ACQP 调 pay。ACQP 必须对请求签名（RSA256），使用 Alipay+ 分配的 Client-Id。",
+      "confidence": "medium",
+      "source": "https://docs.alipayplus.com/alipayplus/alipayplus/api_acq/pay_entry_code ; https://docs.alipayplus.com/alipayplus/alipayplus/api_acq/pay_private_order_code ; https://docs.alipayplus.com/alipayplus/alipayplus/integration_user_mode_acq/accept_payment",
+      "date": "页面未标日期（仓库 2026-10-18 检索）",
+      "notes": "【沿用 ALIPAYPLUS.json】。推断：INSCREEN 的动态码屏在技术上可以显示 ACQP 下发的订单码，但 API 和签名密钥都在 ACQP 手里，终端只能经 ACQP（例如 PayPay 的商户 API，或 Netstars 网关）拿码。PayPay 经由的 Alipay+ 能否用动态订单码、还是只能用店铺固定码，本轮未核实。"
+    },
+    {
+      "id": "ALIPAYPLUS-14",
+      "claim": "【事实/公司说法】新加坡：NETS 于 2023-04 把 Alipay+ 接入 SGQR，覆盖约 11,000 个熟食摊及咖啡店、湿巴刹等，首批 6 个钱包；Antom 是 Ant 自营的收单服务商。香港：Alipay+ 称本地商户可用现有 AlipayHK 收款码受理 14 个境外钱包，经 AlipayHK 网络覆盖 90% 以上本地商户；Worldpay（FIS）曾宣布把 Alipay+ 接入其电商与 POS 产品，首先是 AlipayHK。",
+      "confidence": "medium",
+      "source": "https://kr-asia.com/alipay-payment-option-now-available-at-11000-stalls-in-singapore-hawker-centres ; https://vulcanpost.com/808244/more-merchants-now-accept-alipay-plus-singapore/ ; https://www.alipayplus.com/faq/ ; https://thefintechtimes.com/worldpay-to-integrate-alipay-to-give-merchant-cross-border-payments-a-boost/ ; https://www.theasianbanker.com/press-releases/worldpay-from-fis-to-integrate-alipay-for-cross-border-payments",
+      "date": "2023-04（SGQR）；香港与 Worldpay 条目日期不明（推断为 2023 年前后）",
+      "notes": "WebSearch 摘要。香港「14 个钱包、90% 以上商户」出自哪个页面，摘要没写清楚。QFPay、KPay、Yedpay、Global Payments 是否为 Alipay+ 收单方，本轮未查到。推断：在新加坡、香港，Alipay+ 是经国家码（SGQR/NETS）或 AlipayHK 码落到商户的，INSCREEN 只要显示这些码就能收 Alipay+ 钱包，不需要和 Ant 签约。"
+    },
+    {
+      "id": "ALIPAYPLUS-15",
+      "claim": "【事实/公司说法】Ant International 的区块链与代币化存款：Whale 平台（公司称 2024 年约 1 万亿美元交易中约三分之一经区块链处理）；2024-10-28 与 HSBC 在 HKMA Ensemble 沙盒完成 HKD 跨行区块链测试交易；2025-05 成为 HSBC 香港 Tokenised Deposit Service 首个企业客户；2026-10-06 与 HSBC 把实时 treasury 服务扩展到中东（UAE↔香港走廊试点）。一篇 2025 年报道称 AntChain 支持 HSBC、JPMorgan、Standard Chartered 等 10 多家银行发行的代币化存款。",
+      "confidence": "medium",
+      "source": "https://www.about.hsbc.com.hk/news-and-media/hsbc-and-ant-international-complete-hkd-denominated-cross-bank-blockchain-test-transactions ; https://www.businesswire.com/news/home/20250522743088/en ; https://www.sttinfo.fi/tiedote/72389235/ant-international-and-hsbc-expand-real-time-treasury-management-services-to-the-middle-east ; https://e27.co/going-for-the-new-paradigm-of-blockchain-finance-with-ant-international-20250714/",
+      "date": "2024-10-28 / 2025-05-22 / 2025-07 / 2026-10-06",
+      "notes": "HSBC 各条【沿用 ALIPAY-VERIFY，high】；「10 多家银行」为本轮搜索摘要（medium）。任务背景提到的 UBS 代币化存款合作，本轮未查到（可能存在，未核实）。全部是集团内或银行间 treasury，不是给 Alipay+ 合作方或商户的结算产品。"
+    },
+    {
+      "id": "ALIPAYPLUS-16",
+      "claim": "【报道/事实】稳定币牌照：Bloomberg（2025-06）报道 Ant International 计划在香港《稳定币条例》2025-08 生效后申请发行牌照，并在新加坡、卢森堡申请。卢森堡 CSSF 2025-09-16 向 Alipay (Europe) 授予 MiCA EMT 授权，代币 BREUR（Bettr Settlement Token，锚定欧元）只限获批的 Ant International 关联方之间批发使用。FT（2025-10）报道人民银行与网信办指示蚂蚁集团、京东暂停香港稳定币计划。2026-04 报道称香港首批稳定币牌照没赶上 3 月目标，HKMA 登记册上仍无持牌发行人。",
+      "confidence": "medium",
+      "source": "https://cointelegraph.com/news/jack-ma-ant-group-stablecoin-license-for-singapore-hong-kong ; https://www.scmp.com/tech/big-tech/article/3314150/chinese-fintech-giant-ant-international-seek-stablecoin-licence-hong-kong ; https://en.paperjam.lu/article/cssf-grants-alipay-e-money-licence-paving-way-for-euro-stablecoin ; https://fintechnews.hk/35975/blockchain/ant-group-jd-com-china-stablecoins-pause/ ; https://cointelegraph.com/news/hong-kong-missed-march-target-stablecoin-licenses",
+      "date": "2025-06 / 2025-09-16 / 2025-10 / 2026-04",
+      "notes": "CSSF 授权与 FT 报道【沿用 ALIPAY-VERIFY，high】。叫停报道点名的是蚂蚁集团，是否涵盖 Ant International 不明。截至 2026-10-18，未查到 Ant International 已提交、获批或上线香港 / 新加坡稳定币。2026-04 以后 HKMA 是否发牌，本轮未核实。"
+    },
+    {
+      "id": "ALIPAYPLUS-17",
+      "claim": "【事实/报道】Alipay+ 唯一公开的稳定币清算个案：2024-11-05 起，StraitsX × Ant International（Alipay+）× Grab，在新加坡部分 GrabPay 商户，后台用 XSGD 加 Purpose Bound Money 在 Avalanche 上清结算，商户实时收 SGD。另据 Bloomberg / The Block（2025-07-10）报道，Ant International 与 Circle 合作，待 USDC 满足美国监管要求后接入其区块链，用于商户与银行的资金管理与结算；双方未正式证实，2026 年未见落地报道。MAS BLOOM（2025-10-16）参与者含 Ant International。",
+      "confidence": "medium",
+      "source": "https://www.straitsx.com/case-study/alipay-grab ; https://www.theblock.co/post/361951/jack-ma-ant-international-circle-usdc-stablecoin ; https://www.mas.gov.sg/news/media-releases/2025/mas-launches-bloom-initiative-to-extend-settlement-capabilities",
+      "date": "2024-11-05 / 2025-07-10 / 2025-10-16",
+      "notes": "【沿用 ALIPAY-VERIFY / SG-MY / STABLECOIN-INFRA】。Alipay+ 标准结算是合同约定的银行法币（ACQP 默认 T+2、MPP 默认 T+1）。未查到 Alipay+ 向一般 ACQP / MPP 提供稳定币结算选项，也未查到日本的 Alipay+ 稳定币案例。"
+    },
+    {
+      "id": "ALIPAYPLUS-18",
+      "claim": "【公司说法】Alipay+ 规模：一份 2025 年稿件写合作 40 个钱包和银行 App、10 个国家 QR 方案（乌兹别克斯坦 HUMO 2025-10 成为第 10 个，Octomobile 将是首个接入的乌兹别克钱包）；2026-09 口径为 20 亿以上消费者账户、50 家以上移动支付提供方、10 个以上国家支付交换机。名单中未见加密或稳定币钱包。",
+      "confidence": "medium",
+      "source": "https://www.ansa.it/sito/notizie/economia/business_wire/2025/10/28/uzbekistans-national-payment-system-humo-and-ant-internationals-alipay-partner_eb3f6be8-95ac-455e-b105-1da5448b1078.html ; https://www.alipayplus.com/wallet-tech/ ; ALIPAY-VERIFY（2026-09 口径）",
+      "date": "2025-10-28 / 2026-09",
+      "notes": "「未见加密钱包」是本轮搜索结果（Alipay+ crypto / stablecoin wallet joins）没有命中，不是官方否定。"
+    },
+    {
+      "id": "ALIPAYPLUS-19",
+      "claim": "【事实】稳定币钱包付日本线下商户的已上线先例是 HIVEX，不是 Alipay+：2026-09-30 起，海外 Binance 用户可在 PayPay 线下加盟店付款（顾客扫码、店铺扫码都支持），商户收日元、零申请；日本居住的 Binance Japan 用户不在对象内；费率与 PayPay 同率。用 USDT 支付是 Binance 方和媒体的说法，PayPay 公告未写币种。",
+      "confidence": "high",
+      "source": "https://paypay.ne.jp/notice-merchant/20260930/n-01/ ; https://paypay.ne.jp/help-merchant/b0761/ ; https://crypto.news/binance-pay-brings-crypto-spending-to-millions-of-paypay-merchants-in-japan/",
+      "date": "2026-09-30",
+      "notes": "【沿用 INSCREEN-competitors】。新加坡另有 OKX SG（2025-09）在 GrabPay 商户用 USDC/USDT 付款、先换成 XSGD 的做法（ALIPAY-VERIFY）。推断：稳定币钱包要成为 Alipay+ MPP，在 Ant 公开资料中没有先例；考虑到 2025-10 的内地叫停报道和 Ant 把稳定币限定在机构间 treasury 的定位，短期可能性低（低置信度推断）。"
+    },
+    {
+      "id": "ALIPAYPLUS-20",
+      "claim": "【推断】INSPAY 与 Alipay+ 可行的合作方式，按可行性排序：(a) 日本：INSCREEN 作为 PayPay（或 Netstars 等）现有 Alipay+ ACQP 的展示终端，显示其 MPM 码，即可受理 Alipay+ 的 35 项入境钱包服务和 HIVEX（含 Binance Pay），INSPAY 赚 SaaS 月费，不碰 MDR；(b) 成为某个日本 ACQP 的 TSP（技术服务方），为其做动态码终端与对账集成；(c) INSPAY 自己做 Alipay+ ACQP：须先有日本法下签约商户、代收货款的资格（资金移動業、收纳代行规则等）和与 Ant 的商务合同，短期不现实；(d) 东南亚：在新、马、柬、菲等 Alipay+ 经国家交换机落地的市场，INSCREEN 显示国家码即可收 Alipay+ 钱包，无需与 Ant 签约，但在新马要直面 Ant 自营的 EPOS360 Bluetap。",
+      "confidence": "low",
+      "source": "推断：基于 ALIPAYPLUS-07、08、10~14、19，以及 docs/11、docs/12",
+      "date": "2026-10-18",
+      "notes": "(c) 的日本法律定性需律师确认（2026-06-01 起跨境收纳代行纳入资金移動業规制，见 docs/01 1.6）。(a) 的前提是 PayPay 允许第三方终端调用其商户码或动态码 API，本轮未核实。"
+    },
+    {
+      "id": "ALIPAYPLUS-21",
+      "claim": "【推断】四方怎么组合：Alipay+ 与 Sui 没有直接接口，Alipay+ 也不会向 INSPAY 提供稳定币结算（公开资料中只有新加坡 StraitsX 定制个案）。现实的分工是：INSCREEN 终端在前台；Alipay+（经日本 ACQP）负责外国法币钱包受理；DCS（DCSPay，稳定币收款、法币结算）或日本登记的電子決済手段等取引業者负责稳定币腿；Sui 只是 INSPAY 稳定币受理侧的一条可选链，取决于 DCS 或出金伙伴是否支持。DCS 执行主席的 Alipay+ 背景可作为接触 Ant 的引荐，但不构成 Alipay+ 对稳定币通道的背书。",
+      "confidence": "low",
+      "source": "推断：基于 ALIPAYPLUS-02、03、05、06、15~19",
+      "date": "2026-10-18",
+      "notes": "DCSPay 能否给日本商户（或经 INSPAY）做日元结算、是否支持 Sui，属 DCS / Sui 专题，本轮未核实。日本境内外国稳定币须经登记业者（docs/11），这限制了 DCS（新加坡、香港实体）直接服务日本商户的方式。"
+    }
+  ],
+  "key_claims": [
+    "「Alipay+ DCS」不是 Alipay+ 的产品名（只查到 2022 年的 Alipay+ D-store），应理解为 Alipay+ 与 DCS 两方（medium）。",
+    "截至 2026-10-18，未查到 Ant International / Alipay+ 与 DCS 或 Sui 的公司级合作；唯一关联是人事：前 Ant 东南亚与欧洲区总经理、主导 Alipay+ 全球扩张的贾航 2025-11-25 出任 DCS 执行主席（公司新闻稿，high）。",
+    "Sui 的蚂蚁系合作方是蚂蚁数科（Ant Digital / ZAN，2024-12-13，ESG RWA），不是 Ant International，不代表 Alipay+ 支持 Sui（high / 推断）。",
+    "Alipay+ 对第三方只开放 MPP、ACQP、TSP 三种角色，商户经收单方（如 Antom）或直连接入；未查到「Alipay+ 认证终端 / SaaS」计划。没有收单资格的终端公司，最接近的是给某个 ACQP 做 TSP（high / 未查到）。",
+    "日本：Alipay+ 经 40 多家收单方接入（2024-03），PayPay 为主，商户费 1.98% 税別、按店申请、仅用户扫店铺码；INSCREEN 最现实的路是做 PayPay 或 Netstars 等现有 ACQP 的展示终端或 TSP（事实 high；路径为推断）。",
+    "Ant 自营 EPOS360 应用 + EPOS360 Bluetap 终端（新加坡 2025-11，马来西亚 2026-01 经 TNG），在新马是 INSCREEN 的同类竞品（公司说法，medium）。",
+    "Ant 的稳定币布局在机构间 treasury（Whale、HSBC 代币化存款、只限关联方的 BREUR、BLOOM、据报与 Circle 合作）；面向商户的稳定币清算只有新加坡 StraitsX × Grab 的 XSGD 个案；截至 2026-10 未见 Ant 获香港或新加坡稳定币牌照（medium）。",
+    "Alipay+ 合作钱包中未见加密或稳定币钱包；稳定币钱包付日本商户的先例是 HIVEX × Binance Pay（2026-09-30），不是 Alipay+（high / 未查到）。"
+  ],
+  "open_questions": [
+    "日本约 40 家 Alipay+ 收单方的名单；Netstars 是 Alipay+ 的直连 ACQP，还是经 PayPay 或其他收单方代理？",
+    "PayPay 是否允许第三方终端（INSCREEN）调用其商户 API 生成动态码，且 Alipay+ 钱包能付这类码？PayPay 经由的 Alipay+ 是否只限店铺固定码？",
+    "非持牌的终端 / SaaS 公司能否成为日本 ACQP 的 TSP？Ant 对 TSP 有没有准入、认证或分润？",
+    "INSPAY 若要做 Alipay+ ACQP，在日本需要什么资格（资金移動業、割賦販売法加盟店调查义务是否适用于 QR、2026-06 的跨境收纳代行规则）？",
+    "Ant International 是否已提交香港或新加坡稳定币牌照申请？2025-10 的叫停是否涵盖 Ant International？2026-04 以后 HKMA 是否发牌？",
+    "Ant International 与 UBS（或 HSBC、JPMorgan、渣打以外的银行）的代币化存款合作是否存在？",
+    "Alipay+ 是否计划为合作方（ACQP / MPP）提供稳定币结算，或接纳以稳定币为资金来源的钱包作为 MPP？",
+    "DCS（DCS Card Centre / DCS Fintech）与 Alipay+ 之间是否有未公开的合作，例如 DCS 在新加坡做 Alipay+ 收单，或 DCSPay 与 Alipay+ 合作伙伴对接？",
+    "Antom 在日本是否做线下收单，或与日本收单方合作？EPOS360 Bluetap 是否计划进入日本、香港？",
+    "Sui × 蚂蚁数科 ESG RWA 项目 2024-12 以后的进展，以及蚂蚁数科是否受 2025-10 内地叫停报道影响。"
+  ],
+  "searches_used": 12,
+  "webfetch_note": "WebFetch 对 alipayplus.com、fintechnews.sg、antom.com、alvinology.com、paymentnavi.com 全部 DNS 失败；本轮新事实均来自 WebSearch 摘要，原文未读到。"
+}

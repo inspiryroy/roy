@@ -1,0 +1,232 @@
+{
+ "topic": "DCS（DCS Card Centre / DCS Fintech Holdings / DCS Fintech (Hong Kong)）及其与 INSPAY、Alipay+、Sui 合作的可能性",
+ "as_of": "2026-10-18",
+ "searches_used": 12,
+ "webfetch_note": "WebFetch 打开 dcscc.com、www.sc.com、www.kucoin.com 均失败（getaddrinfo ENOTFOUND），全部依据 WebSearch 摘要",
+ "summary": "DCS 指新加坡的 DCS Card Centre（原 Diners Club Singapore；2021-07 由 Ezy Net 以 S$1.036 亿收购，2022-10 更名）及其集团 DCS Fintech。新加坡实体由 DCS Fintech Holdings 全资持有，最终股东未查到；持 MAS《银行法》下的信用卡/签帐卡发卡牌照，兼做收单，支持 Visa、Mastercard、UnionPay、Diners，未查到 MPI/DPT 牌照。稳定币产品有三个：DeCard 是发卡侧 Visa 卡（2025-05 上线，2025-11 渣打为主要银行伙伴，USDC/USDT 充值、POS 时转法币），商户端没有变化；DCSPay 由 DCS Fintech (Hong Kong) 运营，商户收稳定币、托管后兑换为法币结算，2026-08-12 接入 KuCoin Pay 扫码付，2026-09 与 Kotani Pay 做非洲 USDT/USDC 出金，链、费率、牌照、商户数都没公开；DUS（2023，PlatON，1:1 USD）只能回兑为 DCS 卡额度，称将申请 MAS SCS，未见获批。据一条 LinkedIn 帖文，DCS 加入了 Mastercard Crypto Partner Program（low）。与 Alipay+ 的唯一已知联系是人事：2025-11 起任执行主席的 Jia Hang 曾任蚂蚁东南亚/欧洲区域总经理，主导过 Alipay+ 扩张。未查到 DCS 是 Alipay+ ACQP，也未查到 DCS 在日本的业务、DCS 与 Sui 的任何关联或终端硬件伙伴；'Alipay+ DCS'不是查到的单一产品名。推论：DCS 能给日本终端公司带来的是日本以外的持牌稳定币收单与法币结算（DCSPay）、新加坡收单商户（可装 INSCREEN 动态码终端），以及通往 Alipay+ 的人脉。在日本国内，DCS 没有已知牌照，KuCoin 在日本未登记（记忆，须核实），所以 DCSPay × INSCREEN 在日本须先做法律判断，日方结算要由日本登记业者承担。WebFetch 打开 dcscc.com、sc.com、kucoin.com 均失败，全部依据搜索摘要；12/12 次检索已用完。",
+ "report_md": "# DCS（DCS Card Centre / DCS Fintech）调研：与 INSPAY 合作的可能性\n\n截至 2026-10-18。用了 12/12 次 WebSearch。dcscc.com、sc.com、kucoin.com 用 WebFetch 打开均失败（DNS），全部依据搜索摘要，对外使用前须回原文核对。\n标注：事实 / 公司说法 / 推论 / 假设；\"未查到\"不等于不存在。条目编号见 facts（DCS-01…25）。\n\n## 1 结论\n\n* **身份确认**：任务里的\"DCS\"就是新加坡的 DCS Card Centre（原 Diners Club Singapore）及其集团 DCS Fintech（香港实体运营 DCSPay）。没有证据表明\"Alipay+ DCS\"是一个单一的 Alipay+ 产品（DCS-07）。\n* **与 Alipay+ 的关系**：只查到人事联系。执行主席 Jia Hang（2025-11 起）曾任蚂蚁东南亚/欧洲区域总经理、主导 Alipay+ 扩张（DCS-05、06）。DCS 是 Alipay+ ACQP、或双方有合作，均未查到（DCS-07）。\n* **与 Sui 的关系**：未查到。DCS 用过的链是 PlatON、Ethereum、Polygon（DCS-23）。\n* **日本**：未查到业务或伙伴（DCS-22）。\n* **对 INSPAY 的价值（推论）**：主要在日本以外，见第 4 节。\n\n## 2 公司、股权、牌照\n\n| 项 | 内容 | 置信度 |\n|---|---|---|\n| 股权 | DCS Card Centre Pte Ltd 由 DCS Fintech Holdings 全资持有；2021-07 Ezy Net 以 S$1.036 亿从 Johan Holdings（马来西亚）收购 Diners Club Singapore；最终股东未查到 | high / medium |\n| 更名 | 2022-10-15 法律更名，2023-08-02 品牌发布；原为 Diners Club International 在新加坡的独家发卡和收单方，更名以发行 Mastercard、UnionPay、Visa | high |\n| 新加坡牌照 | 非银行机构，持 MAS《银行法》下的信用卡/签帐卡发卡牌照；未查到 MPI/DPT（2024 年的数字资产充值由 Triple-A 兑换，DCS 不接触数字资产） | high / 未查到 |\n| 香港 | DCS Fintech (Hong Kong) Limited 运营 DCSPay；香港牌照未查到 | medium / 未查到 |\n| 管理层 | 执行主席 Jia Hang（前蚂蚁 Alipay+ 区域负责人、前银联） | high |\n| 融资 | 网站有\"300 million upsized asset-backed notes\"页面（只看到标题） | low |\n\n## 3 业务\n\n* **发卡与收单（新加坡）**：公司自称支持 Visa、Mastercard、UnionPay、Diners 的发卡和收单（DCS-10）。2023 年计划增加 Alipay、SGQR、WeChat Pay 受理和 JCB（DCS-08），现状未查到。它是 SGQR 前身联盟的成员（DCS-09）。商户数、终端数、POS 供应商未查到。\n* **DeCard（发卡侧）**：2025-05 与 Visa 推出，是 D-Lite 卡的升级；2025-10 起可经 Polygon 存入 USDT/USDC；2025-11-11 渣打成为主要银行伙伴，负责充值、账户、法币与稳定币结算、资金和外汇对冲（DCS-11、12）。用户用稳定币充值，在 POS 交易时转成法币，商户收到的是普通 Visa 交易。**对终端公司而言，DeCard 不需要任何专门对接**（推论）。\n* **DCSPay（收单侧）**：商户收稳定币、托管、兑换为法币结算（公司说法，DCS-16）。\n  * 2026-08-12 起 KuCoin Pay 用户可扫 DCSPay 商户码付款（DCS-17），双方称 7×24 结算、190+ 国、5.6 亿用户，均为营销口径；\n  * 2026-09 与 Kotani Pay 做非洲 USDT/USDC 出金（DCS-18）；\n  * 未公开的有：支持的链、费率、结算周期、商户数、是否有线下门店。\n* **DUS**：2023 年在 PlatON 发行，1:1 美元，由卡交易代币化而来，只能回兑为卡额度，是闭环代币。当时称将申请 MAS SCS，未见获批（DCS-14、15）。\n* **Mastercard Crypto Partner Program**：项目 2026-03 启动，85+ 成员；DCS 参与只有一条 LinkedIn 帖文为据（low，DCS-19）。\n* **新加坡竞品**：HitPay × Triple-A（称 2 万多家商户）、dtcpay（MPI，DPT，SGQR）（DCS-24）。\n\n## 4 DCS 能给日本终端公司带来什么（推论）\n\n| 合作形态 | DCS 提供 | INSPAY 提供 | 前提 / 阻断项 |\n|---|---|---|---|\n| **A. 新加坡/香港：INSCREEN 显示 DCSPay 动态码** | 持牌主体、稳定币托管与兑换、法币结算（渣打为银行伙伴）、KuCoin Pay 等钱包用户 | 柜台动态码终端 + SaaS（参照 12 章东南亚动态码） | DCSPay 在新加坡由哪个持牌主体结算（DCS Card Centre 未见 DPT 牌照）；API、费率与分润 |\n| **B. 新加坡：为 DCS 收单商户提供多通道终端** | 收单商户、卡与 SGQR 受理关系 | 动态码、多通道显示终端 | 若要读卡，须过 EMV L1/L2、PCI PTS 认证（成本高）；纯 QR 显示终端门槛低。DCS 现有 POS 供应商未知 |\n| **C. 日本入境：外国稳定币钱包用户在 INSCREEN 商户付款** | DCSPay 作为海外侧网络、对接 KuCoin Pay 等钱包 | 日本商户与终端 | **阻断项**：DCS 在日本无已知牌照；日方商户结算须由日本登记业者承担（参照 HIVEX × Binance Pay × PayPay，由 PayPay 承担商户侧，见 11 章）；KuCoin 在日本未登记（记忆，须核实）；Netstars Stablecoin Pay（0.98%）已在做 |\n| **D. 引荐 Alipay+** | Jia Hang 的 Alipay+/Antom 关系 | — | 只是人脉，不是合同；INSPAY 不是收单方，Alipay+ 在日本经 PayPay 等受理 |\n| **E. Sui** | 无已知关联 | — | 须问 DCSPay 是否支持 Sui 上的原生 USDC；否则 Sui 只能作为单独的伙伴 |\n\n**INSPAY 能补 DCS 的地方（推论）**：DCSPay 公开资料里没有线下终端和动态码硬件，也没有日本商户网络。\n\n**DCS 自身的风险**：\n* 最终股东不透明；\n* DCSPay 的牌照和链未公开；\n* DUS 是闭环代币，不能当通用稳定币用；\n* 商户规模未披露。\n\n## 5 待核实\n\n见 open_questions。最便宜的下一步：\n1. 查 ACRA 和 MAS FID；\n2. 向 DCS 要 DCSPay 的 API 文档、链与费率表，以及新加坡收单商户数与 POS 供应商；\n3. 日本律师就方案 C 出意见。\n",
+ "facts": [
+  {
+   "id": "DCS-01",
+   "claim": "DCS Card Centre Pte Ltd（新加坡）由 DCS Fintech Holdings 全资持有；控股公司自称在新加坡及亚太持有多家金融服务子公司。DCS Fintech Holdings 本身的股东未查到",
+   "confidence": "high",
+   "source": "https://dcscc.com/about-us ; https://dcscc.com/dcs-rebranding-press-release ; https://capitalmarkets.sg/card-issuers/dcs-card-centre-pte-ltd",
+   "date": "2022-10 / 2023-08（公司页面，检索于 2026-10-18）",
+   "notes": "事实（公司官网）。WebFetch 打开 dcscc.com 失败（DNS），依据搜索摘要。最终受益人不透明，合作前需 KYC/尽调"
+  },
+  {
+   "id": "DCS-02",
+   "claim": "2021-07，新加坡电子支付公司 Ezy Net 以 S$1.036 亿从马来西亚 Johan Holdings 收购 Diners Club Singapore；Ezy Net 的股东未查到",
+   "confidence": "medium",
+   "source": "https://fintechnews.sg/78620/fintech/mp-tin-pei-ling-appointed-at-dcs-card-centre-after-short-stint-at-grab/ ; https://app.dealroom.co/companies/dcscc_com",
+   "date": "2021-07",
+   "notes": "事实（二手媒体与数据库摘要，未见交易公告原文）。Ezy Net 与 DCS Fintech Holdings 的股权关系未查到"
+  },
+  {
+   "id": "DCS-03",
+   "claim": "Diners Club (Singapore) 更名为 DCS Card Centre：公司 FAQ 称 2022-10-15 生效，品牌发布新闻稿为 2023-08-02。更名前它是 Diners Club International 在新加坡的独家特许经营方，即唯一发卡方和收单方；更名是为了发行 Mastercard、UnionPay、Visa 产品",
+   "confidence": "high",
+   "source": "https://dcscc.com/dcscc-name-change ; https://dcscc.com/dcs-rebranding-press-release ; https://technode.global/2023/08/02/diners-club-singapore-rebrands-to-dcs-card-centre-for-transformation/",
+   "date": "2022-10-15 / 2023-08-02",
+   "notes": "事实（公司）。两个日期分别是法律更名和品牌发布，不矛盾（推论）"
+  },
+  {
+   "id": "DCS-04",
+   "claim": "DCS Card Centre 是非银行机构，持 MAS 依《银行法》（Banking Act）发放的信用卡/签帐卡发卡牌照。未查到它持有《支付服务法》MPI 或 DPT 牌照：2024-09 的数字资产充值由 MAS 持牌的 Triple-A 兑换，新闻稿称 DCS 不接触数字资产",
+   "confidence": "medium",
+   "source": "https://dcscc.com/about-us ; https://technode.global/2023/08/02/diners-club-singapore-rebrands-to-dcs-card-centre-for-transformation/ ; https://capitalmarkets.sg/card-issuers/dcs-card-centre-pte-ltd/mas-licence/ ; https://www.triple-a.io/newsroom/powered-by-triple-a-dcs-card-centre-customers-can-now-top-up-dcs-virtual-accounts-using-digital-assets",
+   "date": "2023-08 / 2024-09-17",
+   "notes": "发卡牌照：high（公司与媒体一致）。capitalmarkets.sg 目录写'PS Act 下的支付服务商'并列出资本市场活动授权，与其他来源不一致，可能是目录错误。'无 MPI/DPT'只是未查到（low–medium），须查 MAS Financial Institutions Directory"
+  },
+  {
+   "id": "DCS-05",
+   "claim": "2025-11，前蚂蚁集团高管 Jia Hang（贾航）出任 DCS Group 执行主席。DCS Group 包括 DCS Fintech（集团全球业务）和 DCS Card Centre（新加坡核心实体）。公司稿称他在蚂蚁任东南亚及欧洲区域总经理、主导 Alipay+ 全球扩张，此前在中国银联任职",
+   "confidence": "high",
+   "source": "https://www.malaymail.com/news/money/mediaoutreach/2025/11/25/alibaba-group-veteran-payments-leader-jia-hang-joins-dcs-to-accelerate-a-new-era-of-payments-innovation/431111 ; https://www.finews.asia/people/44409-dcs-names-alibaba-veteran-as-executive-chairman",
+   "date": "2025-11-25",
+   "notes": "任命：事实（公司新闻稿，经 MediaOutreach 发布）。'主导 Alipay+ 全球扩张'是公司说法。中文名'贾航'是音译推断，未见中文原文"
+  },
+  {
+   "id": "DCS-06",
+   "claim": "Ant Group 于 2022-03 任命 Jia Hang 为东南亚区域总经理，常驻新加坡；此前负责 WorldFirst 全球运营和电商平台支付方案团队",
+   "confidence": "high",
+   "source": "https://www.alipayplus.com/news/detail/new_regional_head ; https://itbrief.com.au/story/ant-group-appoints-jia-hang-as-regional-general-manager",
+   "date": "2022-03",
+   "notes": "事实（Alipay+ 官网新闻）。这是本轮查到的 DCS 与 Alipay+ 之间唯一的联系，属人事联系，不是商业合作"
+  },
+  {
+   "id": "DCS-07",
+   "claim": "未查到 DCS 是 Alipay+ 收单合作方（ACQP）或 Alipay 收单方的公告，也未查到 DCS 与 Alipay+ 的任何合作；'Alipay+ DCS'也不是查到的单一 Alipay+ 产品名",
+   "confidence": "medium",
+   "source": "WebSearch '\"Alipay+\" \"DCS\" Jia Hang partnership acquiring Singapore'（2026-10-18），结果只有 finews 任命稿及 Ant×2C2P 等无关交易；docs/research/ALIPAY-VERIFY.json、ALIPAYPLUS.json 无 DCS 条目",
+   "date": "2026-10-18（检索日）",
+   "notes": "未查到 ≠ 不存在。新加坡 Alipay+ 受理主要经 NETS（SGQR，2023-04）和 2C2P、Antom 等收单方（仓库已有结论）。DCS 是否经 NETS 间接受理，须向 DCS 确认"
+  },
+  {
+   "id": "DCS-08",
+   "claim": "2023 年更名报道称 DCS 计划在卡收单之外提供 Alipay、SGQR、WeChat Pay 受理，并把 JCB 加入合作网络",
+   "confidence": "medium",
+   "source": "https://www.marketing-interactive.com/diners-club-singapore-rebrands-to-dcs-card-centre-as-it-eyes-product-expansion",
+   "date": "2023-08",
+   "notes": "公司说法，属计划。2026-10 是否已上线未查到；也未查到它是以 Alipay（中国钱包）收单方身份还是 Alipay+ ACQP 身份接入"
+  },
+  {
+   "id": "DCS-09",
+   "claim": "DCS（时称 Diners Club Singapore）是新加坡'可互操作二维码'（SGQR 前身）合作联盟的 7 个成员之一，联盟成员含银联国际",
+   "confidence": "medium",
+   "source": "https://www.theasianbanker.com/press-releases/mobile-wallets,-acquirers-and-payment-networks-collaborate-to-enable-interoperable-qr-payments-in-singapore-for-consumers-and-merchants",
+   "date": "约 2017–2018",
+   "notes": "事实（新闻稿摘要）。日期依搜索摘要推定，未打开原文"
+  },
+  {
+   "id": "DCS-10",
+   "claim": "DCS 自称基础设施覆盖 Visa、Mastercard、UnionPay、Diners Club，同时具备发卡和商户收单能力。新加坡收单商户数、终端数、POS/终端硬件供应商均未查到",
+   "confidence": "medium",
+   "source": "https://www.finews.asia/people/44409-dcs-names-alibaba-veteran-as-executive-chairman",
+   "date": "2025-11",
+   "notes": "公司说法（任命稿中的公司介绍）。商户规模和硬件伙伴：未查到"
+  },
+  {
+   "id": "DCS-11",
+   "claim": "2025-11-11，渣打宣布担任 DeCard 的主要银行伙伴：负责持卡人充值处理、账户管理、法币与稳定币结算，以及资金、流动性和外汇对冲。用户以 USDC 或 USDT 为 Visa 卡账户充值，在 POS 交易时转成法币；DCS 提供发卡牌照和收单关系，Visa 提供卡组织网络。先在新加坡推出，之后扩展到其他主要市场",
+   "confidence": "high",
+   "source": "https://www.sc.com/en/press-release/standard-chartered-to-power-decard-in-singapore-through-partnership-with-dcs/ ; https://www.theblock.co/post/378311/standard-chartered-stablecoin-credit-card",
+   "date": "2025-11-11",
+   "notes": "事实（渣打新闻稿；WebFetch 打开 sc.com 失败，依据搜索摘要）。DeCard 在发卡侧：商户收到的是普通 Visa 交易和法币，任何 Visa 终端都能受理，不需要稳定币专用终端（推论）。'稳定币信用卡'是媒体标题，账户是否为预付/担保型未核实"
+  },
+  {
+   "id": "DCS-12",
+   "claim": "DeCard 早于渣打合作：2025-05 DCS 与 Visa 推出 DeCard，作为原有 D-Lite 卡的升级；2025-10 与 Polygon Labs 合作，可经 Polygon 网络直接存入 USDT、USDC",
+   "confidence": "medium",
+   "source": "https://www.fintechfutures.com/blockchain-crypto-digital-assets/dcs-partners-standard-chartered-to-power-decard-stablecoin-credit-card ; https://fintechnews.sg/121479/digitalassets/standard-chartered-dcs-decard/",
+   "date": "2025-05 / 2025-10",
+   "notes": "事实（行业媒体）。Solana Compass 把上线时间写成 2025-11，应指渣打合作宣布。2026-10 的持卡人数、是否已扩展到新加坡以外未查到"
+  },
+  {
+   "id": "DCS-13",
+   "claim": "2024-09-17 起，DCS 持卡人可在 DCS Cards App 内用数字资产为 D-Vault 虚拟账户充值，充值即时提高卡额度并可用于还款；加密转法币全程由 MAS 持牌的 Triple-A 操作",
+   "confidence": "high",
+   "source": "https://www.triple-a.io/newsroom/powered-by-triple-a-dcs-card-centre-customers-can-now-top-up-dcs-virtual-accounts-using-digital-assets ; https://dcscc.com/Triple-A-DCS-Card-Centre-digital-assets-top-up ; https://fintechnews.sg/101390/digitalassets/triple-a-crypto-to-fiat-dcs-card/",
+   "date": "2024-09-17",
+   "notes": "事实（双方新闻稿）。这是持卡人充值，不涉及商户受理或 POS"
+  },
+  {
+   "id": "DCS-14",
+   "claim": "2023 年 DCS 发布支付代币 DCS Tokens（DUS），1 DUS = 1 USD，首发于 PlatON 网络；代币由 DCS 处理的信用卡交易代币化而来，只能回兑给 DCS、作为卡消费额度。当时报道称 DCS 预计在数月内申请登记为 MAS 监管的单一货币稳定币（SCS）",
+   "confidence": "medium",
+   "source": "https://www.theblock.co/post/248759/dcs-card-centre-launches-payment-token-dus-to-be-first-deployed-and-issued-on-platon-network ; https://www.dcscc.com/dcst",
+   "date": "2023（约 2023-08）",
+   "notes": "发布：事实（媒体转公司稿）。DUS 不能在 DCS 以外流通，不是通用支付稳定币（推论）。MAS SCS 登记：未查到获批；仓库 STABLECOIN-INFRA 显示 MAS 2026-09-01 才就 SCS 立法化征求意见，StraitsX 只有 in-principle approval，因此 DUS 大概率不是'MAS 监管稳定币'（推论，medium）"
+  },
+  {
+   "id": "DCS-15",
+   "claim": "DCS 后来的页面称 DCS Tokens 已在多条链发行，并列出 Ethereum 主网上的 DUSD；第三方目录称另有 PlatON 上的 PRC-20 DUS",
+   "confidence": "low",
+   "source": "https://www.dcscc.com/dcst ; https://solanacompass.com/projects/dcs-card-centre",
+   "date": "未注明（检索于 2026-10-18）",
+   "notes": "公司页面加第三方目录，只见搜索摘要。DUS 与 DUSD 的命名不一致；流通量和 2026 年状态未查到"
+  },
+  {
+   "id": "DCS-16",
+   "claim": "DCSPay 由 DCS Fintech (Hong Kong) Limited 运营、DCS Group 支持：企业可向用户收稳定币，资金存入托管账户，再兑换成法币结算到银行账户。DCS Group 自称持牌全球支付服务商、有 50 余年支付经验",
+   "confidence": "medium",
+   "source": "https://www.kucoin.com/announcement/KuCoinPay-DCSPay-Partnership-Announcement",
+   "date": "2026-08-12",
+   "notes": "公司说法（KuCoin 公告；WebFetch 打开 kucoin.com 失败，依据搜索摘要）。'50 余年'应指 Diners Club Singapore 的历史（推论）。DCS Fintech (Hong Kong) 的香港牌照未查到；DCSPay 支持的币种和链（Kotani 合作显示至少有 USDT/USDC）、市场、商户费率、上线日期均未查到"
+  },
+  {
+   "id": "DCS-17",
+   "claim": "KuCoin Pay 宣布接入 DCSPay 的商户网络：KuCoin Pay 用户扫商户二维码用稳定币付款，商户侧兑换为本地法币；双方称 7×24 结算、覆盖 190 多个国家、可触达 5.6 亿 Web3 用户",
+   "confidence": "medium",
+   "source": "https://www.kucoin.com/announcement/KuCoinPay-DCSPay-Partnership-Announcement ; https://www.spendnode.io/blog/kucoin-pay-dcspay-stablecoin-payments-august-2026/ ; https://coinedition.com/kucoin-pay-partners-dcspay-to-strengthen-stablecoin-payment-infrastructure/",
+   "date": "2026-08-12",
+   "notes": "公司说法。公告日期写作 08/12/2026，法文版读作 12/08，判断为 2026-08-12。'商户侧换法币'出自 Spendnode 的二手解读。190 国、5.6 亿是营销口径，不等于持牌可服务范围；费率、结算币种、是否线下扫码（相对于线上收银台）均未查到"
+  },
+  {
+   "id": "DCS-18",
+   "claim": "DCSPay 与 Kotani Pay 合作做非洲稳定币出金：DCSPay 负责钱包、收银台、开户、合规和转账发起，Kotani Pay 把 USDT/USDC 换成当地货币，经移动钱包和 USSD 付出；先尼日利亚，后肯尼亚、加纳、埃及、南非、坦桑尼亚",
+   "confidence": "medium",
+   "source": "https://techtrendske.co.ke/2026/09/09/stablecoin-payments-africa-dcspay-kotani-pay/",
+   "date": "2026-09-09",
+   "notes": "事实（地区媒体报道合作公告）。说明 DCSPay 至少处理 USDT 和 USDC，业务重心偏全球出金和电商，而不只在新加坡线下（推论）"
+  },
+  {
+   "id": "DCS-19",
+   "claim": "Mastercard 于 2026-03 推出 Crypto Partner Program，成员 85 家以上（含 Binance、PayPal、Circle、Ripple、Gemini、Paxos）；一条 DCS 相关的 LinkedIn 帖文称 DCS 以金融机构身份加入该生态",
+   "confidence": "low",
+   "source": "https://stablecoininsider.org/mastercard-launches-crypto-partner-program/ ; https://blockeden.xyz/blog/2026/03/12/mastercard-crypto-partner-program-85-firms-blockchain-payments/ ; https://sg.linkedin.com/in/elsaqiu",
+   "date": "2026-03",
+   "notes": "项目存在：medium（多家行业媒体）。DCS 参与：low，只有一条 LinkedIn 帖文（个人页面），未见 Mastercard 名单原文。Mastercard 2026-08 完成收购 BVNK，并开始 Crypto Credential 试点（The Block），与 DCS 无直接关系"
+  },
+  {
+   "id": "DCS-20",
+   "claim": "DCS Card Centre 列在 Circle 合作伙伴目录中（描述为《银行法》下持牌的非银行机构）；Solana Compass 也有 DCS Card Centre 的项目页",
+   "confidence": "medium",
+   "source": "https://partners.circle.com/partner/dcs-card-centre ; https://solanacompass.com/projects/dcs-card-centre",
+   "date": "检索于 2026-10-18",
+   "notes": "事实：目录条目存在。条目的具体合作内容（如 USDC 结算、Circle Mint）未见。Solana 页面不代表 DCS 产品在 Solana 上运行"
+  },
+  {
+   "id": "DCS-21",
+   "claim": "DCS 网站有标题为'DCS raises 300 million upsized asset-backed notes'的页面，显示它用资产支持票据为卡应收款融资",
+   "confidence": "low",
+   "source": "https://dcscc.com/dcs-raises-300-million-upsized-asset-backed-notes",
+   "date": "未知",
+   "notes": "只看到搜索结果中的页面标题，币种（推测为新元）、日期、投资人都未见"
+  },
+  {
+   "id": "DCS-22",
+   "claim": "未查到 DCS 在日本的业务、日本子公司或日本合作伙伴",
+   "confidence": "medium",
+   "source": "WebSearch 'DCS Card Centre Japan partnership OR \"DCS\" Sui blockchain stablecoin card'（2026-10-18）",
+   "date": "2026-10-18（检索日）",
+   "notes": "未查到 ≠ 不存在（只做了 1 次定向检索）。日本的 Diners Club 特许经营方是三井住友トラストクラブ（记忆，low），与 DCS 无已知关系"
+  },
+  {
+   "id": "DCS-23",
+   "claim": "未查到 DCS（含 DeCard、DCSPay、DUS）与 Sui 区块链、Mysten Labs 或 Sui Foundation 的任何关联。查到的 DCS 用链：PlatON（DUS）、Ethereum（DUSD）、Polygon（DeCard 充值）",
+   "confidence": "medium",
+   "source": "https://www.theblock.co/post/248759/dcs-card-centre-launches-payment-token-dus-to-be-first-deployed-and-issued-on-platon-network ; https://www.dcscc.com/dcst ; https://fintechnews.sg/121479/digitalassets/standard-chartered-dcs-decard/",
+   "date": "2023–2026",
+   "notes": "未查到 ≠ 不存在。DCSPay 的链清单未公开，是否支持 Sui 上的原生 USDC 须直接问 DCS"
+  },
+  {
+   "id": "DCS-24",
+   "claim": "新加坡已有面向商户的稳定币受理竞品：HitPay × Triple-A 称让 2 万多家新加坡商户受理稳定币并即时法币结算；dtcpay（MPI，DPT）支持 SGQR 扫码付",
+   "confidence": "medium",
+   "source": "https://www.triple-a.io/newsroom/powered-by-triple-a-dcs-card-centre-customers-can-now-top-up-dcs-virtual-accounts-using-digital-assets ; docs/research/STABLECOIN-INFRA.json（dtcpay）",
+   "date": "2024–2026",
+   "notes": "HitPay 数字是公司说法（出自 Triple-A 相关检索摘要）。说明在新加坡，DCSPay 不是商户受理稳定币的唯一选择（推论）"
+  },
+  {
+   "id": "DCS-25",
+   "claim": "KuCoin 未在日本登记为暗号資産交換業者；2025 年曾有报道称 Apple 应金融庁要求，从日本 App Store 下架 KuCoin 等未登记交易所的 App",
+   "confidence": "low",
+   "source": "记忆，本轮未检索（检索额度已用完）",
+   "date": "2025-02（记忆）",
+   "notes": "假设/记忆，须核实。若属实，'KuCoin Pay 用户经 DCSPay 在日本商户付款'会被视为向日本居住者或日本商户提供未登记服务，是阻断项；只做访日外国人入境付款的方案也须日本律师判断"
+  }
+ ],
+ "key_claims": [
+  "DCS = DCS Card Centre（原 Diners Club Singapore）+ DCS Fintech（香港等全球业务）。新加坡实体持 MAS《银行法》下的信用卡/签帐卡发卡牌照，兼做收单，支持 Visa、Mastercard、UnionPay、Diners；未查到 MPI/DPT 牌照（事实 high；无 DPT 为未查到）",
+  "股权：DCS Card Centre 由 DCS Fintech Holdings 全资持有；2021-07 Ezy Net 以 S$1.036 亿从 Johan Holdings 收购 Diners Club Singapore；最终股东未查到，须尽调",
+  "与 Alipay+ 的唯一已知联系是人事：2025-11 起执行主席 Jia Hang 曾任蚂蚁东南亚/欧洲区域总经理、主导 Alipay+ 扩张。未查到 DCS 是 Alipay+ ACQP，也未查到双方合作；'Alipay+ DCS'不是查到的产品名",
+  "DeCard（2025-05 与 Visa 上线，2025-11 渣打为主要银行伙伴）是发卡侧产品：USDC/USDT 充值、POS 时转法币，商户收到的是普通 Visa 交易，不需要专用终端",
+  "DCSPay（DCS Fintech (Hong Kong) 运营）：商户收稳定币、托管、兑换为法币结算。2026-08-12 接入 KuCoin Pay 扫码付，2026-09 与 Kotani Pay 做非洲 USDT/USDC 出金；币种以外的链、费率、牌照、商户数都没公开",
+  "DUS（2023，PlatON，1:1 USD）只能回兑为 DCS 卡额度，是闭环代币；称将申请 MAS SCS，未见获批",
+  "未查到 DCS 在日本的业务或伙伴，也未查到它与 Sui 有任何关联，同样未查到终端或 POS 硬件伙伴",
+  "推论：DCS 对 INSPAY 的价值主要在日本以外。①INSCREEN 在新加坡/香港显示 DCSPay 动态码，牌照和结算由 DCS 承担；②为 DCS 新加坡收单商户提供多通道动态码终端；③借 Jia Hang 的关系引荐到 Alipay+。在日本国内，DCS 没有已知牌照，DCSPay 的托管加换汇模式须由日本登记业者承接，KuCoin 在日本未登记（记忆，须核实），所以 DCSPay × INSCREEN 在日本须先做法律判断"
+ ],
+ "open_questions": [
+  "DCS Fintech Holdings 和 Ezy Net 的最终受益股东是谁（新加坡 ACRA 查册）？",
+  "MAS Financial Institutions Directory 中 DCS Card Centre 的牌照清单：是否另持 PS Act MPI 牌照或 DPT 服务资格？",
+  "DCS Fintech (Hong Kong) Limited 在香港持什么牌照（MSO、SVF、VA 相关）？DCSPay 在新加坡给商户结算时由哪个持牌主体承担？",
+  "DCSPay 支持哪些稳定币和链（是否支持 Sui 上的原生 USDC）？商户费率、结算币种与周期、商户数量，是否已有线下扫码商户？",
+  "DCS 新加坡收单的商户数、终端数和 POS 供应商；是否已上线 Alipay（或 Alipay+ 经 NETS）与 WeChat Pay 受理？身份是 Alipay 收单方还是 Alipay+ ACQP？",
+  "Jia Hang 上任后，DCS 是否与 Ant International（Alipay+、Antom）签过合作？",
+  "DeCard 在 2026-10 的持卡人数、扩展市场，以及是否计划进入日本？",
+  "DCS 参与 Mastercard Crypto Partner Program 的官方确认（Mastercard 名单原文）",
+  "KuCoin 在日本的登记状态，以及 Apple 下架报道（记忆，须核实）；外国未登记钱包的用户在日本商户付款的合规路径（参照 HIVEX × Binance Pay × PayPay：日本侧由 PayPay 承担商户结算）",
+  "DUS/DUSD 在 2026 年是否仍在发行、流通量多少、是否已获 MAS SCS 认可？"
+ ]
+}
