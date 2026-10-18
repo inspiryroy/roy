@@ -13,5 +13,6 @@
 | `JP-PAYPAY`、`JP-VERIFY` | 日本法规与 PayPay（第一轮与核实轮） |
 | `ALIPAYPLUS`、`ALIPAY-VERIFY` | Alipay+（第一轮与核实轮） |
 | `STABLECOIN-INFRA` | 稳定币基础设施、出入金、Travel Rule |
+| `DYNQR-pain`、`DYNQR-devices`、`DYNQR-econ`、`DYNQR-integration`、`DYNQR-market` | 东南亚静态码升级动态码：痛点、现有设备、商户经济、接入方式、市场规模（[12 章](../12-inscreen-sea-dynamic-qr.md)） |
 
-**结论以正文（`docs/01`–`10`）为准。** 原始输出中有被核实轮推翻的条目，也有与正文不同的推荐（例如 `ASEAN-LINK.md` 以路径 A 为主、把柬埔寨列入首批）。[09 资料来源](../09-sources.md) 由这些 `*.json` 汇总生成，并标注了置信度。
+**结论以正文（`docs/01`–`12`）为准。** 原始输出中有被核实轮推翻的条目，也有与正文不同的推荐（例如 `ASEAN-LINK.md` 以路径 A 为主、把柬埔寨列入首批）。[09 资料来源](../09-sources.md) 由这些 `*.json` 汇总生成，并标注了置信度。

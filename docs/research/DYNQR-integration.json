@@ -1,0 +1,400 @@
+{
+  "summary": "本轮检验的是 INSCREEN 能否在东南亚八国自己生成动态国家码并确认到账。结论是：“能显示动态码”不是瓶颈，瓶颈在“谁有权签发码”和“谁能给出可信的到账确认”。印尼 QRIS、马来西亚 DuitNow、菲律宾 QR Ph P2M、泰国 tag 30 Biller 码、SGQR NETS 载荷都只能由收单方或参与机构签发。INSCREEN 只能调它们的 API（BRI 动态 QRIS、Midtrans、PayMongo、HitPay、SCB 等）取码、收回调，费率按当地 MDR（印尼常规 0.7%，微型小额 0%；PayMongo QR Ph 1.34%；HitPay PayNow 0.65%+S$0.30 等），不可能全额 0%。账户型码（VietQR、PromptPay tag 29、KHQR、PayNow UEN）的格式公开，终端可以本地生成带金额码，但只有越南（SePay、Casso/payOS 经银行官方 API 推送入账，ACB 官网挂有与 SePay 的协议）和柬埔寨（Bakong Open API 按 KHQR 的 MD5 查交易，据第三方 SDK）有现成的确认通道。泰国只有 slip 验证，依赖付款人出示凭证，跨境不可用，加上 BOT 整治个人账户，不宜当主路线。跨境方面，外国钱包只付商户（P2M）码：泰国中国线只受理参与银行的商户码，越南 Alipay 只在 NAPAS 受理网络内可付，个人码能否被付未查到。终端自生成的个人账户码大概率进不了 Alipay+ 或 INSPAY 网络（INSPAY 网络默认拒绝 P2P）。所以，“0% 手续费、直连账户”只在越南、柬埔寨两国成立，并且和“跨境锁价收款”互相冲突。本轮 10 次 WebSearch 用完，WebFetch 全部 DNS 失败，结论依据搜索摘要和仓库已核实事实。",
+  "facts": [
+    {
+      "id": "INTEGRATION-01",
+      "claim": "EMVCo 商户码 tag 01 的 '11' 为静态码（付款人输入金额）、'12' 为动态码（码内带 tag 54 金额，通常一次性）；对账靠 tag 62 的参考号（泰国 Ref1/Ref2、62-05/62-07、马来西亚 62-90/91 等），八国国家码都沿用这一区分。",
+      "confidence": "high",
+      "source": "docs/02-qr-interoperability.md 2.1；docs/research/TH-LA.json",
+      "date": "2026-10-18",
+      "notes": "类型：仓库已核实事实，本轮未重查。"
+    },
+    {
+      "id": "INTEGRATION-02",
+      "claim": "“终端能显示动态码”和“终端有权签发可对账的动态码”是两回事。按签发权，码分三类：①收单方签发的商户码（QRIS、DuitNow、QR Ph P2M、泰国 tag 30 Biller 码、带签名的 SGQR NETS 载荷），终端只能调收单方 API 取码串；②账户型转账码（VietQR、PromptPay tag 29、KHQR 个人 tag 29、PayNow UEN 或手机号），格式公开，终端可以在本地生成带金额和附言的码；③在静态 QRIS 里插入 tag 54 的“伪动态码”，技术上能付，但不能用来对账。",
+      "confidence": "medium",
+      "source": "docs/02-qr-interoperability.md 2.3；docs/05-country-playbooks.md 印尼技术要点；docs/research/ID.json（开源库做法）",
+      "date": "2026-10-18",
+      "notes": "类型：推论，依据仓库已核实的各国码结构。这是本文的分析框架：模型 (a) 对应①，模型 (b) 对应②，③不可用。"
+    },
+    {
+      "id": "INTEGRATION-03",
+      "claim": "QRIS 商户码必须由 PJSP（BI 持牌的支付服务机构）签发：tag 26–45 是收单方模板（Merchant PAN、收单方商户号），tag 51 国家域 GUID 为 ID.CO.QRIS.WWW、子字段 02 为全国商户号 NMID。终端不能自己生成一张合法的 QRIS 商户码。",
+      "confidence": "medium",
+      "source": "docs/02-qr-interoperability.md 2.3 印尼；docs/research/ID.json",
+      "date": "2026-10-18",
+      "notes": "类型：仓库已核实（中）。BI/ASPI 规范原文不公开。"
+    },
+    {
+      "id": "INTEGRATION-04",
+      "claim": "BRI 开发者门户有《QRIS Merchant Presented Mode (MPM) Dinamis v1.1》API 文档；BRI 通过 EDC、面向线上商户的 API 和 BRI Merchant App 提供动态 QRIS（截至 2024-12，BRI Merchant App 用户 27 万）。",
+      "confidence": "medium",
+      "source": "https://developers.bri.co.id/en/docs/qris-merchant-presented-mode-mpm-dinamis-v11 ；devices.json DEVICES-15",
+      "date": "2026-10-18",
+      "notes": "类型：银行官方文档（只拿到搜索结果标题，WebFetch DNS 失败，正文未读）。说明大型收单行直接开放动态 QRIS API，INSCREEN 可以不经聚合商、直连收单行。接入条件、费用、回调方式未读到。"
+    },
+    {
+      "id": "INTEGRATION-05",
+      "claim": "Midtrans 文档称：BI 为常规类商户规定的 QRIS MDR 是每笔成功交易 0.7%，教育、加油站等特殊类别要单独确认（DealPOS 列为教育 0.6%、加油站 0.4%）。动态 QRIS 的流程是：用 charge API 选定收单方，返回 QR 字符串，再接收支付通知；动态 QRIS 可经后台或 API 退款。",
+      "confidence": "medium",
+      "source": "https://docs.midtrans.com/docs/what-is-the-applicable-transaction-fee-for-qris ；https://docs.midtrans.com/reference/qris ；https://support.dealpos.com/en/articles/4774137-faq-mdr-payout",
+      "date": "2026-10-18",
+      "notes": "类型：公司声明（据 WebSearch 摘要）。Midtrans 只是把 BI 费率原样转给商户，没有说明是否另加服务费。"
+    },
+    {
+      "id": "INTEGRATION-06",
+      "claim": "BCA 2026-09-01 通知：自 2026-10-01 起调整全部类型 QRIS 交易的 MDR。表格看起来是对 UKE/UME/UBE 新增“单笔 ≤ Rp100,000 为 0%”一档；UMI 单笔 ≤ Rp500,000 为 0%，超出部分 0.3%（仓库已核实）。",
+      "confidence": "medium",
+      "source": "https://www.bca.co.id/en/informasi/news-and-features/2026/09/01/18/50/informasi-penyesuaian-merchant-discount-rate-mdr-transaksi-qris ；pain.json PAIN-10；docs/02 2.3",
+      "date": "2026-09-01",
+      "notes": "类型：银行通知（WebFetch DNS 失败，搜索摘要称表格难以辨认）。BI 原文未读。和 PAIN-10 的“UKE/UME/UBE ≤Rp10 万 0%”一致，可信度中等。"
+    },
+    {
+      "id": "INTEGRATION-07",
+      "claim": "推论：在印尼，“0% 手续费”只在 MDR 本身为 0 的档位成立，即 UMI 单笔 ≤Rp500,000，以及（2026-10 起）其他类别单笔 ≤Rp100,000。超出部分的 MDR 由商户承担，且不得转嫁给消费者，不管用什么终端都一样。INSCREEN 在印尼不能承诺全额 0%，只能承诺“不在 MDR 之上另加费”。",
+      "confidence": "medium",
+      "source": "INTEGRATION-05、06；pain.json PAIN-10",
+      "date": "2026-10-18",
+      "notes": "类型：推论。"
+    },
+    {
+      "id": "INTEGRATION-08",
+      "claim": "牌照：QRIS 收单只能由 BI 持牌的 PJP 做，非银行 PJP 外资上限 85%（PBI 22/23/2020），GPN 要求境内交易在境内处理。推论：INSCREEN/INSPAY 若不申请 PJP，在印尼只能当 PJSP（BRI、Midtrans、Xendit、DOKU 等）的设备或技术合作方。这个角色在 BI 框架下是否算“penunjang”（支付辅助服务商）、要不要登记，未核实。",
+      "confidence": "medium",
+      "source": "docs/research/ID.json（PBI 22/23/2020）；docs/05-country-playbooks.md 印尼监管红线",
+      "date": "2026-10-18",
+      "notes": "类型：牌照和外资上限为仓库已核实（中）；“技术合作方”的定性是推论，需要印尼律师确认。"
+    },
+    {
+      "id": "INTEGRATION-09",
+      "claim": "未查到：本轮没有查到 Xendit、DOKU 的 QRIS 动态码费率和回调细节，提示词中的“0.63%”也没有得到证实。",
+      "confidence": "low",
+      "source": "本轮 WebSearch（2026-10-18）",
+      "date": "2026-10-18",
+      "notes": "类型：未查到。没查到不等于不存在，应直接看两家的定价页。"
+    },
+    {
+      "id": "INTEGRATION-10",
+      "claim": "DuitNow QR 的 tag 26 里，子字段 01 是 6 位收单机构 ID（PayNet 目录），子字段 02 是收单方分配的 QR ID。社区资料称动态码里的账户号是临时值，有效期约 60 秒，过期返回 D313。推论：终端无法自己生成可用的 DuitNow 商户动态码，只能调 BNM 注册收单方的 API 取码。",
+      "confidence": "medium",
+      "source": "docs/research/SG-MY.json（PayNet MPM 规范 V1.5 镜像）；docs/02 2.3 马来西亚",
+      "date": "2026-10-18",
+      "notes": "类型：规范字段为仓库已核实（中）；60 秒为低置信社区资料；“终端不能自行签发”是推论。"
+    },
+    {
+      "id": "INTEGRATION-11",
+      "claim": "马来西亚的收单要按 FSA 2013 第 17(1)、18 条注册（BNM《Merchant Acquiring Services》政策文件，2021-09-15）。PayNet 的数字注册商户合作方必须是马来西亚注册、BNM 持牌的第三方收单方或获批电子货币发行人，且有 3 年以上经验。",
+      "confidence": "medium",
+      "source": "docs/research/SG-MY.json",
+      "date": "2026-10-18",
+      "notes": "类型：仓库已核实（中）。推论：INSPAY 不具备这些条件，只能接在现有收单方后面。"
+    },
+    {
+      "id": "INTEGRATION-12",
+      "claim": "HitPay 的 DuitNow API 开发指南称，集成分三步：用 API key 认证，按指定金额创建 payment request 生成 QR，再通过 webhook 或轮询确认支付；API 生成的码只对应一个金额，交易窗口结束后失效。结算时间有两种说法：一页写 T+2 自然日，另一页写下一个工作日。",
+      "confidence": "medium",
+      "source": "https://hitpayapp.com/my/blog/duitnow-api-integration-malaysia ；https://hitpayapp.com/my/blog/how-to-set-up-duitnow-qr-malaysia-business",
+      "date": "2026-10-18",
+      "notes": "类型：公司声明（营销博客）。HitPay 称没有月费和开通费，只按笔收费，但摘要里没有费率。"
+    },
+    {
+      "id": "INTEGRATION-13",
+      "claim": "马来西亚 DuitNow QR 的商户费率参考：Omise 博客称开通无费用、每笔 MYR 1.50（日期不明）；Qashier 的商户 MDR 为 0.8%、无月费（devices.json）。Fiuu、Billplz、Curlec、Senangpay 的费率本轮未查到。",
+      "confidence": "low",
+      "source": "https://www.omise.co/en/blogs/why-should-online-businesses-in-malaysia-accept-duitnow-en ；devices.json DEVICES-21",
+      "date": "2026-10-18",
+      "notes": "类型：公司声明。MYR 1.50 每笔可能指线上场景，不一定适用线下 QR，需要向各家核实。"
+    },
+    {
+      "id": "INTEGRATION-14",
+      "claim": "PayMongo 的 QR Ph 动态码走 Payment Intent 流程：创建 allowed method 含 qrph 的 Payment Intent，挂上 QR Ph Payment Method，attach 返回 QR 图片。码一次性使用，默认 30 分钟过期；webhook 事件有 payment.paid、payment.failed、qrph.expired。另有 Wallet QR 接口 /v3/qr/mpm/generate，expiry_seconds 可设 60–9,000 秒（默认 1,800），事件为 qr.paid、qr.expired。",
+      "confidence": "medium",
+      "source": "https://developers.paymongo.com/docs/qr-ph-api ；https://developers.paymongo.com/docs/payment-acceptance-qr-ph-api ；https://docs.paymongo.com/docs/money-movement-wallet-qr",
+      "date": "2026-10-18",
+      "notes": "类型：公司官方文档（WebFetch DNS 失败，据搜索摘要）。两页对“30 分钟从何时算起”说法不一。"
+    },
+    {
+      "id": "INTEGRATION-15",
+      "claim": "PayMongo 定价页：QR Ph 线上和店内同为 1.34%，摘要中没有固定每笔费用。",
+      "confidence": "medium",
+      "source": "https://developers.paymongo.com/docs/pricing",
+      "date": "2026-10-18",
+      "notes": "类型：公司声明（搜索摘要）。是否另收 VAT、结算费未读到。"
+    },
+    {
+      "id": "INTEGRATION-16",
+      "claim": "QR Ph 商户码（tag 28，GUID ph.ppmi.p2m）的 28-01 是 InstaPay 参与机构代码，28-03 是商户收款账户。PayMongo（PAEYPHM2XXX）、GCash、Maya 都是 InstaPay 参与者；单笔受 InstaPay ₱50,000 上限约束。推论：动态 P2M 码只能由参与机构或聚合商签发，INSCREEN 要接 PayMongo 这类 API。",
+      "confidence": "medium",
+      "source": "docs/research/PH-MM.json；docs/02 2.3 菲律宾",
+      "date": "2026-10-18",
+      "notes": "类型：仓库已核实（中）加推论。"
+    },
+    {
+      "id": "INTEGRATION-17",
+      "claim": "BSP 2026-09 征求意见稿拟暂停新的 OPS（支付系统运营者）注册 12 个月，并要求做商户收单的受监管机构只与持牌 VASP 合作。推论：INSPAY 短期内很难在菲律宾自己登记，只能接在已登记的收单方后面；INSCREEN 若同时受理稳定币，收单伙伴要能证明对方是持牌 VASP。",
+      "confidence": "medium",
+      "source": "docs/research/PH-MM.json；docs/05-country-playbooks.md 菲律宾监管",
+      "date": "2026-09",
+      "notes": "类型：征求意见稿为仓库已核实（中），是否定稿未知；含义部分是推论。"
+    },
+    {
+      "id": "INTEGRATION-18",
+      "claim": "SCB 开发者文档：Thai QR（tag 30）付款成功后，SCB 向商户登记的 URL 推送 payment confirmation，失败交易不推送。商户未响应时每 12 秒重试，最多 3 次，然后把交易明细发到商户登记邮箱。交易查询 API 支持 QR 30 和 QR CS（返回 transactionId、amount、时间、merchantId、terminalId 等）。收不到推送时，可以按笔查询，或用 slip verification API（需要客户收据上 QR 里的交易号）核对。",
+      "confidence": "medium",
+      "source": "https://developer.scb.co.th/assets/documents/documentation/qr-payment/payment-confirmation.html ；https://developer.scb.co.th/assets/documents/documentation/qr-payment/thai-qr.html",
+      "date": "2026-10-18",
+      "notes": "类型：银行官方文档（WebFetch DNS 失败，据搜索摘要）。这是泰国“收单方签发动态码 + 银行回调”路线的一手证据。"
+    },
+    {
+      "id": "INTEGRATION-19",
+      "claim": "SCB 的接入条件：要用往来或储蓄账户收款，合作方需申请 Biller ID（Tag 30）；收信用卡另需办商户入网。SCB EASY App Payment 的 Biller ID 必须与 SCB Bill Payment、Cross Bank Bill Payment 用的不同；SCB Business QR 允许一个账户挂多个 Biller ID。费用本轮未查到。",
+      "confidence": "medium",
+      "source": "https://developer.scb.co.th/assets/documents/documentation/pay-with-scb/payment-via-scb.html ；https://www.scb.co.th/en/corporate-banking/business-cash-management/scb-business-collection/business-qr-payment",
+      "date": "2026-10-18",
+      "notes": "类型：银行官方文档（搜索摘要）。推论：“一个账户多个 Biller ID”可以让 INSPAY 以平台身份给每个门店或终端分配 Biller 后缀，但 Biller ID 前 13 位是税号，申请主体必须是有税号的商户或平台，需要和 SCB 确认。"
+    },
+    {
+      "id": "INTEGRATION-20",
+      "claim": "一个非官方 PHP 包的 README 称：SCB 回调端点是公开的，SCB 不签名。如果属实，收到回调后应再用带认证的查询 API 复核。",
+      "confidence": "low",
+      "source": "https://packagist.org/packages/pongsit/scb",
+      "date": "2026-10-18",
+      "notes": "类型：第三方说法，未经 SCB 文档证实。"
+    },
+    {
+      "id": "INTEGRATION-21",
+      "claim": "KBank K-API、Krungsri 的动态码 API 接入条件和费用，本轮未查到。一个非官方 Python 项目（thanakan）的 README 称，自己直连泰国银行 API 手续繁琐、起步成本高（“50k，或每月最低 10k”泰铢）。",
+      "confidence": "low",
+      "source": "https://github.com/codustry/thanakan（经 github-redirect.dependabot.com 镜像）",
+      "date": "2026-10-18",
+      "notes": "类型：第三方说法，未核实。泰国小商户 Thai QR 的 MDR 本轮也未核实（凭记忆，多数银行对小微 PromptPay 收款免费，未核实）。"
+    },
+    {
+      "id": "INTEGRATION-22",
+      "claim": "PromptPay tag 29（个人或个体户转账码）字段公开：子字段 01 手机号（0066+9 位）、02 身份证或税号、03 e-Wallet ID，三选一。开源库（如 dtinth/promptpay-qr）可以离线生成带金额的码，凭记忆，带金额时 POI 置为 12。终端本地生成 PromptPay 带金额码不需要任何合同。",
+      "confidence": "medium",
+      "source": "docs/research/TH-LA.json；https://github.com/dtinth/promptpay-qr",
+      "date": "2026-10-18",
+      "notes": "类型：字段为仓库已核实（中）；“带金额时 POI=12”凭记忆，未核实。难点在确认到账，不在生成：本轮没有找到任何银行给第三方开放“读取个人 PromptPay 账户入账”的官方 API。"
+    },
+    {
+      "id": "INTEGRATION-23",
+      "claim": "泰国的 slip 验证：e-slip 上有 mini QR，任何银行 App 扫一下就能核对（Bangkok Bank 页面）。商业 API 有 SlipOK、Slip2GO、RDCW Slip Verify（读 slip 内嵌 QR）。价格：AIS 给网店卖家的捆绑套餐是 500 张/月，前 3 个月 ฿350，第 4 个月起 ฿210，超出部分 ฿0.42/张；一份非官方 README 称 SlipOK 每月免费 100 张。",
+      "confidence": "medium",
+      "source": "https://www.bangkokbank.com/th-TH/Personal/Grow-Club/Verify-eSlip ；https://www.ais.th/consumers/package/postpaid/rsme/slip-ok ；https://slip.rdcw.co.th/docs ；pain.json PAIN-15",
+      "date": "2026-10-18",
+      "notes": "类型：银行页面和公司定价（搜索摘要）。AIS 价格只适用于 AIS 套餐客户，不是 SlipOK 标准价。SlipOK 等服务从哪里取到银行数据、与银行有没有正式协议，本轮未查到。"
+    },
+    {
+      "id": "INTEGRATION-24",
+      "claim": "推论：slip 验证作为终端的到账确认手段有四个弱点。①要付款人主动出示或上传 slip，不适合柜台快速收款；②只能证明“这笔转账存在、金额和收款人对得上”，同一张真 slip 可被重复使用，必须做去重；③外国钱包付款人没有泰国 e-slip，跨境场景用不了；④依赖第三方服务的数据来源，可能随银行政策中断。它适合线上和 LINE 订单，不适合作为 INSCREEN 的主确认通道。",
+      "confidence": "medium",
+      "source": "INTEGRATION-23；pain.json PAIN-13/14/15",
+      "date": "2026-10-18",
+      "notes": "类型：推论。"
+    },
+    {
+      "id": "INTEGRATION-25",
+      "claim": "泰国合规背景：BOT 2026-06 规定持牌 PSP 只能处理泰铢交易，个人 QR 必须以泰铢结算；2025-02 至 2026-05 约 5,000 个用于人民币 P2P（Alipay/WeChat）的账户被冻结或终止。凭记忆（未核实）：泰国 2019 年《税法典》修订（“e-Payment 法”）要求金融机构申报年入账 ≥3,000 笔，或 ≥400 笔且合计 ≥200 万泰铢的账户。推论：用个人 PromptPay 账户大量收商户款，会同时碰到税务申报和人头账户风控。",
+      "confidence": "medium",
+      "source": "docs/research/TH-LA.json；docs/02 2.4；e-Payment 法部分凭记忆",
+      "date": "2026-06",
+      "notes": "类型：BOT 部分为仓库已核实（中）；e-Payment 法门槛为记忆，未核实，置信度低；含义为推论。"
+    },
+    {
+      "id": "INTEGRATION-26",
+      "claim": "VietQR 用 tag 38（GUID A000000727），子字段 01 是嵌套的“6 位受益机构 BIN + 账号或卡号”，02 是服务码（QRIBFTTA/QRIBFTTC），62-08 是转账附言（商户对账关键字段）；没有显式的 P2M 标志。终端可以本地生成“账户 + 金额 + 订单号附言”的码。凭记忆，VietQR.io 等站点提供免费的带金额 VietQR 图片生成接口（未核实）。",
+      "confidence": "medium",
+      "source": "docs/research/VN-KH.json；docs/02 2.3 越南",
+      "date": "2026-10-18",
+      "notes": "类型：结构为仓库已核实（中）；免费生成接口凭记忆。"
+    },
+    {
+      "id": "INTEGRATION-27",
+      "claim": "SePay 开发者文档：关联账户有新的入账时，SePay 向配置的 URL 发 HTTP POST；认证可选 HMAC-SHA256、API Key、OAuth 2.0 或不认证；端点失败时按斐波那契间隔重试最多 7 次（共约 33 分钟），要求端点幂等。API v1 停止开发，新集成用 v2。限流说法不一（每 IP 2 或 3 次/秒）。",
+      "confidence": "medium",
+      "source": "https://developer.sepay.vn/en/sepay-webhooks ；https://developer.sepay.vn/en/sepay-webhooks/tich-hop-webhook ；https://developer.sepay.vn/en/sepay-api/v2/gioi-thieu",
+      "date": "2026-10-18",
+      "notes": "类型：公司官方文档（WebFetch DNS 失败，据搜索摘要）。SePay 和 Casso 的费率本轮未查到。"
+    },
+    {
+      "id": "INTEGRATION-28",
+      "claim": "SePay 称与 12 家银行“正式连接”（招聘页；英文首页写 10 多家），是 NAPAS 的网络发展合作伙伴；文档列出与 TPBank、VietinBank、ACB、MBBank 的 API 连接方式；ACB 个人账户经“与 ACB 正式合作开放的 API”接入（输入账号、户名、手机号，OTP 验证）；OCB 企业账户需签三方授权。ACB 官网另挂有《Thỏa thuận đăng ký dịch vụ tài khoản định danh – SEPAY》（SePay 识别账户服务登记协议）PDF。",
+      "confidence": "medium",
+      "source": "https://itviec.com/nha-tuyen-dung/sepay ；https://sepay.vn/en ；https://docs.sepay.vn/cau-hinh-tai-khoan-ngan-hang.html ；https://docs.sepay.vn/ket-noi-acb.html ；https://docs.sepay.vn/ket-noi-ocb-api-doanh-nghiep.html ；https://acb.com.vn/acbwebsite/files/（SePay 协议 PDF）",
+      "date": "2026-10-18",
+      "notes": "类型：公司声明，加一份银行官网文件（只拿到标题，正文未读）。ACB 官网挂有双方协议，说明至少 ACB 与 SePay 之间是银行认可的正式安排，不是读短信或抓网银；其他银行是否同样正式，未逐一核实。"
+    },
+    {
+      "id": "INTEGRATION-29",
+      "claim": "Casso：webhook 在关联账户有入账或出账时通知应用，可选单个或全部关联账户；payOS 是 Casso 专做支付确认的方案，结合 VietQR、虚拟账号（Virtual Account Number）和 Open Banking API。",
+      "confidence": "medium",
+      "source": "https://developer.casso.vn/webhook/thiet-lap-webhook-thu-cong",
+      "date": "2026-10-18",
+      "notes": "类型：公司声明（搜索摘要；payos.vn WebFetch DNS 失败）。payOS 的持牌情况、合作银行名单和费率未查到。"
+    },
+    {
+      "id": "INTEGRATION-30",
+      "claim": "SePay 4G 到账音箱零售价 ₫599,000（约 USD 23），一台可播报多个账户，可设为只播报在该音箱上扫码的付款；App 用虚拟账户按门店拆分收入，并提供 API 接入 CRM、ERP 和电商自动确认收款。推论：越南已经有“账户型 VietQR + 银行官方入账通知 + 虚拟账户归因”的成熟产品，商户不需要收单合同，INSCREEN 在越南做的是同一件事，只是多了屏幕。",
+      "confidence": "medium",
+      "source": "devices.json DEVICES-12（https://didongviet.vn/thiet-bi-am-thanh/loa-thong-bao-chuyen-khoan-sepay.html）",
+      "date": "2026-10-18",
+      "notes": "类型：零售标价和公司描述（同轮其他 agent 已检索），加推论。说明越南最接近创始人设想的“0 费率直连账户”，但这个位置已经有人占了。"
+    },
+    {
+      "id": "INTEGRATION-31",
+      "claim": "越南合规：①Decree 52/2024 要求境外机构经 SBV 认可的商业银行进入（2026-07 修订草案拟放宽）；②个人数据保护法（Law 91/2025/QH15，2026-01-01 生效）规定个人数据跨境传输须做影响评估，并在 60 天内报公安部，罚款最高为上年营收的 5%。推论：INSPAY 不碰资金、只经银行官方 API 读取入账通知，可能不属于需 SBV 许可的“支付中介服务”，但需越南律师确认。交易数据（含付款人姓名、账号）传回日本服务器会触发数据出境义务。凭记忆（未核实）：早期有工具靠转发余额变动短信或托管网银账号密码来读入账，这违反银行条款，也有安全风险，INSCREEN 只能走银行正式 API。",
+      "confidence": "medium",
+      "source": "docs/research/VN-KH.json；docs/06-compliance-risk.md 6.7",
+      "date": "2026-10-18",
+      "notes": "类型：①②为仓库已核实（中）；“不属于支付中介”是推论；早期抓取做法凭记忆，置信度低。"
+    },
+    {
+      "id": "INTEGRATION-32",
+      "claim": "越南税务：年营业额 ≥10 亿越南盾的个体户自 2025-06 起须使用连接收银机的电子发票，2026 年起取消定额税。推论：用个人账户收经营款越来越难不被税务看到，INSCREEN 在越南的卖点应是“收款 + 自动对账 + 开票”，而不是“动态码”。银行向税务机关提供收款账户信息的具体规定，本轮未查到。",
+      "confidence": "medium",
+      "source": "pain.json PAIN-21/22/47；本轮 WebSearch 未查到银行信息共享规定",
+      "date": "2026-10-18",
+      "notes": "类型：税改为同轮其他 agent 已检索（中）；含义为推论；信息共享规定未查到。"
+    },
+    {
+      "id": "INTEGRATION-33",
+      "claim": "Bakong Open API：多个第三方 SDK 文档称，生产地址 api-bakong.nbc.gov.kh（测试地址 sit-api-bakong.nbc.gov.kh）提供 POST /v1/check_transaction_by_md5，用 Bearer token 认证，请求体为整串 KHQR 的 MD5。成功返回 responseCode 0 和交易字段（hash、付款方和收款方账户、币种、金额、时间），未找到返回 responseCode 1 / errorCode 1。token 要先申请、验证，到期前续期。指南建议在码有效期内轮询。",
+      "confidence": "medium",
+      "source": "https://docs.rs/crate/khqr/0.1.0 ；https://packagist.org/packages/konthaina/khqr-php ；https://pypi.org/project/bakong-khqr/0.2.7 ；https://skills.sh/lowintechie/skills/bakong-khqr",
+      "date": "2026-10-18",
+      "notes": "类型：第三方开源 SDK 文档（Python 包自称非官方），NBC 官方 API 文档未取得。有一个示例把域名写成 .org，疑为笔误。NBC 对 token 申请者资格和商用条款的规定，本轮未查到。"
+    },
+    {
+      "id": "INTEGRATION-34",
+      "claim": "KHQR：tag 29 为个人、tag 30 为商户，子字段 00 是 Bakong 账户 ID（name@bank）；动态码（01=12、金额 > 0）必须在 tag 99 带过期时间；KHR 金额为整数，USD 最多 2 位小数。推论：终端可以用 NBC 官方 SDK 本地生成带金额的个人或商户 KHQR，再用 check_transaction_by_md5 轮询确认，技术上实现了“直连账户、0 费率”，不需要收单合同。",
+      "confidence": "medium",
+      "source": "docs/research/VN-KH.json（NBC 官方 SDK bakong-khqr）；INTEGRATION-33",
+      "date": "2026-10-18",
+      "notes": "类型：码结构为仓库已核实（中-高）；“可用于终端确认”是推论，取决于 NBC 是否允许把 Open API 用于商业设备，需向 NBC 确认。"
+    },
+    {
+      "id": "INTEGRATION-35",
+      "claim": "ABA PayWay 的 KHQR 指南称：KHQR 由 NBC 监管，实施 KHQR 的商户必须按 ABA 或 NBC 的要求调整，否则可能被暂停或终止服务。",
+      "confidence": "low",
+      "source": "https://developer.payway.com.kh/khqr-guideline-3192101f0.md ；pain.json PAIN-40",
+      "date": "2026-10-18",
+      "notes": "类型：公司声明（同轮其他 agent 检索）。推论：在柬埔寨，商户码（tag 30）的入网和 KYM 由收单行（ABA、ACLEDA 等）负责，INSCREEN 用个人码收经营款，有被收单行或 NBC 叫停的风险。"
+    },
+    {
+      "id": "INTEGRATION-36",
+      "claim": "LAO QR：tag 38（GUID A005266284662577），子字段 02 为业务类型（001 转账/个人、002 商户、003 账单）；个人码不带商户名，要经 LAPNet INQUIRY 取户名；LAPNet 成员接口不公开。凭记忆（未核实）：BCEL OnePay 给商户提供动态码和实时到账通知的开发接口。",
+      "confidence": "low",
+      "source": "docs/research/TH-LA.json；docs/02 2.3 老挝；BCEL OnePay 部分凭记忆",
+      "date": "2026-10-18",
+      "notes": "类型：码结构为仓库推断（中）；BCEL 接口凭记忆，置信度低。本轮未检索老挝。"
+    },
+    {
+      "id": "INTEGRATION-37",
+      "claim": "PayNow QR（GUID SG.PAYNOW）子字段：01 代理类型（0 手机、2 UEN），02 代理值，03 金额可改（0/1），04 过期日。格式公开，终端可以本地生成“UEN + 金额 + 参考号 + 过期时间”的动态码。自 2021-02 起，持 MPI 牌照的非银机构可经 API 网关直连 FAST 和 PayNow。SGQR 中的 NETS 载荷带签名（子字段 99），只能由 NETS 主机签发。",
+      "confidence": "medium",
+      "source": "docs/02 2.3 新加坡；docs/research/SG-MY.json",
+      "date": "2026-10-18",
+      "notes": "类型：仓库已核实（中；MPI 直连为高）。到账确认要靠商户企业账户所在银行的入账通知 API。凭记忆，DBS、OCBC 有面向企业客户的 PayNow 入账通知 API，本轮未核实（未出现在搜索结果中）。"
+    },
+    {
+      "id": "INTEGRATION-38",
+      "claim": "新加坡 PayNow 的收费参考：HitPay 两页说法不一，一页写每笔 0.65% + S$0.30，另一页写 ≥S$100 为 0.65% + S$0.30、<S$100 为 0.9%（最低 S$0.20），都没有月费和开通费。UOB 自 2026 年起对企业 PayNow 收款每笔收 S$0.20，其他银行可能跟进；用个人手机号收款的熟食摊不受影响。Qashier 为 POS 提供动态 PayNow QR，收 MDR 但未公布费率。",
+      "confidence": "medium",
+      "source": "https://hitpayapp.com/sg/blog/paynow-qr-code-setup-singapore ；https://hitpayapp.com/blog/payment-methods-singapore ；https://www.hack.gov.sg/2025/singpay/ ；https://qashier.com/sg/?p=8780",
+      "date": "2026-10-18",
+      "notes": "类型：公司声明，加政府黑客松页面的二手引用（UOB 收费，低）。推论：新加坡企业 UEN 收款已经不是 0 费率，“0% 直连”只对个人 PayNow 成立，而那是 P2P。"
+    },
+    {
+      "id": "INTEGRATION-39",
+      "claim": "新加坡牌照：SGQR 参与指引（2023-12-01 生效）适用于在实体店用静态 QR 提供收单服务的 MPI 和豁免机构。凭记忆（未核实）：《支付服务法》对“商户收单服务”的定义不以经手资金为条件，可能把为商户提供受理终端或支付网关的服务包括进去。推论：INSCREEN 在新加坡即使不碰资金，也可能被认定为商户收单服务，需要 MAS 法律意见。",
+      "confidence": "low",
+      "source": "docs/research/SG-MY.json；PS Act 定义凭记忆",
+      "date": "2026-10-18",
+      "notes": "类型：指引为仓库已核实（中）；PS Act 定义为记忆，置信度低。"
+    },
+    {
+      "id": "INTEGRATION-40",
+      "claim": "外国钱包扫各国码的现状（已核实部分）：泰国中国线开通时只受理 6 家参与银行的商户码；马来西亚商户开通 DuitNow QR 即自动受理跨境，按 MYR 入账；菲律宾 Alipay+ 经 PPMI 可扫全国 QR Ph 商户，商户不需换码；柬埔寨 12 个 Alipay+ 钱包可扫 KHQR；越南自 2026-04-03 起，中国游客可用 Alipay 扫 VIETQRGlobal，在“NAPAS 网络内的受理点”付款，Vietcombank 为结算行。",
+      "confidence": "medium",
+      "source": "docs/research/TH-LA.json、SG-MY.json、PH-MM.json、VN-KH.json、ALIPAY-VERIFY.json；https://plo.vn/tu-nay-vi-dien-tu-alipay-thanh-toan-tai-viet-nam-de-dang-post902607.html ；https://thoibaotaichinhvietnam.vn/napas-mo-rong-dich-vu-thanh-toan-qua-ma-qr-giua-viet-nam-trung-quoc-195023.html",
+      "date": "2026-04-03",
+      "notes": "类型：仓库已核实，加越南媒体报道。越南报道只说受理网络通过银行、支付中介和企业扩展，面向零售商、个体户和企业，没有说明个人账户的 VietQR 码能否被 Alipay 扫付。"
+    },
+    {
+      "id": "INTEGRATION-41",
+      "claim": "推论：外国钱包要能付，码必须是商户（P2M）模板，并带真实 MCC、商户名和参考号。各国的判别方式：泰国用 tag 30/31，不用 tag 29；马来西亚 MCC 不能是 0000；菲律宾用 tag 28（ph.ppmi.p2m），不用 27；新加坡用 UEN 或 NETS 载荷，不用手机号；柬埔寨用 tag 30；印尼要有 tag 51 NMID；越南码内没有 P2M 标志，只能靠在 NAPAS 受理网络登记。动态码还要带过期时间（KHQR tag 99、PayNow 04）或足够长的有效期（DuitNow 约 60 秒），境外钱包的锁汇有效期必须短于码有效期。",
+      "confidence": "medium",
+      "source": "docs/02 2.2–2.5；INTEGRATION-40",
+      "date": "2026-10-18",
+      "notes": "类型：推论，依据仓库已核实的码结构和 INSPAY 参考实现的规则。"
+    },
+    {
+      "id": "INTEGRATION-42",
+      "claim": "未查到：本轮没有找到任何证据说明现有跨境线（Alipay+、NITMX、PayNet、NAPAS）拒绝或明确受理动态码。DuitNow 跨境靠交易码 031 和原样转发码串，看不出动态码有技术障碍。推论：收单方签发的动态商户码最可能被外国钱包付通；终端自己生成的账户型码（个人 VietQR、PromptPay tag 29、个人 KHQR）大概率不在跨境受理范围内，即使付通，也可能被定性为跨境个人汇款。",
+      "confidence": "low",
+      "source": "docs/research/SG-MY.json（交易码 031）；docs/02 2.4；本轮检索",
+      "date": "2026-10-18",
+      "notes": "类型：未查到加推论。要向 NITMX、PayNet、NAPAS、Alipay+ 逐一确认动态码和个人码的受理口径。"
+    },
+    {
+      "id": "INTEGRATION-43",
+      "claim": "INSPAY 自己设计的跨境网络默认拒绝个人码（P2P_NOT_SUPPORTED），理由是跨境个人汇款需要汇款牌照，个人码没有 KYM，是贴码诈骗和地下换汇的载体。推论：只要 INSCREEN 在某国走“个人账户 + 本地生成码”，PayPay 等境外钱包经 INSPAY 网络就付不了这类商户。“0 费率直连账户”和“跨境锁价收款”在同一台设备上互相冲突，除非商户另有收单方签发的 P2M 码。",
+      "confidence": "medium",
+      "source": "docs/02 2.4；reference-impl 规则",
+      "date": "2026-10-18",
+      "notes": "类型：仓库设计约定，加推论。"
+    },
+    {
+      "id": "INTEGRATION-44",
+      "claim": "各国适配判断（推论）。越南：模式 (b) 成熟可行，账户型 VietQR + 银行官方入账 API（SePay、Casso/payOS 或直连银行），收款方转账费通常为 0（凭记忆）。柬埔寨：(b) 技术可行，个人或商户 KHQR + Bakong Open API，商用条款未知。泰国：(b) 生成容易、确认弱（只有 slip 验证），又有个人账户整治，应走 (a)，即 SCB 等银行的 tag 30 Biller 动态码加回调。新加坡：(b) 只在企业 UEN 加银行 API 时可行，且企业收款开始按笔收费。印尼、马来西亚、菲律宾：只能走 (a)，即 PJSP、收单方或 InstaPay 参与者的 API，MDR 约 0–1.34%。老挝：(a)，经 BCEL 等银行，证据弱。",
+      "confidence": "medium",
+      "source": "INTEGRATION-03 至 43",
+      "date": "2026-10-18",
+      "notes": "类型：推论。结论是：创始人设想的“0% 手续费、直连账户”，在八国中只有越南、柬埔寨两国有现成的合规技术路径，泰国勉强可做；其余五国 INSCREEN 只能做收单方的设备或渠道。"
+    },
+    {
+      "id": "INTEGRATION-45",
+      "claim": "推论：哪种模式决定 INSCREEN 能拿到什么。模式 (a) 下，动态码和回调都是收单方的能力，INSCREEN 只是显示屏，费率和商户关系归收单方，INSPAY 的收入要靠设备或 SaaS 费，或者向收单方分润。模式 (b) 下，INSPAY 掌握码和确认链路，可以加开票和对账，但要承担“个人账户经营”“数据出境”“是否属于支付中介”三类合规风险，而且跨境钱包付不了。",
+      "confidence": "medium",
+      "source": "INTEGRATION-02、43、44",
+      "date": "2026-10-18",
+      "notes": "类型：推论。"
+    },
+    {
+      "id": "INTEGRATION-46",
+      "claim": "稳定币受理的限制（与 docs/11 相关）：越南加密资产不得作为支付手段；泰国 SEC 2022 年禁止数字资产业者为加密支付提供便利；印尼 BI 禁止 PJP 处理虚拟货币交易。推论：在这几国，INSCREEN 不能让本地 QR 收单伙伴把稳定币兑成本币入商户账户；稳定币只能在离岸或游客专用沙盒（如泰国 TouristDigiPay）中使用。",
+      "confidence": "medium",
+      "source": "docs/05-country-playbooks.md；docs/research/ID.json、VN-KH.json、TH-LA.json",
+      "date": "2026-10-18",
+      "notes": "类型：仓库已核实（中；印尼一项为低），加推论。细节以 docs/11 为准。"
+    },
+    {
+      "id": "INTEGRATION-47",
+      "claim": "参照（凭记忆，未核实）：中国 2021 年人民银行 259 号文要求区分个人收款码和经营收款码；“个人码免签支付”（监听个人账户到账通知、自动确认订单）长期与赌博、跑分洗钱相关，是灰色地带。印度 UPI 音箱的到账确认来自 PSP 服务器，不是读取个人账户。这两国的经验说明：“读个人账户到账通知”这类模式规模一大，监管就会介入。",
+      "confidence": "low",
+      "source": "凭记忆；pain.json PAIN-43、devices.json DEVICES-07",
+      "date": "2021",
+      "notes": "类型：记忆加类比，未核实，只作风险提示。"
+    }
+  ],
+  "key_claims": [
+    "终端能“画”动态码不等于能签发可对账的动态码：QRIS、DuitNow、QR Ph P2M、泰国 tag 30、SGQR NETS 只能由收单方或参与机构签发，INSCREEN 只能调它们的 API（模式 a）。",
+    "在印尼、马来西亚、菲律宾、新加坡（企业 UEN），模式 a 的费率由收单方决定，约 0–1.34%（印尼常规 MDR 0.7%，UMI ≤Rp50 万和自 2026-10 起 ≤Rp10 万档为 0%；PayMongo QR Ph 1.34%；HitPay PayNow 0.65%+S$0.30；UOB 企业 PayNow 每笔 S$0.20），“全额 0%”不成立。",
+    "“0% 直连账户”（模式 b）只在越南和柬埔寨有现成的技术与合规路径：越南用账户型 VietQR + 银行官方入账 API（SePay 称正式连接 12 家银行，ACB 官网挂有 SePay 协议；Casso/payOS）；柬埔寨用个人或商户 KHQR + Bakong Open API 的 check_transaction_by_md5（据第三方 SDK，NBC 商用条款未知）。",
+    "泰国 PromptPay tag 29 带金额码容易生成，但第三方没有官方入账 API，只能靠 slip 验证（SlipOK 等，AIS 套餐 ฿210/500 张）。它依赖付款人出示凭证，要防重复使用，跨境不可用；加上 BOT 对个人账户的整治，泰国应走 SCB 等银行的 tag 30 Biller 动态码加回调（SCB 回调失败后每 12 秒重试，最多 3 次，另有查询 API 和 slip 验证 API）。",
+    "外国钱包和 INSPAY 网络只付商户（P2M）码：泰国中国线只受理 6 家参与银行的商户码，越南 Alipay 只在 NAPAS 受理网络内可付。终端自生成的个人账户码大概率无法跨境受理，或被定性为跨境个人汇款，所以“0% 直连账户”和“跨境锁价”互相冲突。",
+    "模式 b 的合规风险有三类：用个人账户收经营款（越南 2026 年取消定额税、泰国 e-Payment 申报和人头账户冻结）、数据出境（越南 Law 91/2025 要求 60 天内报公安部）、是否构成需许可的支付中介或收单服务（越南、新加坡都需要律师意见）。读取入账只能走银行正式 API，不能转发短信或托管网银密码。",
+    "对创始人假设的含义：INSCREEN 的“动态码能力”在模式 a 国家没有差异化，在模式 b 国家已有 SePay 等低价（约 USD 23）对手。可以差异化的是多国收单 API 聚合、可信到账确认、开票和对账，以及经收单方 P2M 码的跨境锁价，而不是“能出动态码”本身。"
+  ],
+  "open_questions": [
+    "Xendit、DOKU、BRI 直连动态 QRIS 的接入条件、费率和回调签名方式；INSCREEN 作为 PJSP 的设备或技术合作方，在 BI 框架下是否需要登记为辅助服务商。",
+    "SCB、KBank、Krungsri 的 tag 30 动态码 API：是否允许平台用自己的税号为多个商户申请 Biller ID 后缀；小微商户的 Thai QR MDR 和 API 月费是多少；回调是否签名。",
+    "SePay、Casso/payOS 在越南是否持有 SBV 许可，与哪些银行签有正式协议（ACB 协议 PDF 正文未读）；INSPAY 只读通知、不碰资金是否落在 Decree 52/2024 的“支付中介服务”之外。",
+    "NBC 是否允许把 Bakong Open API（check_transaction_by_md5）用于商业终端；token 申请资格、限流和服务条款；个人 KHQR（tag 29）用于经营是否违反 NBC 或收单行规则。",
+    "Alipay+、NITMX、PayNet、NAPAS 各条入境线是否受理动态码；是否受理个人码（泰国 tag 29、马来西亚 MCC 0000、个人 VietQR、个人 KHQR）；VIETQRGlobal 的“受理点”如何登记，个体户账户能否加入。",
+    "新加坡《支付服务法》的“商户收单服务”是否覆盖不碰资金的终端提供方；DBS、OCBC 企业 PayNow 入账通知 API 的条件和费用。",
+    "泰国 e-Payment 法的申报门槛（3,000 笔，或 400 笔且 200 万泰铢）现行是否有变；BOT 2026 年对个人码商用的具体限制。",
+    "老挝 BCEL OnePay 和 LAPNet 是否向第三方终端开放动态码与到账通知接口。"
+  ]
+}

@@ -1,0 +1,348 @@
+{
+  "summary": "创始人隐含的假设是“东南亚商户把静态码升级成动态码的需求很强”。从商户经济看，这一假设对数量上占绝大多数的微型商户不成立。这些商户的 QR 收款本来就几乎免费：印尼 UMI 单笔 ≤Rp500,000 的 MDR 为 0%，2026-10-01 起所有类别单笔 ≤Rp100,000 也为 0%；泰国个人商户、马来西亚小微商户免费，越南 VietQR 是免费转账。到账确认则由免费 App 或银行赠送的音箱解决。¥2,000/月（按 1 USD ≈ ¥154，约 USD 13）约等于泰国、菲律宾一天以上的最低工资，是印度音箱订阅费（约 USD 1.4/月）的约 9 倍，也是银行能为每户微型商户承担的设备预算（假设约 USD 0.5–3/月）的 4–26 倍。按分层测算（全部为假设），微型商户最多愿付约 USD 0–1.5/月，有店员的小型店约 USD 2–5/月，POS 集成的中型商户和连锁约 USD 5–15/收银台/月（¥2,000 只在这里可行，买方是 POS 厂商、收单方或总部），游客区商户约 USD 3–10/月（取决于 PayPay 是否接入本网络）。东南亚的设备买方主要是银行和收单方（B2B2M），不是商户本人。越南的税务强制收银是唯一的制度拉力，但强制部分只有约 3.7 万户。本轮用了 10 次 WebSearch，WebFetch 均为 DNS 失败，新事实依据搜索摘要。",
+  "facts": [
+    {
+      "id": "ECON-01",
+      "claim": "【假设】汇率口径：1 USD ≈ ¥154，所以 ¥2,000/月 ≈ USD 13.0/月。折算为当地货币：≈ ฿422（1 USD = 32.5 THB）、≈ ₫338,000（26,000）、≈ Rp213,000（16,400）、≈ RM55.8（4.3）、≈ ₱740（57）、≈ S$16.8（1.29）、柬埔寨直接按 USD 13（美元化；≈ KHR 52,600，4,050）、≈ ₭283,000（21,800）。",
+      "confidence": "low",
+      "source": "假设（与 devices.json DEVICES-30 的 ₫/Rp/RM/₱ 口径一致；THB、SGD、KHR、LAK 为本文补充）",
+      "date": "2026-10-18",
+      "notes": "未逐日核实，均为 2025–2026 年近似水平；LAK 波动大，误差可能超过 ±10%。下文所有本币↔美元换算都用这一口径。"
+    },
+    {
+      "id": "ECON-02",
+      "claim": "【银行官方页面·单一银行】Bangkok Bank 商户费率表（2025-07-01 生效）：法人商户收 Thai QR 每笔 0.35% 或 ฿5；个人商户经 QR PromptPay 收款“在银行另行通知前”不收费。",
+      "confidence": "medium",
+      "source": "https://www.bangkokbank.com/en/Business-Banking/Manage-My-Business/Merchant-Services/Payments-on-EDC",
+      "date": "2025-07-01",
+      "notes": "WebSearch 摘要（WebFetch 对该域名 DNS 失败或未尝试，未读原文）。只是一家银行的费率；KBank、SCB、Krungthai 的法人费率未查到。第三方工具 spark.money 称 PromptPay MDR 为 0.00–0.10%，与此冲突，权重更低。未找到 BOT 统一规定商户费率的文件。"
+    },
+    {
+      "id": "ECON-03",
+      "claim": "【公司声明·沿用】泰国小微商户的现状成本几乎为零：KBank K SHOP 是免费商户 App（语音播报 + 推送，2022 年称受理点超 200 万）；Krungthai 在分行免费发 PromptPay 台卡（KTC 称 Tung Ngern 网络超 200 万商户）；SCB แม่มณี 支持店主和店员同时收通知；Qashier 音箱 ฿1,790（一次性）。",
+      "confidence": "medium",
+      "source": "沿用 dynqr/devices.json DEVICES-17、DEVICES-18；dynqr/pain.json PAIN-16",
+      "date": "2022–2026",
+      "notes": "未重复检索。"
+    },
+    {
+      "id": "ECON-04",
+      "claim": "【媒体/厂商指南】泰国 EDC/POS 终端月费约 ฿300–800（Stripe 指南，长约可能免月费）；Bangkok Bank EDC 押金 ฿1,000（非 Android）/ ฿3,000（Android），安装费 ฿500（2025-07-01 起），月费在摘要中被截断、未查到。",
+      "confidence": "low",
+      "source": "https://stripe.com/zh-hk/resources/more/credit-card-processing-fees-in-thailand ; https://www.bangkokbank.com/en/Business-Banking/Manage-My-Business/Merchant-Services/Payments-on-EDC",
+      "date": "2025-07-01（Bangkok Bank）；Stripe 页面日期未知",
+      "notes": "WebSearch 摘要（WebFetch 对该域名 DNS 失败或未尝试，未读原文）。฿300–800 是第三方区间，不是银行价目表。"
+    },
+    {
+      "id": "ECON-05",
+      "claim": "【已核实事实·沿用】QRIS MDR（BI）：UMI（微型）单笔 ≤Rp500,000 为 0%（2024-12-01 起），> Rp500,000 为 0.3%；UKE/UME/UBE 为 0.7%；教育 0.6%；SPBU 0.4%；G2P/P2G 0%。MDR 由商户承担，不得转嫁消费者。MDR 不区分静态码和动态码（BRI 0% 促销同时适用于两者）。",
+      "confidence": "medium",
+      "source": "docs/research/ID.json；docs/02-qr-interoperability.md；dynqr/pain.json PAIN-10；https://ekonomi.bisnis.com/read/20241016/9/1808129/mulai-1-desember-2024-transaksi-qris-maksimal-rp500000-bebas-biaya-di-pedagang-kecil",
+      "date": "2024-10-16 公布，2024-12-01 生效",
+      "notes": "仓库已核实，未重复检索；本轮检索结果中 bisnis.com、pasardana 报道与之一致。"
+    },
+    {
+      "id": "ECON-06",
+      "claim": "【媒体报道·两源一致，新】BI 自 2026-10-01 起把 QRIS 0% MDR 扩大到所有商户类别的单笔 ≤Rp100,000 交易（此前 UKE/UME/UBE 对这类小额交易收 0.7%）；UMI 单笔 ≤Rp500,000 仍为 0%；CNBC Indonesia（2026-01）称 > Rp500,000 收 0.3%。",
+      "confidence": "medium",
+      "source": "https://katadata.co.id/foto/6a882ffd488a8/foto-bi-perluas-mdr-qris-0-mulai-oktober-2026 ; https://www.idnfinancials.com/jp/news/67526/independence-day-bi-launches-indonesian-credit-card ; https://www.cnbcindonesia.com/market/20260113082606-17-701822/pakai-qris-ada-biaya-admin-ini-penjelasan-bi",
+      "date": "2026（生效日 2026-10-01）",
+      "notes": "WebSearch 摘要（WebFetch 对该域名 DNS 失败或未尝试，未读原文）：katadata WebFetch DNS 失败。未见 BI 规章原文（PADG）。需要回写 docs/02 第 123 行（目前写 UKE/UME/UBE 0.7%，未反映 2026-10-01 的变化）。UKE+ 商户 > Rp100,000 的交易是否仍为 0.7%，摘要未明说（推断：仍为 0.7%）。"
+    },
+    {
+      "id": "ECON-07",
+      "claim": "【银行官方页面】印尼 EDC 月租：Maybank Indonesia 固话版 Rp100,000/月、GPRS 版 Rp200,000/月；BCA 称所有商户免 EDC/APOS 月租；OCBC Indonesia 对新注册 QRIS 商户免 EDC 月租（促销期 2025-05-01 至 2025-12-31），其商户文件按 Rp200,000/月/台做测算。",
+      "confidence": "medium",
+      "source": "https://www.maybank.co.id/mesinedc ; https://www.bca.co.id/en/bisnis/produk/penerimaan-bisnis/EDC-BCA ; https://www.ocbc.id/zh/promo/2023/05/22/qris-nyala-bisnis ; https://cdn3.ocbc.id/asset/media/Feature/DigitalChannel/riplay/riplay-merchant-solution.pdf",
+      "date": "2025",
+      "notes": "WebSearch 摘要（WebFetch 对该域名 DNS 失败或未尝试，未读原文）。说明印尼收单行普遍把终端当作获客成本，由银行承担（B2B2M）。"
+    },
+    {
+      "id": "ECON-08",
+      "claim": "【公司声明·沿用】东南亚一体化 POS 软件月费：StoreHub USD 39 / 79 / 149；印尼 Moka 起价 Rp249,000/月（约 USD 15，按年付）。",
+      "confidence": "medium",
+      "source": "沿用 dynqr/devices.json DEVICES-24",
+      "date": "约 2023–2026",
+      "notes": "未重复检索。这是中型商户已经在付的软件费，INSCREEN 若作为 POS 外设，定价会被放在这个参照系里比较。"
+    },
+    {
+      "id": "ECON-09",
+      "claim": "【媒体报道·引 BNM】DuitNow QR：PayNet 原定 2023-10-01 起对商户收 0.25% MDR（结束 2019 年起的豁免）；BNM 称主要银行和部分非银机构（约占受理 DuitNow QR 商户的 75%）继续对微型和小型商户免收，PayNet 承担这些收单方全额豁免的成本；Maybank、Bank Islam、AmBank、Hong Leong 宣布“另行通知前”继续免收；Public Bank 也免收，但信用卡资金的 DuitNow QR 仍收 0.25%。",
+      "confidence": "medium",
+      "source": "https://www.malaymail.com/news/malaysia/2023/09/29/bank-negara-paynet-to-cover-costs-so-banks-can-continue-waiving-duitnow-qr-charge-for-small-businesses/93582 ; https://www.businesstoday.com.my/2023/09/29/bnm-msmes-will-continue-to-enjoy-zero-transaction-fees-for-qr-payment/ ; https://fintechnews.my/39863/payments-remittance-malaysia/paynet-bnm-clarify-the-duitnow-qr-transaction-fee-confusion/",
+      "date": "2023-09-29",
+      "notes": "WebSearch 摘要（WebFetch 对该域名 DNS 失败或未尝试，未读原文）。未找到 2025–2026 年的更新：豁免是否仍有效未核实。非银收单方另定价，例如 Qashier 收 0.8% MDR、无月费（DEVICES-21）。"
+    },
+    {
+      "id": "ECON-10",
+      "claim": "【公司声明·沿用】马来西亚音箱价格：Maybank QRPay Soundbox RM199.90 / RM279.90，2025 年促销 RM50，2026 年向首批 4,000 家非城市商户免费；Qashier RM179 / RM239；RHB Sound Box 价格未查到。",
+      "confidence": "medium",
+      "source": "沿用 dynqr/devices.json DEVICES-20、DEVICES-21、DEVICES-22",
+      "date": "2025–2026",
+      "notes": "未重复检索。"
+    },
+    {
+      "id": "ECON-11",
+      "claim": "【厂商说法，非监管】越南 VietQR 本质是 NAPAS 银行间转账：Sapo 称店主用 VietQR 收款不付费，这是相对电子钱包和刷卡的优势；MoMo 自 2023-07 起对每月 ≤₫1,000 万的 VietQR 扫码付款免费（付款方促销）。本轮没有找到 SBV 或 NAPAS 规定 VietQR 商户 MDR 的文件，也没有找到银行对商户 VietQR 收费的价目表。",
+      "confidence": "medium",
+      "source": "https://www.sapo.vn/blog/ket-noi-vietqr-pro-tren-sapo-fnb ; https://thitruongtaichinhtiente.vn/ma-vietqr-ptag.html ; https://docs.antom.com/ac/antomop/vietqr.md",
+      "date": "2023–2026",
+      "notes": "WebSearch 摘要（WebFetch 对该域名 DNS 失败或未尝试，未读原文）。“VietQR 收款免费”是厂商口径，对个人账户收款成立；企业账户和 VNPAY-QR（收单网络）是否收费另需查。"
+    },
+    {
+      "id": "ECON-12",
+      "claim": "【公司声明·沿用】越南的到账设备多为银行免费赠送：VietinBank（绑定套餐，活动至 2025-11-30）、MB（免费送小型个体户）、VPBank（Biz Prime 套餐内免费）；SePay 零售 ₫599,000（约 USD 23）；VNPAY 称其数字报税方案免费到 2028 年底。",
+      "confidence": "medium",
+      "source": "沿用 dynqr/devices.json DEVICES-09、DEVICES-10、DEVICES-12；dynqr/pain.json PAIN-23",
+      "date": "2025–2026",
+      "notes": "未重复检索。"
+    },
+    {
+      "id": "ECON-13",
+      "claim": "【厂商资料，口径冲突】菲律宾 QR Ph P2M 的商户 MDR：本轮没有找到 BSP 设定或封顶 MDR 的文件；厂商资料一说 QR Ph 和本地钱包 MDR 为 1.5–2.0%，Wise 称通常 1.0–1.5%；Maya Business 促销为上线后 3 个月 QR Ph 1%，之后按标准费率（未披露）；PayMongo 对 GCash 收 2.5%（网关费，不是 GCash 自己的费率）。BSP 第 1198 号通函（2024）要求非银收单方取得 Merchant Acquisition License。",
+      "confidence": "low",
+      "source": "https://hitpayapp.com/blog/no-monthly-fee-payment-gateways-for-msmes-in-the-philippines-(q3-2025) ; https://wise.com/ph/blog/how-to-get-qr-ph ; https://www.transfi.com/blog/qr-ph-explained-how-p2p-and-p2m-qr-payments-work-for-individuals-and-merchants ; https://juspay.io/en-sg/blog/the-philippine-payments-ecosystem-a-regulator-engineered-digital-transformation",
+      "date": "2025–2026",
+      "notes": "WebSearch 摘要（WebFetch 对该域名 DNS 失败或未尝试，未读原文）。GCash for Business、Maya Business 官方费率表未查到。若 1–2% 属实，菲律宾是八国里商户 MDR 最高的，收单方补贴设备的空间也最大（见 ECON-32）。"
+    },
+    {
+      "id": "ECON-14",
+      "claim": "【政府页面】新加坡 Hawkers Go Digital：政府补贴熟食摊主每摊每月前 S$20,000 电子支付的 0.5% MDR，补贴到 2026-06-30 截止，且只限 2025-12-31 前加入的摊主；2026-01-01 起新采用 SGQR 的摊主按现行 MDR 付费、无补贴。",
+      "confidence": "medium",
+      "source": "https://www.imda.gov.sg/hawkersgodigital ; https://www.digitalforlife.gov.sg/about/our-projects/hawkers-go-digital ; https://www.enterprisesg.gov.sg/-/media/esg/files/media-centre/media-releases/2024/october/mr03824_government-subsidy-under-hawkers-go-digital-programme-extended-for-another-year.pdf",
+      "date": "2024-10（延期公告）；截止 2026-06-30",
+      "notes": "WebSearch 摘要（WebFetch 对该域名 DNS 失败或未尝试，未读原文）。该补贴此前已延期过一次；2026-06-30 之后是否再延期未查到。截至检索日（2026-10-18）按摘要应已结束。"
+    },
+    {
+      "id": "ECON-15",
+      "claim": "【低置信·沿用+厂商】新加坡企业收 PayNow：UOB 自 2026 年起对企业 PayNow 收款每笔收 S$0.20（hack.gov.sg 引 UOB 网站，其他银行可能跟进，DBS、OCBC 未核实）；厂商博客称 PayNow/NETS 等本地方案 MDR 约 0.5–0.8%。",
+      "confidence": "low",
+      "source": "https://www.hack.gov.sg/2025/singpay/ ; https://www.eats365pos.com/sg/blog/post/what-restaurants-should-know-about-sgqr-and-transaction-costs",
+      "date": "2025",
+      "notes": "WebSearch 摘要（WebFetch 对该域名 DNS 失败或未尝试，未读原文）。用个人手机号收款的熟食摊不受 S$0.20 影响（仓库 SG-MY.json，低置信）。"
+    },
+    {
+      "id": "ECON-16",
+      "claim": "【银行页面】柬埔寨 KHQR：付款方普遍免费（BIDC：在 60 多家 Bakong 成员行的 KHQR 商户扫码付款无手续费；SBI LH：用 QR 收付款不收费、所有转出免费）；ABA 称 Bakong 成员行用户可在 15 万以上 ABA 商户扫码（日期未知）。本轮没有找到 ABA PayWay 或 ACLEDA 的商户 MDR。",
+      "confidence": "low",
+      "source": "https://www.bidc.com.kh/en/page/KHQR-payment ; https://www.sbilhbank.com.kh/en/digital-banking/merchant-khqr ; https://ababank.com/aba-news/aba-bank-now-supports-khqr-for-greater-convenience-of-its-qr-paymen",
+      "date": "日期未知（约 2022–2025）",
+      "notes": "WebSearch 摘要（WebFetch 对该域名 DNS 失败或未尝试，未读原文）。“未查到商户 MDR”不等于不收费。"
+    },
+    {
+      "id": "ECON-17",
+      "claim": "【未查到】老挝 LAO QR 的商户费率与终端价格：本轮未检索（检索预算限制）。仓库中只有 BOL 外币转账费 0.3%、上限 USD 30 的规定，和本地 QR 收款费率无关。",
+      "confidence": "low",
+      "source": "未检索；docs/research/TH-LA.json",
+      "date": "—",
+      "notes": "老挝的判断全部是推断。"
+    },
+    {
+      "id": "ECON-18",
+      "claim": "【二手资料】泰国 2026 年日最低工资 ฿337–400，曼谷和部分东部府为最高的 ฿400；Trading Economics 称 2026 年全国口径维持 ฿400/日。",
+      "confidence": "medium",
+      "source": "https://tradingeconomics.com/thailand/minimum-wages ; https://employsome.com/?p=7009",
+      "date": "2026",
+      "notes": "WebSearch 摘要（WebFetch 对该域名 DNS 失败或未尝试，未读原文）。未见泰国劳工部原文。"
+    },
+    {
+      "id": "ECON-19",
+      "claim": "【二手资料】越南 2026-01 起月最低工资 ₫5,310,000（2025 年为 ₫4,960,000）。按记忆，这是第 293/2025/NĐ-CP 号议定的一类地区（I 区）标准；IV 区约 ₫370 万（记忆·未核实）。",
+      "confidence": "medium",
+      "source": "https://id.tradingeconomics.com/vietnam/minimum-wages",
+      "date": "2026-01",
+      "notes": "WebSearch 摘要（WebFetch 对该域名 DNS 失败或未尝试，未读原文）。聚合站点没有标注是 I 区，地区归属依据记忆。"
+    },
+    {
+      "id": "ECON-20",
+      "claim": "【二手资料】印尼 2026 年雅加达省最低工资（UMP）为 Rp5,729,876/月（约 USD 342），是各省最高；最低工资分省（UMP）和县市（UMK）两级，中爪哇等地的 UMK 约 Rp2.2–2.6 百万（记忆·未核实）。",
+      "confidence": "medium",
+      "source": "https://employsome.com/?p=6734",
+      "date": "2026",
+      "notes": "WebSearch 摘要（WebFetch 对该域名 DNS 失败或未尝试，未读原文）。未见人力部原文。"
+    },
+    {
+      "id": "ECON-21",
+      "claim": "【二手资料，可能过时】菲律宾国家首都区（NCR）非农日最低工资 ₱695；按记忆，这是 NCR 第 26 号工资令（2025-07 生效）的标准，2026 年是否再调未查到；NCR 以外地区更低（记忆）。",
+      "confidence": "low",
+      "source": "https://www.humanresourcesonline.net/asian-markets-with-the-highest-and-lowest-minimum-wages-in-2026",
+      "date": "2025–2026",
+      "notes": "WebSearch 摘要（WebFetch 对该域名 DNS 失败或未尝试，未读原文）。"
+    },
+    {
+      "id": "ECON-22",
+      "claim": "【记忆·未核实】马来西亚月最低工资 RM1,700（2025-02-01 起）；柬埔寨制衣、制鞋业 2026 年月最低工资 USD 210；新加坡没有法定最低工资（实行渐进式工资模式）；老挝最低工资本轮未核实。",
+      "confidence": "low",
+      "source": "记忆，本轮未检索",
+      "date": "2025–2026",
+      "notes": "使用前须查官方原文。"
+    },
+    {
+      "id": "ECON-23",
+      "claim": "【计算，基于上列假设与二手数据】¥2,000/月（≈ USD 13）相当于：泰国 1.06–1.25 天最低工资（按 26 天、฿400 计，占月薪 4.1%）；越南 I 区月最低工资的 6.4%（IV 区约 9%）；雅加达 UMP 的 3.7%（中爪哇 UMK 约 8–10%）；马来西亚 RM1,700 的 3.3%；菲律宾 NCR 1.07 天日薪；柬埔寨制衣最低工资的 6.2%。新加坡熟食摊：按 0.5% MDR、每月 S$20,000 流水算，摊主 MDR 约 S$100/月，S$16.8 的终端费相当于 MDR 再加 17%。越南年营业额 ₫10 亿（约 USD 3,205/月）的个体户：¥2,000 约占营业额 0.4%。",
+      "confidence": "medium",
+      "source": "计算：ECON-01、ECON-14、ECON-18～ECON-22",
+      "date": "2026-10-18",
+      "notes": "百分比只用于感受购买力，不代表商户的支付意愿。"
+    },
+    {
+      "id": "ECON-24",
+      "claim": "【已核实事实·沿用】印尼 QRIS 2026 年中商户 4,486 万，其中 96.68% 为 UMKM；本轮没有找到静态与动态 QRIS 的商户数占比，也没有找到 UMI/UKE/UME/UBE 各类商户的数量分布。",
+      "confidence": "medium",
+      "source": "docs/research/ID.json；https://www.fortuneidn.com/finance/transaksi-digital-melesat-qris-tumbuh-82-4-persen-d7w02-00-lflgw-8hs5kx",
+      "date": "2026 年中",
+      "notes": "UMKM 包含小型和中型，不等于“微型”；微型的确切占比未查到。"
+    },
+    {
+      "id": "ECON-25",
+      "claim": "【已核实/二手·沿用】泰国：PromptPay QR 受理点 800 万以上（2022，NETS×NITMX 公告）；K SHOP 受理点超 200 万（2022）、Tung Ngern 超 200 万商户；UNCTAD 引 OSMEP 称泰国 2016 年企业超过 300 万家、99.7% 为 MSME。Thai QR 商户总数和各行份额未查到。",
+      "confidence": "medium",
+      "source": "docs/research/SG-MY.json；dynqr/devices.json DEVICES-17、DEVICES-18；https://msme-resurgence.unctad.org/sites/smesurge/files/documents/Thai%20Study%20SME%20-%20FINAL.1.pdf",
+      "date": "2016 / 2022",
+      "notes": "OSMEP 最新（2023–2025）MSME 数量在 Statista 付费墙后，未取得。受理点 ≠ 商户（一家商户可有多个点），多家银行之间也有重复。"
+    },
+    {
+      "id": "ECON-26",
+      "claim": "【已核实事实·沿用】马来西亚：DuitNow QR 受理点累计超过 300 万（2025 年新增 681,250 个）；2023 年约 75% 的 DuitNow QR 商户在继续免收微型和小型商户 MDR 的机构开户（ECON-09）。",
+      "confidence": "high",
+      "source": "https://paynet.my/about-us/media-centre/press-release/8-44-billion-transactions-processed-in-2025-as-digital-p",
+      "date": "2026-04-23",
+      "notes": "受理点 ≠ 商户数。"
+    },
+    {
+      "id": "ECON-27",
+      "claim": "【政府数据·媒体转述】越南：据税务局（Cục Thuế），自 2025-06-01 起必须使用“收银机生成电子发票”的个体户（年营业额 ≥₫10 亿、直接向消费者销售的原定额户）全国约 37,000 户，占个体户总数的 1% 以上；第 68/2026/NĐ-CP 号议定（2026-03-05 生效）维持 ₫10 亿门槛。VietQR 约有 9,000 万个手机银行账户使用（2025-10）。个体户总数本轮未查到（记忆：GSO 口径约 500 万户以上，未核实）。",
+      "confidence": "medium",
+      "source": "https://www.sggp.org.vn/hoa-don-dien-tu-gop-phan-tao-he-sinh-thai-kinh-doanh-minh-bach-hon-post792218.html ; https://thuvienphapluat.vn/hoi-dap-phap-luat/ho-kinh-doanh-co-doanh-thu-1-ty-dong-tro-len-phai-ap-dung-hoa-don-dien-tu-dung-khong-138082541.html ; https://www.meinvoice.vn/tin-tuc/33955/huong-dan-ho-kinh-doanh-chuyen-doi-hoa-don-dien-tu-may-tinh-tien-va-ke-khai-thue/ ; docs/05-country-playbooks.md",
+      "date": "2025-06（37,000 户为规定实施时的统计）；2026-03-05",
+      "notes": "WebSearch 摘要（WebFetch 对该域名 DNS 失败或未尝试，未读原文）：sggp WebFetch DNS 失败。关键含义：越南“税务强制收银”这一最强的制度拉力，强制部分只覆盖约 3.7 万户，远小于创始人可能想象的规模；其余个体户 2026 年起改为申报纳税，但不强制用收银机。"
+    },
+    {
+      "id": "ECON-28",
+      "claim": "【已核实事实·沿用】新加坡：PayNow 约 35 万家企业注册（2025-12，MAS 与 ABS）；SGQR+ 受理点在扩展到熟食中心后超过 35,000 个（NETS 2024-11）。菲律宾：QR Ph 2025 年 24.7 亿笔、₱1.16 万亿，商户数未查到。柬埔寨：KHQR 约 450 万受理商户，2025 年约 13.3 亿笔。",
+      "confidence": "medium",
+      "source": "https://www.mas.gov.sg/news/media-releases/2026/mas-and-abs-chart-instant-payments-enhancements-with-paynow-ge ; https://www.nets.com.sg/newsroom/nets-announces-sgqr-islandwide-rollout-following-the-success-of-sgqr-proof-of ; https://www.nbc.gov.kh/english/news_and_events/news_info.php?id=877 ; docs/05-country-playbooks.md",
+      "date": "2024-11 / 2025 / 2026-06",
+      "notes": "未重复检索。"
+    },
+    {
+      "id": "ECON-29",
+      "claim": "【未查到】中型商户、餐饮连锁、现代零售门店数，以及游客区商户数（尤其日本游客密集的商户）：本轮各国都没有找到可用数据（未专门检索）。下文分层模型中这三类的规模都是空白，只做单店经济测算。",
+      "confidence": "low",
+      "source": "未检索",
+      "date": "—",
+      "notes": "优先向收单行和 POS 厂商索取按商户规模分层的商户数；游客区可用 Alipay+ 或 PromptPay 跨境受理点数近似。"
+    },
+    {
+      "id": "ECON-30",
+      "claim": "【推论，基于多条事实】东南亚给小微商户的收款设备，基本由银行、收单方或政府出钱（B2B2M），商户自己直接付的只有 POS 软件月费和一次性的音箱：越南多家银行把音箱绑在开户或套餐里免费送；Maybank 促销价 RM50，并向 4,000 家非城市商户免费；BCA 对所有商户免 EDC 月租，OCBC Indonesia 对新 QRIS 商户免租；PayNet 出钱让收单方继续对小微商户免 MDR；新加坡政府补贴熟食摊 MDR。与之相对，印度商户自己按月付音箱订阅费（Paytm 约 ₹125/月，PhonePe ₹125/月或 ₹25/月加 ₹999 一次性，约 USD 0.3–1.5/月）。",
+      "confidence": "medium",
+      "source": "ECON-07、ECON-09、ECON-10、ECON-12、ECON-14；dynqr/devices.json DEVICES-01、DEVICES-03、DEVICES-09、DEVICES-10、DEVICES-20",
+      "date": "2023–2026",
+      "notes": "含义：INSCREEN 在东南亚的经济买方应是银行、收单方和 POS 厂商，不是小微商户本人。"
+    },
+    {
+      "id": "ECON-31",
+      "claim": "【假设·测算】银行为一家微型商户的设备能出的钱：假设商户在本行活期日均余额 USD 300–1,000，存贷利差 2–4%，每年带来 USD 6–40，即每月 USD 0.5–3.3；微型商户的 QR MDR 在印尼（UMI 小额）、马来西亚（豁免）、泰国（个人商户）、越南（转账）基本为 0，没有 MDR 收入可分。所以银行每户每月的设备预算约 USD 0.5–3，只有 ¥2,000（USD 13）的 1/26 到 1/4。",
+      "confidence": "low",
+      "source": "假设（余额与利差均为假设值，须向银行核实）",
+      "date": "2026-10-18",
+      "notes": "银行另有交叉销售（贷款、理财）的价值，未计入；计入后预算可能更高，但仍需银行自己的获客成本数据。"
+    },
+    {
+      "id": "ECON-32",
+      "claim": "【假设·测算】中型商户能给收单方带来的 MDR 毛收入（再在发卡方、收单方、交换机之间分配，分配比例未查到）：印尼 UME 门店月 QRIS 流水 Rp1.5 亿、其中一半是 > Rp100,000 的交易，按 0.7% 约 Rp525,000（≈ USD 32）；泰国法人门店月 QR 流水 ฿300,000 × 0.35% ≈ ฿1,050（≈ USD 32）；马来西亚非豁免商户月流水 RM60,000 × 0.25% = RM150（≈ USD 35）；菲律宾月流水 ₱500,000 × 1.5% ≈ ₱7,500（≈ USD 132）。",
+      "confidence": "low",
+      "source": "假设（流水为假设值；费率来自 ECON-02、ECON-05、ECON-06、ECON-09、ECON-13）",
+      "date": "2026-10-18",
+      "notes": "推论：只有中型以上商户，收单方才有 MDR 余量补贴一台 USD 13/月的终端；菲律宾的空间最大，印尼 2026-10-01 扩大 0% 后空间变小。"
+    },
+    {
+      "id": "ECON-33",
+      "claim": "【假设·分层测算】S1 微型、店主自营（摊贩、warung、熟食摊、市场摊位；按印尼数据推断占 QR 商户数的大多数）。现状成本：贴纸码免费，App 到账通知免费，或一次性音箱 USD 11–65（按 36 个月摊销约 USD 0.3–1.8/月）。动态码相对现状的可度量收益：防假截图——音箱或 App 通知已经解决，增量约 USD 0；防贴纸覆盖——事件罕见，约 USD 0–0.3/月；防付错金额——音箱会报金额，约 USD 0–0.5/月；节省人工——**为负**：独立终端要店主每笔先输入金额（假设每笔多 5–10 秒），而静态码由顾客自己输入；对账——不需要。最高可承受月费约 USD 0–1.5（¥0–230），以印度音箱订阅约 USD 1.4/月为上限参照。¥2,000 是这一参照的约 9 倍，相当于泰国、菲律宾一天以上的最低工资。",
+      "confidence": "low",
+      "source": "假设；参照 ECON-03、ECON-10、ECON-12、ECON-30；dynqr/pain.json PAIN-44、PAIN-45",
+      "date": "2026-10-18",
+      "notes": "结论：这一层不能直接向商户卖 ¥2,000/月，即使由银行补贴，也超出银行每户 USD 0.5–3/月的预算（ECON-31）。"
+    },
+    {
+      "id": "ECON-34",
+      "claim": "【假设·分层测算】S2 小型、有店员（1–3 个收银台的咖啡店、小超市、小餐馆）。现状：柜台静态码 + 音箱或多用户 App 通知（K SHOP、แม่มณี 免费）。动态码的增量收益：店员一侧可见、付款人改不了的到账确认（App 已能部分做到）；防店员换上自己的收款码（本轮无数据）；防付错金额；有简易 POS 时省去顾客输入金额，每笔快约 5–10 秒；越南有开票需求。估计价值约 USD 2–8/月，最高可承受月费约 USD 2–5（¥300–770）。越南年营业额 ≥₫10 亿的个体户如果捆绑电子发票，或可承受 USD 5–10，但要和免费到 2028 年的 VNPAY、银行方案竞争。",
+      "confidence": "low",
+      "source": "假设；参照 ECON-03、ECON-12、ECON-27",
+      "date": "2026-10-18",
+      "notes": "敏感项：如果 INSCREEN 能从 POS 自动取金额，人工项会由负转正。"
+    },
+    {
+      "id": "ECON-35",
+      "claim": "【假设·分层测算】S3 中型、餐饮连锁、现代零售（多收银台、已用 POS）。现状成本：POS 软件 USD 15–149/月；EDC 月租 ฿300–800 或 Rp100,000–200,000（常被免除），而 EDC、POS 常常已能出收单方签发的动态码（如 BRI 的 EDC、API）。动态码加按单核销的价值：假设每店每天省 0.5–1 小时人工对账（每月 13–26 小时），按最低工资折算约为泰国 USD 20–40、印尼（雅加达）USD 22–44、马来西亚 USD 25–49、菲律宾（NCR）USD 20–40、越南（I 区）USD 13–26；另可减少漏收和少付（假设为 QR 流水的 0.05–0.1%）。商户一般只愿付出价值的 20–40%，所以最高可承受约 USD 5–15/收银台/月（¥770–2,300）。¥2,000 只在这一层落在可承受区间内，前提是 INSCREEN 接入 POS 和收单方 API；买方是 POS 厂商、收单方或连锁总部。",
+      "confidence": "low",
+      "source": "假设；参照 ECON-04、ECON-07、ECON-08；dynqr/devices.json DEVICES-15、DEVICES-25",
+      "date": "2026-10-18",
+      "notes": "关键风险：这一层的对照不是“贴纸码”，而是“现有 EDC/POS 已经能出动态码”，INSCREEN 的增量价值只对尚未集成的门店成立。按最低工资折算是保守下限，中型店实际工资更高。"
+    },
+    {
+      "id": "ECON-36",
+      "claim": "【假设·分层测算】S4 游客区商户（日本游客多）。现状：在菲律宾、印尼、柬埔寨、马来西亚，Alipay+ 钱包已能扫现有静态码，商户不用换码或换设备；PayPay 海外模式截至 2026-04 只在韩国、台湾上线，东南亚未上线。动态码的价值在于让境外钱包按已知金额锁定报价（这是 INSPAY 网络的需求）。用 docs/10 的假设：网络毛收入约 82 bps、分润前贡献约 9 bps。一家商户每月的日本钱包流水要达到约 USD 1,585，网络毛收入才够付 USD 13；要达到约 USD 14,400，贡献才够。商户自身的收益取决于额外成交（例如每月 USD 1,000 日本客流水中有 10–20% 是因为能用 PayPay 而多出来的，按 30% 毛利，约 USD 30–60/月），由此推出最高可承受约 USD 3–10/月，只有日本客极多的商户能到 ¥2,000。",
+      "confidence": "low",
+      "source": "假设；docs/10-economics.md 10.2–10.3；docs/research/SG-MY.json（PayPay 台湾）；dynqr/devices.json DEVICES-26",
+      "date": "2026-10-18",
+      "notes": "这一层的价值能否兑现，取决于 PayPay 是否接入本网络（Phase 0 BD 未完成），属于先有鸡还是先有蛋的问题。"
+    },
+    {
+      "id": "ECON-37",
+      "claim": "【推论】没有价格信号推动商户从静态码升级到动态码：印尼 MDR 不区分静态和动态，BRI 的 0% 促销两者都适用；泰国、马来西亚、越南小微商户的 QR 收款本来就免费；仓库和兄弟调研都没有找到任何一国强制使用动态码的规定。商户升级的动力只能来自运营收益（对账、防错、提速），而这些收益集中在 S3 中型商户。",
+      "confidence": "medium",
+      "source": "ECON-02、ECON-05、ECON-06、ECON-09、ECON-11；dynqr/pain.json PAIN-10、PAIN-46",
+      "date": "2026-10-18",
+      "notes": ""
+    },
+    {
+      "id": "ECON-38",
+      "claim": "【推论·对假设的检验】“东南亚商户把静态码升级为动态码的需求很强”这一假设，在商户经济层面不成立：在数量上占绝大多数的 S1 微型商户的最高可承受月费约 USD 0–1.5，¥2,000（USD 13）高出约一个数量级，而且现状（免费 App 通知或银行赠送的音箱）已经解决了他们最在意的“钱到没到”。¥2,000/月只在 S3（POS 集成的中型商户和连锁，按收银台计费、由 POS 厂商、收单方或总部采购）以及日本客极多的 S4 游客商户中成立。越南的税务强制收银是唯一的制度拉力，但强制部分约 3.7 万户，而且面对免费的捆绑方案。",
+      "confidence": "medium",
+      "source": "ECON-24、ECON-27、ECON-30～ECON-36",
+      "date": "2026-10-18",
+      "notes": "置信度为 medium 是因为方向一致（多国、多来源），但数值都是假设。"
+    },
+    {
+      "id": "ECON-39",
+      "claim": "【推论·定价含义】若要进入东南亚，INSCREEN 的定价更可能是：①向银行、收单方一次性卖硬件（或硬件 + 很低的平台费），由对方免费或补贴给小微商户，价格要对标 USD 11–65 的音箱；②对 S3 按收银台收 USD 5–15/月，作为 POS 客显外设；③在 S4 由 INSPAY 网络从跨境收入中补贴，只投放给日本客流水足够大的商户。“向小微商户收 ¥2,000/月”不可行。",
+      "confidence": "low",
+      "source": "ECON-30～ECON-36",
+      "date": "2026-10-18",
+      "notes": "INSCREEN 的物料成本（BOM）和交互方式（是否需要手动输入金额）未知，会直接改变①的可行性。"
+    },
+    {
+      "id": "ECON-40",
+      "claim": "【记忆·未核实】稳定币收款不是东南亚本地商户付费的理由：泰国 BOT（2022）、印尼 BI 都禁止把加密资产用作支付手段，越南加密资产不是合法支付手段；新加坡（dtcpay 在 NETS 受理点做“付款方用稳定币、商户收法币”）和菲律宾是例外。所以 INSCREEN 的稳定币功能对本地商户而言不是升级的理由，即使有价值也集中在新加坡和菲律宾的游客场景。",
+      "confidence": "low",
+      "source": "记忆；docs/research/SG-MY.json（dtcpay）；docs/11 正在并行撰写",
+      "date": "2022–2026",
+      "notes": "以 docs/11 的结论为准，本条只说明它不改变本文的支付意愿测算。"
+    }
+  ],
+  "key_claims": [
+    "按商户经济，动态码升级需求“很强”的假设不成立：微型商户的 QR 收款和到账确认已经几乎免费，而它们在数量上占绝大多数（印尼 QRIS 4,486 万商户中 96.68% 为 UMKM）。",
+    "¥2,000/月 ≈ USD 13（假设 1 USD ≈ ¥154），约等于泰国 1.1–1.3 天、菲律宾 NCR 1.1 天的最低工资，约为越南 I 区月最低工资的 6.4%、雅加达 UMP 的 3.7%、马来西亚的 3.3%；是印度音箱月租（约 USD 1.4）的约 9 倍。",
+    "新事实：BI 自 2026-10-01 起把 QRIS 0% MDR 扩大到所有商户类别的单笔 ≤Rp100,000 交易（媒体两源，未见 BI 原文），docs/02 需要更新。",
+    "各国商户 QR 费率：泰国 Bangkok Bank 法人 0.35% 或 ฿5、个人免费；马来西亚 0.25%（约 75% 的商户所在机构对小微商户豁免，PayNet 出钱）；越南 VietQR 转账免费（厂商口径）；菲律宾 1–2%（厂商口径，无 BSP 上限）；新加坡熟食摊 0.5% MDR 补贴于 2026-06-30 截止；柬埔寨、老挝的商户 MDR 未查到。",
+    "东南亚设备的经济买方是银行、收单方和政府（B2B2M）：银行免费送音箱、免 EDC 月租，PayNet 出钱补贴 MDR 豁免；商户自己只付 POS 软件费（USD 15–149/月）和一次性音箱（USD 11–65）。",
+    "分层最高可承受月费（假设）：微型 USD 0–1.5，小型 USD 2–5，中型或连锁 USD 5–15/收银台，游客区 USD 3–10；¥2,000 只在中型或连锁层可行，而且必须接入 POS 和收单方签发的动态码。",
+    "对独立终端来说，动态码对微型商户的人工收益是负的：静态码由顾客输入金额，动态码要店主每笔先输入；除非能从 POS 自动取金额。",
+    "越南的税务强制收银电子发票（年营业额 ≥₫10 亿）只覆盖约 3.7 万户（占个体户 1% 以上），而且 VNPAY 等方案免费到 2028 年底。",
+    "按 docs/10 的假设（网络毛收入 82 bps、贡献 9 bps），一家游客商户每月的日本钱包流水要达到约 USD 1,585，网络毛收入才够付 ¥2,000；要达到约 USD 14,400，贡献才够。"
+  ],
+  "open_questions": [
+    "BI 2026-10-01 扩大 QRIS 0% MDR 的规章原文（PADG 编号），以及 UKE/UME/UBE 单笔 > Rp100,000 是否仍为 0.7%。",
+    "KBank、SCB、Krungthai 对法人商户的 Thai QR 费率，以及 EDC 月租的官方价目表（目前只有 Bangkok Bank 一家）。",
+    "DuitNow QR 小微商户 MDR 豁免在 2025–2026 年是否仍有效；PayNet 补贴是否有期限。",
+    "GCash for Business、Maya Business 的 QR Ph 官方 MDR；ABA PayWay、ACLEDA 的 KHQR 商户费率；LAO QR 的商户费率。",
+    "新加坡 Hawkers Go Digital 的 MDR 补贴 2026-06-30 后是否再延期；DBS、OCBC 是否跟进 UOB 的 S$0.20/笔企业 PayNow 收费。",
+    "各国按规模分层的商户数（微型、小型、中型、连锁门店数），以及日本游客密集商户的数量和单店日本客流水。",
+    "MDR 在发卡方、收单方、交换机之间如何分配（决定收单方能补贴多少设备费）；银行每获取一家商户的成本和平均活期余额。",
+    "INSCREEN 的 BOM 成本、是否需要店员手动输入金额、能否从 POS 自动取金额——这三项直接决定 S1/S2 的人工收益是正是负。",
+    "商户访谈：中型商户每天人工对账实际花多少时间，因付错金额、少付造成的损失占 QR 流水的比例，以及对“按收银台计费的客显外设”的支付意愿。",
+    "越南个体户总数（GSO 或税务局口径），以及 2026 年取消定额税后自愿采用收银机的比例。"
+  ]
+}

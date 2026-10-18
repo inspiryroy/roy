@@ -13,7 +13,7 @@
 | 国家 | 日本游客（2025） | 国家码普及 | 私营网络接入先例 | Alipay+ 现状 | 稳定币可落地（伙伴结算） | 建议定位 |
 |---|---|---|---|---|---|---|
 | 泰国 | 已知数据中最多：1–5 月 44.4 万（全年推算约 100–110 万；他国同口径数据未查到，排序未核实） | 极高（PromptPay 全部交易月 20 亿笔以上，含转账；Thai QR 商户数及各行份额未查到，Phase 0 向候选行索取） | 有：Ant（仅中国走廊，Krungthai）、GLN × KB 国民 × SCB（B2，2023-12，现状未核实） | 国家码线只见中国 Alipay 用户（未检出对其他钱包开放的公告，非官方否定）；其他 Alipay+ 钱包只能扫 KTC/2C2P/Antom 等收单方的码 | 低（只在离岸；USD 电汇） | **Phase 1 试点首选**：已知量最大、差异化最强；先 B2（SCB，GLN 先例）或 B1，再 A；工作日日结 |
-| 越南 | 已知数据中次之：1–5 月 34.2 万（全年推算约 80 万；排序未核实） | 高 | 有：Ant（Vietcombank）、GLN（BIDV/Hana）、Liquid（VietinBank）；Decree 52 修订利好；加密钱包 Bitget、RedotPay 已可扫 VietQR（竞品） | Alipay 线只见中国 Alipay 用户（未检出对其他钱包开放的公告，非官方否定） | 低（USD 电汇） | **Phase 1–2**：复制 GLN 的 NAPAS 境外网络模式（需对端结算行，见 5.6） |
+| 越南 | 已知数据中次之：1–5 月 34.2 万；2025 全年约 81.4 万（SGGP 引越南统计，见 12 章来源 52；排序未核实） | 高 | 有：Ant（Vietcombank）、GLN（BIDV/Hana）、Liquid（VietinBank）；Decree 52 修订利好；加密钱包 Bitget、RedotPay 已可扫 VietQR（竞品） | Alipay 线只见中国 Alipay 用户（未检出对其他钱包开放的公告，非官方否定） | 低（USD 电汇） | **Phase 1–2**：复制 GLN 的 NAPAS 境外网络模式（需对端结算行，见 5.6） |
 | 印尼 | 未查到 | 极高（商户约 4,500 万） | 以与东盟各国的双边联通为主；中国线经 Alipay+ 技术层；日本方向经 METI–BI 框架下的 Netstars | Alipay 线只见中国 Alipay 用户（未检出对其他钱包开放的公告，非官方否定；中国线另有银联） | 低（法币；LCS 本币直接汇率） | **Phase 2**：本网络作为日方发行侧聚合者，经 Netstars/JPQR Global 交换接 QRIS（BI 称日本→印尼方向已获 FSA 许可，但未见日本钱包接入）；谈不成时改走 B1/A |
 | 柬埔寨 | 未查到（量小） | 高（约 450 万商户） | 有：Alipay+、UPI（ACLEDA）、微信（单一报道，未核实） | 已对 12 个 Alipay+ 钱包开放（2024-10） | **中**（银行经 NBC 批准可持 Group 1b 稳定币；获批前 USD 电汇） | **Phase 2**：经 Netstars 参与 JPQR–KHQR 二期，同时试点银行层稳定币结算 |
 | 马来西亚 | 未查到 | 高 | 成熟：Alipay+、Wise 直连（2026-07）、BC Card（一期已上线）；NPCI 2026-02 签约、未确认上线 | 已对 8 个以上 Alipay+ 钱包开放（2023-10，占入境 > 80%） | 低（USD 电汇） | Phase 2：A 路径成熟，但与 Alipay+ 正面竞争（价格、锁定报价） |

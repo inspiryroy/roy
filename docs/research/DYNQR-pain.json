@@ -1,0 +1,430 @@
+{
+  "summary": "创始人隐含的假设是“东南亚商户有强烈的静态码升级动态码需求”。按本轮证据，这一假设对占商户绝大多数的贴纸小微户不成立。各国商户最普遍、最有感的痛点是“到底有没有到账”，即假截图、假 slip、假 bill，在泰、越、印尼、马、菲、新都有多源报道。市场已经用便宜的方式解决这个问题：银行 App 语音推送（K SHOP 免费）、音箱（PayNet×RHB、TNG、BCA/BRI/Mandiri/DANA/OVO、SCB、Qashier ฿1,790，印尼多为月租）、slip 验证 API。这些方案保留静态码，没有换成动态码。本轮没有找到任何一国央行或交换机构强制商户改用动态码，也没有找到公开的静态/动态占比数据。监管重心是付款人认证、商户 KYM、统一静态标签（新加坡）和 NFC/CPM（印尼）；印尼 MDR 不区分静态和动态。动态码能单独解决的是输错金额、贴纸覆盖、按单自动对账三件事：前两件的证据集中在无人值守场景且损失小，第三件是有收银系统的中型以上商户的需求。唯一有制度性拉力的是越南：年营业额 ≥10 亿越南盾的个体户自 2025-06 起须用收银机电子发票，2026 年起取消定额税，银行和 VNPAY 正免费或补贴推广 QR、POS、发票、报税一体方案。结论：INSCREEN 不应以“能出动态码”为卖点。应改为“付款人改不了的到账确认 + 金额显示 + 多钱包/外国钱包受理 + 对账或开票”，先切越南需开票的个体户、东南亚有收银需求的中型商户和游客商户，并承认小微段会和音箱打价格战。WebFetch 和 curl 对 detik、jatimtimes、ringgitplus、tribune、vnba、mynt 都失败（DNS 或代理 403），本文依据 WebSearch 摘要和仓库内已核实条目；共用 14 次 WebSearch。",
+  "facts": [
+    {
+      "id": "PAIN-01",
+      "claim": "【已核实事实·沿用】EMVCo 商户码 tag 01：'11' 为静态码（付款人自己输入金额，可反复使用），'12' 为动态码（码内带 tag 54 金额，通常一次性）；八国国家码都沿用这一区分。",
+      "confidence": "high",
+      "source": "docs/02-qr-interoperability.md；https://github.com/dtinth/promptpay-qr",
+      "date": "2026",
+      "notes": "沿用本仓库已核实条目，本轮未重查"
+    },
+    {
+      "id": "PAIN-02",
+      "claim": "【已核实事实·沿用】QRIS 2026 年中有 6,577 万用户、4,486 万商户，其中 96.68% 为 UMKM（微小中型企业），交易量同比 +82.42%。",
+      "confidence": "medium",
+      "source": "https://www.fortuneidn.com/finance/transaksi-digital-melesat-qris-tumbuh-82-4-persen-d7w02-00-lflgw-8hs5kx",
+      "date": "2026 年中",
+      "notes": "沿用 docs/research/ID.json；另有报道称商户 4,711 万，口径或日期不同"
+    },
+    {
+      "id": "PAIN-03",
+      "claim": "【学术/媒体】QRIS 分静态和动态两类，都属于 MPM（商户出示码）：静态码是贴纸或打印件；动态码由 EDC 或商户手机在输入金额后生成。Kontan 引述银行说法，动态码每笔唯一，比静态码更安全。",
+      "confidence": "medium",
+      "source": "https://jtiik.ub.ac.id/index.php/jtiik/article/view/8570 ；https://etheses.iainkediri.ac.id/17154/4/20402148_bab2.pdf ；https://keuangan.kontan.co.id/news/bank-jamin-keamanan-penggunaan-qris",
+      "date": "2023-2024（各文日期不一）",
+      "notes": "WebSearch 摘要；学术论文另称注册商户超过 2,940 万、约 99% 为 UMKM（较早口径）"
+    },
+    {
+      "id": "PAIN-04",
+      "claim": "【未查到】本轮没有找到 BI 或 ASPI 公布的静态/动态 QRIS 商户数或交易额占比。没查到不等于没有：BI 支付系统统计或 ASPI 内部数据里可能有。",
+      "confidence": "low",
+      "source": "本轮检索（2026-10-18），见 https://keuangan.kontan.co.id/news/layanan-qris-jadi-primadona-sejumlah-bank-catat-kenaikan-volume-dan-transaksi",
+      "date": "2026-10-18",
+      "notes": "推论：96.68% 为 UMKM、商户以贴纸起步，静态码应占商户数的绝大多数，但这是推论，不是数据"
+    },
+    {
+      "id": "PAIN-05",
+      "claim": "【已核实事实·沿用】开源库把静态 QRIS 改成“动态”QRIS 的做法：把 010211 换成 010212，在 5802ID 前插入 tag 54 金额，再重算 CRC。也就是说，手机 App 就能生成带金额的码，不需要专用终端；本仓库 05 章已指出这种码不能作为对账依据。",
+      "confidence": "medium",
+      "source": "https://registry.npmjs.org/@agungjsp/qris-dinamis ；docs/05-country-playbooks.md",
+      "date": "npm 1.0.7",
+      "notes": "说明“动态码”本身的生成门槛很低，终端的价值不在“能出动态码”"
+    },
+    {
+      "id": "PAIN-06",
+      "claim": "【媒体报道·多源】2023-04 雅加达 QRIS 贴纸覆盖案：嫌疑人 2023-04-01 至 04-09 在清真寺等 38 处把自己的 QRIS 贴在官方码上或旁边，共收到约 Rp1,306 万；收款商户名为“Restorasi Masjid”，属 LinkAja 平台、地址在棉兰。BI 回应要强化 KYM（了解你的商户），并提醒商户看到账通知。",
+      "confidence": "high",
+      "source": "https://katadata.co.id/amp/berita/nasional/643554ef0bf48/tersangka-penipuan-qris-ditangkap-berikut-38-titik-yang-jadi-sasaran ；https://nasional.kontan.co.id/news/pelaku-penipuan-qris-kotak-amal-masjid-tebar-stiker-di-38-titik-lokasi-ini-daftarnya ；https://finansial.bisnis.com/read/20230412/90/1646162/qris-palsu-di-kotak-amal-masjid-bsi-bris-minta-masyarakat-cek-penerima-donasi",
+      "date": "2023-04",
+      "notes": "事件本身多源一致；BI 原话出自媒体转述。发生在无人值守的捐款箱，损失金额小。BI 2023-08 另有报道标题为“诈骗案多，BI 强调 QRIS 交易安全”（https://finansial.bisnis.com/read/20230817/90/1685842/banyak-kasus-penipuan-bank-indonesia-tegaskan-transaksi-qris-aman），正文未读"
+    },
+    {
+      "id": "PAIN-07",
+      "claim": "【媒体报道】detikInet：BCA、BRI、Mandiri、DANA、OVO 都推出了自己的 QRIS Soundbox（到账语音播报器），只有交易真正核验成功才播报，用来对付修图后的付款截图；设备一般走 WiFi 或 4G SIM，多为按月租用。",
+      "confidence": "medium",
+      "source": "https://inet.detik.com/business/d-8207135/cara-kerja-qris-soundbox-lindungi-pedagang-dari-bukti-transfer-palsu/amp",
+      "date": "约 2025（页面日期未取得）",
+      "notes": "WebFetch 打开失败（DNS ENOTFOUND），依据搜索摘要；月租金额未查到"
+    },
+    {
+      "id": "PAIN-08",
+      "claim": "【媒体报道】2026-05-25 JatimTIMES：东爪哇巴图市（Kota Batu）商户投诉最多的是“修图伪造 QRIS 付款截图”，商户开始提高警惕。",
+      "confidence": "medium",
+      "source": "https://jatimtimes.com/baca/3331344260/20260525/145200/privacy",
+      "date": "2026-05-25",
+      "notes": "WebFetch 失败（DNS），依据搜索摘要；说明截图造假到 2026 年仍是印尼小商户的主要痛点"
+    },
+    {
+      "id": "PAIN-09",
+      "claim": "【公司声明】印尼 Soundbox 仍在扩张：Paylabs 在 FEKDI x IFSE 2026 推出“Soundbox on App”（App 内播报），iFortepay 在 Pekan Halal Indonesia 2026 推出 QRIS Soundbox；Telkomsel Enterprise 的商户指南称动态 QRIS 每笔有唯一码和预设金额、更安全，同时建议用通知或支付后台做实时核验。",
+      "confidence": "medium",
+      "source": "https://mediaasuransinews.co.id/gallery-photo/berita-foto/paylabs-hadirkan-soundbox-on-app-di-fekdi-x-ifse-2026-perkuat-keamanan-transaksi-qris/ ；https://achmadnurhidayat.id/ifortepay-luncurkan-qris-soundbox ；https://www.telkomsel.com/enterprise/insight/blog/cara-mencegah-penipuan-qris-yang-merugikan-merchant",
+      "date": "2026",
+      "notes": "厂商宣传，非独立数据"
+    },
+    {
+      "id": "PAIN-10",
+      "claim": "【媒体报道】QRIS MDR：UMI（微型）商户单笔 ≤Rp50 万为 0%（2024-12-01 起），超过部分 0.3%；UKE/UME/UBE 单笔 ≤Rp10 万为 0%；MDR 由商户承担，不得转嫁消费者。BRI 的 MDR 0% 促销同时适用于静态和动态 QRIS。Maybank Indonesia 的费率表写 UKE/UME/UBE 为 0.7%，与上述说法有出入。",
+      "confidence": "medium",
+      "source": "https://www.metrotvnews.com/read/bmRCYzdm-biaya-transaksi-qris-gratis-simak-aturannya ；https://keuangan.kontan.co.id/news/makin-untung-jadi-merchant-bri-dengan-promo-mdr-qris-0 ；https://investortrust.id/financial/49976/dukung-ekosistem-digital-umkm-bri-hadirkan-program-qris-umi-tanpa-biaya-mdr ；https://www.maybank.co.id/-/media/E-Banking/QRIS/RIPLAY-UMUM-Merchant-QRIS.pdf",
+      "date": "2024-08 至 2025",
+      "notes": "BI 原文未读。要点：费率不区分静态/动态，没有价格信号推动商户换动态码；0.7% 可能是 ≤Rp10 万以外的标准费率"
+    },
+    {
+      "id": "PAIN-11",
+      "claim": "【未查到】本轮没有找到 BI（如 PADG QRIS）或 ASPI 要求某类商户必须使用动态 QRIS 的规定。",
+      "confidence": "low",
+      "source": "本轮检索（2026-10-18）",
+      "date": "2026-10-18",
+      "notes": "需要直接查 BI PADG 原文或问 ASPI 才能下结论"
+    },
+    {
+      "id": "PAIN-12",
+      "claim": "【已核实事实·沿用】QRIS Tap（NFC）2025-03-14 正式上线，单笔约 0.3 秒，首批用于 MRT、TransJakarta 等交通场景；BI 页面也提到 QRIS CPM（用户出示码）。",
+      "confidence": "medium",
+      "source": "https://www.cnbcindonesia.com/tech/20250314131152-37-618650/qris-tap-resmi-berlaku-mulai-hari-ini-begini-kecanggihannya",
+      "date": "2025-03-14",
+      "notes": "推论：BI 的创新方向是 NFC/CPM 提速，不是把小微贴纸换成动态 MPM"
+    },
+    {
+      "id": "PAIN-13",
+      "claim": "【政府警示/媒体】泰国数字经济与社会部（DES）警告网店卖家：有人出售假 slip（转账凭证）生成程序，可任意填写收款人、付款人、金额和时间，直接生成凭证图片；建议发货前先核对实际到账。",
+      "confidence": "medium",
+      "source": "https://www.dailynews.co.th/news/1308568/ ；https://www.infoquest.co.th/?p=221031",
+      "date": "2022 前后（页面日期未取得）",
+      "notes": "依据搜索摘要；警示对象主要是线上卖家，不是柜台场景"
+    },
+    {
+      "id": "PAIN-14",
+      "claim": "【政府/媒体】泰国政府公共关系厅（PRD）给出“5 种识别假 slip 的方法”，包括用银行 App 扫描 e-slip 上的 QR 码，核对付款人、金额和时间（扫不出或不一致即可疑），以及开通银行到账通知与 slip 对照。另有报道称 ChatGPT 等 AI 已被用来生成假 slip。",
+      "confidence": "medium",
+      "source": "https://www.prd.go.th/th/content/category/detail/id/9/iid/237135 ；https://www.naewna.com/likesara/630656 ；https://www.jib.co.th/web/news/news_detail/7265/",
+      "date": "2023-2025",
+      "notes": "泰国 e-slip 自带可验证的 mini QR，这是验单服务能做起来的基础"
+    },
+    {
+      "id": "PAIN-15",
+      "claim": "【公司声明/市场】泰国已形成假 slip 验证的商业服务：SlipOK、Slip2GO（只支持泰国银行的转账 slip，已接入 BigSeller）、RDCW Slip Verify API（读取 slip 内嵌 QR 后核验，Client ID/Secret 认证）。",
+      "confidence": "medium",
+      "source": "https://marketeeronline.co/archives/342421 ；https://help.bigseller.pro/en_US/detailPage/3/1/9328/content ；https://historical-wind-0ac.notion.site/RDCW-Slip-Verify-API-1274811e984380a7a884ff5fc07ba8ac",
+      "date": "2024-2026",
+      "notes": "SlipOK 的用户数和调用量未查到；服务存在说明痛点真实，但主要场景是远程收款（线上、LINE 下单）"
+    },
+    {
+      "id": "PAIN-16",
+      "claim": "【公司声明】KBank 的 K SHOP App 支持语音播报和推送通知，店主和店员都能实时收到，受理 Thai QR PromptPay 和其他钱包 QR；个人商户可在 App 内申请，法人商户需到分行。SCB 销售“มณี รับทรัพย์”（Manee Rubsub）QR Soundbox；Qashier 在泰国卖 Soundbox，售价 ฿1,790，支持 PromptPay。",
+      "confidence": "medium",
+      "source": "https://apple.co/2yoaq4s ；https://www.scb.co.th/th/personal-banking/payment/for-merchant/manee-rubsub.html ；https://qashier.com/th/en/qashier-soundbox/",
+      "date": "2025-2026",
+      "notes": "K SHOP 内容来自 App Store 页面文字；SCB 音箱价格和保有量未查到"
+    },
+    {
+      "id": "PAIN-17",
+      "claim": "【已核实事实·沿用】真实 KBank K SHOP 商户码是静态码（01=11），但使用 tag 30 Bill Payment（Biller ID + Ref）并带 tag 31 收单行信息，而不是个人 PromptPay（tag 29）。也就是说，泰国的“静态商户码”已能路由到收单行并触发商户端通知。",
+      "confidence": "medium",
+      "source": "https://github.com/spayicloud01-source/admin-id-bot ；docs/research/TH-LA.json",
+      "date": "2026",
+      "notes": "沿用；Ref1/Ref2 是动态码自动核销的关键字段（docs/02）"
+    },
+    {
+      "id": "PAIN-18",
+      "claim": "【未查到/记忆·未核实】本轮没有查到 BOT 或 NITMX 公布的 Thai QR 静态/动态占比，也没有查到 BOT 要求商户使用动态码的规定。BOT 2023–2024 年的反诈措施（技术犯罪紧急法令、大额转账人脸验证等）凭记忆主要针对付款人认证和人头账户，不针对商户码类型。",
+      "confidence": "low",
+      "source": "本轮检索（2026-10-18）；反诈措施部分凭记忆",
+      "date": "2026-10-18",
+      "notes": "因检索预算用完，BOT 反诈措施本轮未核实，具体门槛不写入"
+    },
+    {
+      "id": "PAIN-19",
+      "claim": "【媒体报道·多源】越南伪造转账凭证（bill chuyển khoản giả）很普遍：有网站和软件能按订单金额生成各家银行的假凭证，造假服务在社交网络公开售卖；有报道称一名 2008 年出生的青年伪造了 300 张转账单在全国行骗；建议不见到账不发货，并开通短信余额变动通知。",
+      "confidence": "medium",
+      "source": "https://tapchicongthuong.vn/nhan-dien-lua-dao-gia-mao-bien-lai-chuyen-tien-thanh-cong-116612.htm ；https://luatvietnam.vn/linh-vuc-khac/lam-gia-bill-chuyen-khoan-883-93678-article.html ；https://viettimes.vn/xuat-hien-trang-web-gia-mao-bill-chuyen-khoan-cua-nhieu-ngan-hang-viet-nam-post169054.html ；https://vnreview.vn/threads/lam-ro-doi-tuong-nam-thanh-nien-sinh-nam-2008-lam-gia-300-hoa-don-chuyen-tien-lua-dao-toan-quoc.67900/latest ；https://24hstore.vn/cong-nghe/hang-ngan-thu-ngan-bi-qua-mat-boi-bill-ngan-hang-duoc-lam-gia-y-nhu-that-cach-phan-biet-n7714",
+      "date": "2023-2026",
+      "notes": "多源一致，但没有官方统计；“上千名收银员被骗”出自零售商博客标题"
+    },
+    {
+      "id": "PAIN-20",
+      "claim": "【媒体报道·单一来源】vnreview 转述有关部门警告：有人利用 WiFi 或蓝牙到账播报音箱的漏洞（默认密码、与顾客同一网络）播放假的到账播报，骗个体户。",
+      "confidence": "low",
+      "source": "https://vnreview.vn/threads/canh-bao-ve-thu-doan-lua-dao-qua-loa-thong-bao-giao-dich-doi-voi-ho-kinh-doanh.86916/",
+      "date": "约 2025-2026",
+      "notes": "只有这一条来源，未找到公安或银行原文；如属实，说明普通音箱也不够可信"
+    },
+    {
+      "id": "PAIN-21",
+      "claim": "【已核实事实·厂商博客多源】第 70/2025/NĐ-CP 号议定（修订第 123/2020 号）：自 2025-06-01 起，年营业额 ≥10 亿越南盾、直接向消费者销售的个体户（hộ kinh doanh）必须使用“由收银机生成并实时传送税务机关”的电子发票；不执行最高可罚 1,000 万越南盾；有提案把门槛提高到 20–30 亿越南盾。",
+      "confidence": "medium",
+      "source": "https://www.sapo.vn/blog/nghi-dinh-so-70-2025-nd-cp ；https://www.meinvoice.vn/?p=32521 ；https://ketoanthuanthien.vn/hoi-dap/nguong-doanh-thu-nao-thi-phai-ap-dung-hoa-don-dien-tu-tu-may-tinh-tien/",
+      "date": "2025",
+      "notes": "议定原文未读，依据 MISA、Sapo 等发票软件商博客；没有来源提到要把支付二维码和收银机发票绑在一起"
+    },
+    {
+      "id": "PAIN-22",
+      "claim": "【媒体报道】越南自 2026-01-01 起取消个体户定额税（thuế khoán），改为申报纳税；2026-03-05 政府发布第 68/2026/NĐ-CP 号议定（个体户税收政策与管理）及第 18/2026/TT-BTC 号通知。",
+      "confidence": "medium",
+      "source": "https://thuvienphapluat.vn/ma-so-thue/phap-luat-thue/bo-thue-khoan-2026-ho-kinh-doanh-phai-chuan-bi-nhung-gi-433724-212436.html ；https://znews.vn/cach-de-ho-kinh-doanh-tranh-sai-sot-khi-ke-khai-thue-sau-nghi-dinh-68-post1633525.html",
+      "date": "2026-03",
+      "notes": "两份文件原文未读；摘要把取消定额税归到 70/2025 号议定，归属有疑问（凭记忆，源头是第 68-NQ/TW 号决议和税收管理法修订），这里只采信“2026 年起取消”的结论"
+    },
+    {
+      "id": "PAIN-23",
+      "claim": "【公司声明】越南银行和支付商正把“QR 收款 + POS + 电子发票 + 数字报税”打包卖给个体户：VietinBank 与 VNPAY 2026-07-27 签约，提供面向个体户的支付与数字报税一体化方案；VNPAY 称数字报税方案免费到 2028 年底；Vietbank × VNPAY 也有同类方案；Techcombank 推出个体户经营账户和 SoftPOS；VNPAY 提供 QR、PhonePOS、SmartPOS。",
+      "confidence": "medium",
+      "source": "https://vnba.org.vn/vi/vietinbank-va-vnpay-hop-tac-cung-cap-giai-phap-thanh-toan-va-nop-thue-so-cho-ho-kinh-doanh-22922.htm ；https://daibieunhandan.vn/vietbank-va-vnpay-tung-giai-phap-so-hoa-giup-ho-kinh-doanh-toi-uu-van-hanh-10418834.html ；https://techcombank.com/tag/quan-ly-doanh-thu",
+      "date": "2026-07",
+      "notes": "依据搜索摘要；直接打开被代理拒绝（403）。说明越南的终端需求来自税务合规，竞争者是银行和 VNPAY 的免费或补贴方案"
+    },
+    {
+      "id": "PAIN-24",
+      "claim": "【记忆·未核实】越南央行（SBV）第 2345/QĐ-NHNN 号决定（2023-12，2024-07-01 起施行）：单笔网上转账超过 1,000 万越南盾或当日累计超过 2,000 万越南盾须做生物识别认证；第 17/2024、18/2024 号通知（2025-01-01 起）要求账户和卡完成生物识别核验后才能做网上交易。这些措施针对付款人和人头账户，不要求商户使用动态码。",
+      "confidence": "low",
+      "source": "凭记忆，本轮未检索核实（检索预算用完）",
+      "date": "2023-12 / 2024-07 / 2025-01",
+      "notes": "使用前须到 SBV 官网核实原文"
+    },
+    {
+      "id": "PAIN-25",
+      "claim": "【公司声明·多源】RHB 与 PayNet 2023 年底推出 DuitNow QR “Plug & Play” Sound Box，RHB 自称是首家这样做的银行；先投放城郊的中小微商户，再扩展到餐饮、杂货店、夜市；到账时播报并显示金额，确认款项进了正确商户、金额无误。RHB 董事总经理点名的风险是“不诚实的顾客用假付款收据骗商户”。",
+      "confidence": "medium",
+      "source": "https://rhbfoundation.rhbgroup.com/-/media/Assets/Corporate-Website/Document/Highlights/Media-Release/20231130.pdf ；https://ringgitplus.com/en/blog/bank-news/rhb-paynet-launch-duitnow-qr-plug-play-sound-box-for-scam-prevention.html ；https://fintechnews.my/41334/payments-remittance-malaysia/rhb-paynets-sound-box-delivers-instant-audio-and-display-alerts-for-qr-payments/",
+      "date": "2023-11-30",
+      "notes": "WebFetch 失败（DNS），依据搜索摘要；价格和铺设量未查到。PayNet（国家交换机运营方）直接参与，说明官方选的是“静态码 + 音箱”路线"
+    },
+    {
+      "id": "PAIN-26",
+      "claim": "【公司声明】TNG eWallet Soundbox（经 unifi 销售）明确针对“假付款界面”诈骗：顾客用 TNG eWallet 或 DuitNow QR 付款时播报并显示金额，支持英语、马来语、中文。Qashier 也在马来西亚推出 QashierPay Soundbox，并引用 FICO 调查：32% 的马来西亚人把支付诈骗列为最担心的金融犯罪。",
+      "confidence": "medium",
+      "source": "https://ubc.unifi.com.my/solutions/TNG ；https://ibsintelligence.com/?p=554198 ；https://cybersecurityasia.net/rhb-champions-anti-scam-efforts-with-duitnow-qr-sound-box/",
+      "date": "2023-2025",
+      "notes": "厂商宣传；FICO 调查是二手引用"
+    },
+    {
+      "id": "PAIN-27",
+      "claim": "【已核实事实·沿用】DuitNow QR 规范支持动态码（POI=12）；社区资料称动态码中的账户号是临时值，有效期约 60 秒。",
+      "confidence": "low",
+      "source": "https://github.com/deadboy18/malaysia-pay-kit/blob/main/docs/duitnow-qr-research.md",
+      "date": "2026-05-04",
+      "notes": "沿用；动态码技术上可行，但没有证据显示 PayNet 或 BNM 在推小微商户改用动态码"
+    },
+    {
+      "id": "PAIN-28",
+      "claim": "【记忆·未核实】马来西亚 LHDN 的 MyInvois 电子发票分阶段实施，2025 年把豁免门槛提高到年营业额 RM100 万，小微商户暂不受影响。",
+      "confidence": "low",
+      "source": "凭记忆，本轮未检索核实",
+      "date": "2025",
+      "notes": "若属实，马来西亚的税务压力暂时到不了小微柜台"
+    },
+    {
+      "id": "PAIN-29",
+      "claim": "【媒体报道】2024 年有 Facebook 卖家出售仿 GCash 收据和交易记录的 Canva 模板；GCash 回应后，媒体建议核对参考号（参考号与具体交易绑定，难以伪造）。有读者留言称 GCash 已不再发入账短信，要看 App 交易记录或开推送。",
+      "confidence": "medium",
+      "source": "https://unbox.ph/news/fake-gcash-receipts/",
+      "date": "2024",
+      "notes": "“不再发短信”只是读者评论，不是 GCash 的说法"
+    },
+    {
+      "id": "PAIN-30",
+      "claim": "【公司声明/媒体】GCash 2026-04 称已封禁超过 4,900 个与 quishing（QR 钓鱼）有关的欺诈商户；BSP 把 quishing 列为增长中的诈骗；GCash 提醒注意随机或与店铺无关的商户名（如“XJ82q”“Merchant_123”）。Mynt 另一份新闻稿称已封禁超过 6,700 个利用 QR Ph 收款的非法赌博网站或账户。",
+      "confidence": "medium",
+      "source": "https://tribune.net.ph/2026/04/22/gcash-blocks-4900-quishing-scam-merchants ；https://www.philstar.com/banking/2026/04/23/2523046/gcash-upholds-zero-tolerance-quishing-scam-blocks-fake-illegal-sites ；https://mynt.com.ph/newsroom/gcash-blocked-6700-illegal-gambling-sites-using-qrph ；https://fintechnews.ph/71083/security/gcash-quishing-qr-scams-fraud-crackdown-philippines/",
+      "date": "2026-04",
+      "notes": "依据搜索摘要。问题出在商户准入（KYM）和冒名商户，换成动态码解决不了"
+    },
+    {
+      "id": "PAIN-31",
+      "claim": "【已核实事实·沿用】QR Ph 由 BSP 第 1055 号通函（2019-10）确立为国家互通 QR 标准，P2M 于 2021-04 起试点；62-05 是一次性参考号（动态码去重键）；PPMI 与 Ant International 2026-09-01 在 QR Ph 上开通 Alipay+，商户不需要换码。",
+      "confidence": "medium",
+      "source": "docs/research/PH-MM.json；docs/02-qr-interoperability.md",
+      "date": "2019-10 / 2021-04 / 2026-09-01",
+      "notes": "沿用；Alipay+ 接入“商户不需要新码”说明跨境方也在迁就现有静态码"
+    },
+    {
+      "id": "PAIN-32",
+      "claim": "【公司声明】HitPay 在菲律宾推广 QR 支付 Soundbox（博客“QR payment soundbox Philippines”）。",
+      "confidence": "low",
+      "source": "https://hitpayapp.com/blog/qr-payment-soundbox-philippines",
+      "date": "2025-2026",
+      "notes": "只有标题和链接，正文未读；GCash、Maya 是否有自营音箱未查到"
+    },
+    {
+      "id": "PAIN-33",
+      "claim": "【记忆·未核实】菲律宾《便利纳税法》（EOPT，RA 11976，2024 年施行）推动电子发票，BIR 的电子发票系统先覆盖大型纳税人；《反金融账户诈骗法》（AFASA，RA 12010，2024-07）针对人头账户和社会工程诈骗。",
+      "confidence": "low",
+      "source": "凭记忆，本轮未检索核实",
+      "date": "2024",
+      "notes": "两部法律对小微柜台收款方式没有直接要求（推论）"
+    },
+    {
+      "id": "PAIN-34",
+      "claim": "【媒体报道·多源】2023-09：如切（Joo Chiat）一家餐馆称，一名顾客两年内用 35 张伪造的 PayNow 截图付款，损失 S$4,619.90；店方流程是让顾客在 WhatsApp 发截图核对，前任会计没有认真对账。",
+      "confidence": "medium",
+      "source": "https://mothership.sg/2023/09/customer-scam-joo-chiat-restaurant-fake-paynow-screenshots//amp ；https://sethlui.com/fake-paynow-screenshots-singapore-sep-2023/",
+      "date": "2023-09",
+      "notes": "两家媒体报道，属单一事件；场景是远程订单，不是柜台"
+    },
+    {
+      "id": "PAIN-35",
+      "claim": "【二手博客】有博客称新加坡出现在熟食摊、奶茶店、零售店甚至慈善捐款箱上覆盖假 QR 贴纸的诈骗。",
+      "confidence": "low",
+      "source": "https://lock.pub/en/blog/paynow-scam-prevention-singapore",
+      "date": "2025",
+      "notes": "非官方来源；新加坡警方 2024-12 的公告讲的是 PayNow 钓鱼网站，是另一类诈骗（https://www.police.gov.sg/media-hub/news/2024/20241213_police_advisory_on_scams_involving_the_use_of_a_paynow_phishing_site）"
+    },
+    {
+      "id": "PAIN-36",
+      "claim": "【已核实事实·沿用】新加坡的国家方向是“统一静态标签 + 单一收单清算”：SGQR 参与指引（2023-12-01 生效）专门规范在实体店用静态 QR 收单的机构；NETS 2024-11-07 宣布 SGQR+ 全岛推广，受理点 24,000 个，扩展到熟食中心后超过 35,000 个。",
+      "confidence": "medium",
+      "source": "https://www.rajahtannasia.com/viewpoints/major-payment-institutions-exempt-payment-services-providers-to-note-sgqr-guidelines-taking-effect-on-1-dec-2023/ ；https://www.nets.com.sg/newsroom/nets-announces-sgqr-islandwide-rollout-following-the-success-of-sgqr-proof-of-concept",
+      "date": "2023-12 / 2024-11-07",
+      "notes": "沿用；2025 年以后的完成情况未核实"
+    },
+    {
+      "id": "PAIN-37",
+      "claim": "【已核实事实·沿用（低）】UOB 自 2026 年起对企业 PayNow 收款每笔收 S$0.20；用个人手机号收款的熟食摊不受影响。",
+      "confidence": "low",
+      "source": "https://www.hack.gov.sg/2025/singpay/",
+      "date": "2025",
+      "notes": "二手引用；推论：熟食摊有动力继续用个人 PayNow 静态码，不会为动态码多付费"
+    },
+    {
+      "id": "PAIN-38",
+      "claim": "【未查到】本轮没有找到新加坡 NETS 或银行推出熟食摊音箱、或推动熟食摊改用动态码的资料。",
+      "confidence": "low",
+      "source": "本轮检索（2026-10-18）",
+      "date": "2026-10-18",
+      "notes": ""
+    },
+    {
+      "id": "PAIN-39",
+      "claim": "【已核实事实·沿用】KHQR 的 tag 99 是时间戳模板（00 创建、01 过期，13 位毫秒）；NBC 官方 SDK 规定动态码（01=12、金额大于 0）必须带过期时间，过期即报 KHQR_EXPIRED。",
+      "confidence": "medium",
+      "source": "https://registry.npmjs.org/bakong-khqr/-/bakong-khqr-1.0.20.tgz",
+      "date": "2025-04-30",
+      "notes": "沿用；规范对动态码有安全设计，但没有证据显示 NBC 推动商户从静态改为动态"
+    },
+    {
+      "id": "PAIN-40",
+      "claim": "【公司声明】ABA PayWay 的 KHQR 指南称 KHQR 由 NBC 监管，实施 KHQR 的商户必须按 ABA 或 NBC 的要求调整，否则可能被暂停或终止服务。",
+      "confidence": "low",
+      "source": "https://developer.payway.com.kh/khqr-guideline-3192101f0.md",
+      "date": "2025-2026",
+      "notes": "依据搜索摘要；指南里有没有动态码或到账通知的具体要求没有读到"
+    },
+    {
+      "id": "PAIN-41",
+      "claim": "【未查到】本轮英文检索没有找到柬埔寨假转账截图或 KHQR 音箱的报道（高棉语来源未检索）；老挝本轮未检索。可参照的类似案例：不丹央行为应对修图截图诈骗推出了 QR Soundbox。",
+      "confidence": "low",
+      "source": "https://thebhutanese.bt/edited-screen-shots-being-used-to-scam-people-and-how-to-prevent-it/",
+      "date": "2026-10-18",
+      "notes": "不丹的情况只能说明这类问题和对策有共性，不能当作柬埔寨的证据"
+    },
+    {
+      "id": "PAIN-42",
+      "claim": "【媒体报道/公司声明·参照】印度：Paytm 2023 年对 Rest of World 称已铺设 680 万台设备；Business Insider 称截至 FY23 第三季度累计 580 万台（含 PoS 与 Soundbox）；另有未注明日期的报道称共 820 万台（含 Soundbox 与刷卡机）；某案例网站估计 2024 年全印超过 2,000 万商户用音箱类设备。商户和 WARC 都说音箱让“用 App 伪造付款回执”失效。",
+      "confidence": "medium",
+      "source": "https://restofworld.org/2023/india-sound-boxes-paytm-phonepe/ ；https://www.businessinsider.in/business/news/how-paytm-soundbox-is-fuelling-growth/articleshow/96911126.cms ；https://www.warc.com/content/feed/sound-boxes-solve-a-digital-payment-pain-point/en-GB/8039 ；https://www.markhub24.com/post/paytm-soundbox-engineering-merchant-trust-as-a-growth-engine",
+      "date": "2023-2024",
+      "notes": "2,000 万为粗略估计（low）。印度小微商户的主流做法是“静态 UPI 码 + 音箱”，不是动态码"
+    },
+    {
+      "id": "PAIN-43",
+      "claim": "【记忆·未核实·参照】中国：小微商户普遍用“收款码牌 + 云音箱”；人民银行 2021 年第 259 号文（银发〔2021〕259 号）要求区分个人收款码和经营收款码，加强条码支付受理管理，针对的是用个人码做经营和收款码被替换、被出租的问题；有收银系统的商户用“扫码盒子”（被扫）。",
+      "confidence": "low",
+      "source": "凭记忆，本轮未检索核实",
+      "date": "2021-10 起",
+      "notes": "只作类比；具体条款和后续调整须核实"
+    },
+    {
+      "id": "PAIN-44",
+      "claim": "【推论】八国有据可查、商户最有感的痛点是“钱到底到没到”（假截图、假 slip、假 bill）：泰、越、印尼、马、菲、新都有多源报道。解决它只需要一个付款人改不了的到账确认（银行 App 推送、音箱、slip 验证 API），不需要动态码；静态码加音箱也会播报金额，收银员可当场核对。",
+      "confidence": "medium",
+      "source": "PAIN-07/08/13/14/15/16/19/25/26/29/34/42",
+      "date": "2026-10-18",
+      "notes": "这是对证据的综合判断；反例是 PAIN-20（音箱可被伪造播报，低置信）"
+    },
+    {
+      "id": "PAIN-45",
+      "claim": "【推论】动态码真正能单独解决的问题有三个：(1) 付款人输错金额；(2) 贴纸被覆盖（屏幕上每笔现生成的码无法被覆盖）；(3) 按订单自动核销对账（Ref1/Ref2、62-05、Bill No.）。前两项的证据集中在无人值守场景（清真寺捐款箱、慈善箱），单案损失小；第三项是有收银系统的中型以上商户和连锁的需求，不是贴纸小微户的需求。“付款人输错金额”和“店员私吞”本轮没有找到任何数据。",
+      "confidence": "medium",
+      "source": "PAIN-06/17/30/35；docs/02-qr-interoperability.md",
+      "date": "2026-10-18",
+      "notes": "“没找到”不等于不存在"
+    },
+    {
+      "id": "PAIN-46",
+      "claim": "【推论】本轮没有找到任何一国央行或交换机构强制商户改用动态码。监管措施集中在：付款人认证（越南生物识别，记忆）、商户准入与 KYM（BI、GCash/BSP）、统一静态标签（新加坡 SGQR+）、NFC/CPM 提速（BI QRIS Tap）。KHQR、DuitNow 的规范为动态码设计了过期机制，但没有强推。MDR 也不区分静态和动态（印尼）。",
+      "confidence": "medium",
+      "source": "PAIN-10/11/12/18/24/30/36/39",
+      "date": "2026-10-18",
+      "notes": "BOT、BSP、BNM 的相关规定因预算未专门检索，结论偏弱"
+    },
+    {
+      "id": "PAIN-47",
+      "claim": "【推论】税务是唯一能找到的、制度性推动“收银机或 POS 联动收款”的力量，最强的是越南：年营业额 ≥10 亿越南盾的个体户自 2025-06 须用收银机电子发票，2026 年起取消定额税，银行和 VNPAY 正把 QR、POS、发票、报税打包免费或补贴推广。印尼、菲律宾、马来西亚的电子发票目前主要覆盖大中型企业（马、菲为记忆）。",
+      "confidence": "medium",
+      "source": "PAIN-21/22/23/28/33",
+      "date": "2026-10-18",
+      "notes": "越南的需求是“开票 + 收款 + 对账一体机”，动态码只是其中一个功能"
+    },
+    {
+      "id": "PAIN-48",
+      "claim": "【推论】INSCREEN 在小微商户段的直接竞争者是音箱：PayNet/RHB、TNG、BCA/BRI/Mandiri/DANA/OVO、SCB、Qashier（฿1,790）都在推，印尼多为月租；K SHOP 的 App 语音通知还是免费的。和印度 Paytm 一样，这些方案都是“静态码 + 音箱”，没有换成动态码。",
+      "confidence": "medium",
+      "source": "PAIN-07/09/16/25/26/42",
+      "date": "2026-10-18",
+      "notes": "INSCREEN 的价格本轮未知"
+    },
+    {
+      "id": "PAIN-49",
+      "claim": "【推论】在东南亚，“支持动态码”主要是 INSPAY 跨境网络的需求（境外钱包要按已知金额锁汇，docs/02），不是本地商户的需求。如果 INSCREEN 的卖点是“动态码”，商户感知的价值很低；如果卖点是“可信到账确认 + 金额显示 + 多钱包 + 外国游客付款 + 对账或开票”，才对得上已有的痛点。",
+      "confidence": "medium",
+      "source": "docs/02-qr-interoperability.md；PAIN-31/44/45",
+      "date": "2026-10-18",
+      "notes": ""
+    },
+    {
+      "id": "PAIN-50",
+      "claim": "【假设】假设 INSCREEN 的硬件和月费明显高于音箱（音箱零售约 ฿1,790，或按月租），并且需要商户在每笔交易时输入金额。如果不需要商户手动输入金额（例如对接收银系统），结论会对中型商户更有利。",
+      "confidence": "low",
+      "source": "假设，待 INSPAY 提供 INSCREEN 的定价和交互方式",
+      "date": "2026-10-18",
+      "notes": "需要创始人确认"
+    }
+  ],
+  "key_claims": [
+    "【总判断】“动态码升级需求强烈”这一假设在小微商户段不成立：商户真正的痛点是可信的即时到账确认，市场已用音箱、App 语音推送和 slip 验证 API 低成本解决，并保留静态码（PAIN-07/08/13~16/19/25/26/42/44）。",
+    "【监管】本轮没有找到任何一国强制商户使用动态码；监管重心是付款人认证、商户 KYM、统一静态标签和 NFC/CPM；印尼 MDR 对静态和动态一视同仁（PAIN-10/11/12/18/24/30/36/46）。",
+    "【数据缺口】八国都没有找到公开的静态/动态码占比；印尼 4,486 万 QRIS 商户中 96.68% 为 UMKM，可推知静态贴纸占绝大多数，但这是推论（PAIN-02/04/18）。",
+    "【越南】越南是动态码和收银联动需求最强的市场，驱动力是税务（≥10 亿越南盾个体户须用收银机电子发票，2026 年起取消定额税），不是防诈；竞争者是银行和 VNPAY 的免费或补贴一体方案（PAIN-19~24/47）。",
+    "【泰国】痛点是假 slip，多发生在远程或线上收款；柜台场景已有 K SHOP 免费语音推送和 SCB、Qashier 音箱；商户码本身是带 Ref 的 tag 30 静态码。小微段需求弱，有 POS 的餐厅和连锁需求中等（PAIN-13~18）。",
+    "【印尼】痛点是修图截图（2026-05 仍是投诉之首）和贴纸覆盖（2023 年 38 处、约 Rp1,306 万），主流银行和钱包的对策是月租音箱；BI 没有推动态码，创新方向是 QRIS Tap。小微段需求弱，UME/UBE 收银整合需求中等（PAIN-02~12）。",
+    "【马来西亚】PayNet 亲自和 RHB 推 DuitNow QR 音箱，针对假收据；TNG、Qashier 跟进。小微段需求弱，中型商户需求弱到中（PAIN-25~28）。",
+    "【菲律宾】痛点是假 GCash 收据模板，以及 quishing 和冒名商户（GCash 封 4,900+ 个）；问题出在商户准入，动态码解决不了。需求弱（PAIN-29~33）。",
+    "【新加坡】国家路线是 SGQR+ 统一静态标签；熟食摊用个人 PayNow 避开企业收费；假截图案例是远程订单。需求弱（PAIN-34~38）。",
+    "【柬埔寨/老挝】KHQR 规范内置动态码过期，但本轮没有找到商户痛点或音箱证据，需求未知，推测弱到中（PAIN-39~41）。",
+    "【参照】印度（Paytm 680 万台以上设备）和中国（码牌 + 云音箱）都证明，小微商户的胜出形态是“静态码 + 可信播报”，不是动态码（PAIN-42/43）。",
+    "【定位建议·推论】INSCREEN 的卖点应改为“可信到账确认 + 金额显示 + 多钱包/外国钱包受理 + 对账或开票”；动态码主要服务 INSPAY 跨境锁汇，是 INSPAY 自己的需求，不是商户愿意付费的功能（PAIN-48~50）。"
+  ],
+  "open_questions": [
+    "BI/ASPI 和 BOT/NITMX 是否有静态与动态商户码的数量或交易额占比？可直接询问 ASPI、NITMX，或查 BI 支付系统统计。",
+    "BI PADG QRIS 原文里有没有要求某类商户（如 UBE 或有 EDC 的商户）使用动态码的条款？",
+    "各国音箱的实际铺设量、租金和售价（印尼 BRI/Mandiri/BCA 月租、RHB 和 TNG 音箱价格、SCB 音箱），以及它们是否只播报自家通道的到账？",
+    "越南第 70/2025 号议定的 ≥10 亿越南盾门槛是否已上调；第 68/2026 号议定和第 18/2026 号通知是否要求收款数据与发票或税务对接？受影响的个体户有多少？",
+    "越南音箱被伪造播报的警告是否有公安或银行原文？是否有 SBV 针对商户账户核验的新规？",
+    "SBV 第 2345 号决定、BOT 反诈措施、马来西亚 MyInvois 豁免门槛、菲律宾 EOPT/AFASA 的具体条款（本轮凭记忆，未核实）。",
+    "柬埔寨、老挝的假截图问题和音箱普及情况（需要高棉语、老挝语来源，或询问 ABA、ACLEDA、BCEL）。",
+    "直接访谈商户：目标商户（越南个体户、泰国餐厅、印尼 UME）在“自动对账/开票”和“只要可信播报”之间愿意各付多少钱？目前没有找到“商户主动要求动态码”的任何证据。",
+    "INSCREEN 的定价、是否需要商户逐笔输入金额、能否对接收银系统或电子发票，这些决定它能否进入中型商户段。"
+  ]
+}

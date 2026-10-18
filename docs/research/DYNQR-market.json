@@ -1,0 +1,331 @@
+{
+ "summary": "用户隐含的假设是“东南亚商户把静态码升级为动态码的需求很强”。按自下而上的测算，这一假设不成立，规模差了一到两个数量级。各国公开的 QR 受理数相加超过 6,000 万（印尼 QRIS 4,486 万家、泰国 800 万受理点、马来西亚 300 万受理点、柬埔寨 KHQR 450 万），但单位混杂，有重复。泰国、越南、菲律宾、老挝没有官方商户数。去重后（假设）七国约有 4,700–6,000 万家独立 QR 商户，其中 90–95% 是会留在“静态码 + 到账播报”上的小微户，印度和中国也是这一路线。动态码真正有用的是有收银台或 POS 的商户，按 POS 终端密度推算约 240–400 万家（假设），其中相当一部分已由 EDC 和 POS 出码。据此测算 3 年 SOM 约 0.5–9 万家商户、0.6–18 万台设备、年收入约 USD 30 万到 2,800 万（基准约 2.4 万家、3.6 万台、USD 340 万），全部为假设推导。日本游客：泰国约 105 万（推算）、越南约 81 万，其他国家未查到。即使 PayPay 接入，八国能撑起终端的游客区商户也只有约 800 到 1.5 万家（基准约 4,400 家），网络毛收入约 USD 40 万到 400 万。巴厘有约 100 万家 QRIS 商户，2025 年跨境 QRIS 却只有 148,717 笔、Rp360 亿，说明游客跨境 QR 需求目前很稀薄。交易增长很快，但发生在静态码体系里，没有任何一国公布静态与动态的拆分。本轮用了 10 次 WebSearch，2 次 WebFetch 都是 DNS 失败，新事实依据搜索摘要。",
+ "facts": [
+  {
+   "id": "MARKET-01",
+   "claim": "【已核实事实·沿用】印尼 QRIS 2026 年中商户 4,486 万家，其中 96.68% 为 UMKM（微型、小型、中型企业），用户 6,577 万，交易笔数同比 +82.42%；2026-01 商户为 4,306 万（同比 +17.76%）；另有报道称 4,711 万（口径或日期不同）。",
+   "confidence": "medium",
+   "source": "https://www.fortuneidn.com/finance/transaksi-digital-melesat-qris-tumbuh-82-4-persen-d7w02-00-lflgw-8hs5kx ; https://keuangan.kontan.co.id/news/bi-mencatat-nilai-transaksi-qris-capai-rp-16448-triliun-pada-januari-2026",
+   "date": "2026-01 / 2026 年中",
+   "notes": "沿用 docs/research/ID.json，未重新检索。计数单位为 QRIS 注册商户（按 NMID）。去重问题：同一商户在多家 PJP（收单方）各注册一次时是否各有一个 NMID、BI 统计是否去重，本轮未查到（推断可能存在重复，低置信度）。"
+  },
+  {
+   "id": "MARKET-02",
+   "claim": "【已核实事实·沿用】QRIS 2025 全年交易 155.1 亿笔（同比 +148.54%）；2026-01 单月 18.3 亿笔、Rp164.48 万亿；BI 2026 年目标为 170 亿笔、约 4,500 万商户、6,932 万用户。",
+   "confidence": "medium",
+   "source": "https://keuangan.kontan.co.id/news/bi-mencatat-nilai-transaksi-qris-capai-rp-16448-triliun-pada-januari-2026 ; https://investortrust.id/financial/117342/bi-bidik-69-32-juta-pengguna-qris-pada-2026",
+   "date": "2026-01",
+   "notes": "沿用 docs/research/ID.json。BI 的商户目标是部署目标，不是需求证据；4,500 万的目标在 2026 年中已基本达到，说明商户数增长在放缓（+17.76%），交易增长来自现有小微商户的使用频率。"
+  },
+  {
+   "id": "MARKET-03",
+   "claim": "【已核实事实·沿用】QRIS 跨境入境 2025 年 5,892,621 笔、出境 1,681,112 笔；截至 2026-08 入境累计 1,780 万笔、Rp6.2 万亿。对照境内 2025 年 155.1 亿笔，入境跨境笔数约占 0.04%（计算）。",
+   "confidence": "medium",
+   "source": "docs/research/ID.json ; https://www.idnfinancials.com/news/69514/qris-transactions-by-tourists-reach-idr-6-2-trillion-through-august",
+   "date": "2025 / 2026-08",
+   "notes": "计算：5.89M / 15.51B ≈ 0.038%。说明跨境游客流量在 QRIS 商户总量中占比极小，游客场景只对少数商户有意义。"
+  },
+  {
+   "id": "MARKET-04",
+   "claim": "【媒体报道·新】BI 巴厘代表处数据：截至 2025-04，巴厘 QRIS 商户约 97.4 万家、用户超 100 万；另一篇 Antara 报道（日期不明）称巴厘使用 QRIS 的商户超过 110 万；2025 年巴厘跨境 QRIS 交易 148,717 笔、Rp360 亿（同比 +229%）；无论全国还是巴厘，用 QRIS 最多的外国游客都来自马来西亚。",
+   "confidence": "medium",
+   "source": "https://bali.antaranews.com/berita/411140/qris-beri-nilai-tambah-pariwisata-di-bali-karena-mudahkan-turis-bertransaksi ; https://bali.antaranews.com/berita/379521/bi-ungkap-qris-katrol-kinerja-umkm-di-bali",
+   "date": "2025-04 / 2025 全年",
+   "notes": "WebFetch 对 bali.antaranews.com DNS 失败，只读到 WebSearch 摘要。巴厘是东南亚最典型的游客区，也是本轮唯一查到的游客区商户数。"
+  },
+  {
+   "id": "MARKET-05",
+   "claim": "【计算·推论】巴厘的游客跨境 QR 需求目前非常稀薄：Rp360 亿 ≈ USD 220 万（按 1 USD ≈ Rp16,400），分摊到约 100 万家 QRIS 商户，平均每户每年约 USD 2.2、约 0.15 笔；单笔均值约 Rp24 万（约 USD 15）。BPS 巴厘称 2026 上半年外国游客 320 万（同比 −2.82%），由此推算 2025 全年约 650–700 万人次，平均每位外国游客每年只做约 0.02 笔跨境 QRIS（推论）。原因之一是巴厘最大的客源（澳大利亚，记忆）和日本游客都没有已联通的钱包。",
+   "confidence": "low",
+   "source": "MARKET-04 ; https://bali.antaranews.com/berita/411140/qris-beri-nilai-tambah-pariwisata-di-bali-karena-mudahkan-turis-bertransaksi",
+   "date": "2026-10-18",
+   "notes": "汇率按兄弟调研 econ.json ECON-01 的口径。全年游客数为推算（上半年 × 约 2），非官方全年值。澳大利亚为最大客源是记忆，未核实。"
+  },
+  {
+   "id": "MARKET-06",
+   "claim": "【媒体报道·单行数据·新】印尼没有查到全国 EDC 总数：Bank Mandiri 2025-02 约 25.6 万台（2025-03 另报 26.4 万）；BSI 2025-03 约 2.14 万台；BRI 2023 年底 664,801 台（2022 年底 497,976 台）。印尼商户常同时放多家银行的 EDC。",
+   "confidence": "medium",
+   "source": "https://keuangan.kontan.co.id/news/transaksi-mesin-edc-perbankan-terus-tumbuh-hingga-akhir-februari-2025 ; https://keuangan.kontan.co.id/news/bri-tingkatkan-peredaran-mesin-edc-di-pusat-kota ; https://keuangan.kontan.co.id/news/per-maret-2025-volume-transaksi-mesin-edc-bsi-capai-21-juta-transaksi",
+   "date": "2023-12 / 2025-02 / 2025-03",
+   "notes": "WebSearch 摘要；各数字对应的具体页面未逐一核对。去重问题：EDC 台数 ≠ 有收银台的商户数，一家门店可同时有 BCA、Mandiri、BRI 多台 EDC。BI SPIP 统计表（TABEL 5g）可能有全国数，未读到。"
+  },
+  {
+   "id": "MARKET-07",
+   "claim": "【咨询机构·新】GlobalData 称 2024 年马来西亚每百万人有 27,693 台 POS 终端，高于泰国 13,507、印尼 8,142、印度 6,964、越南 5,988。按人口（记忆，约数）折算：印尼约 231 万台、泰国约 89.1 万台、越南约 60.5 万台、马来西亚约 94.7 万台、印度约 1,010 万台（计算）。",
+   "confidence": "low",
+   "source": "https://www.globaldata.com/media/banking/malaysia-card-payments-to-surpass-125-billion-in-2029-as-digital-adoption-gains-pace-forecasts-globaldata/",
+   "date": "2024",
+   "notes": "单一咨询机构，单位标签须核对原始数据。人口按记忆：印尼 2.84 亿、泰国 6,600 万（登记口径，联合国口径约 7,100 万）、越南 1.01 亿、马来西亚 3,420 万、印度 14.5 亿。POS 终端主要是刷卡终端，用作“有收银台商户”的上限代理，一店多机须去重。菲律宾、新加坡、柬埔寨没有对应数据。"
+  },
+  {
+   "id": "MARKET-08",
+   "claim": "【未查到】泰国 Thai QR 商户总数：本轮检索没有找到 BOT 或 NITMX 公布的商户数（与 docs/05 一致）。可用代理只有：PromptPay QR 受理点 800 万以上（2022，NETS × NITMX 公告）；KBank K SHOP 受理点超 200 万（2022）；Krungthai Tung Ngern 超 200 万商户；OSMEP 称泰国 2016 年企业超 300 万家、99.7% 为 MSME。",
+   "confidence": "medium",
+   "source": "docs/research/SG-MY.json ; dynqr/econ.json ECON-25 ; https://thefintechtimes.com/?p=126858",
+   "date": "2016 / 2022",
+   "notes": "去重问题：800 万是受理点（码）口径，含个人 PromptPay 码，一家商户常同时有 K SHOP、Tung Ngern 和个人码；去重后的独立商户数应明显少于 800 万。本文假设 300–500 万（低置信度假设）。"
+  },
+  {
+   "id": "MARKET-09",
+   "claim": "【媒体·厂商博客，引 NITMX/BOT·新】PromptPay 截至 2025-03 注册约 8,106 万；2025-03 约 21 亿笔、4.43 万亿泰铢，2025-07 约 23.6 亿笔，2025-09 约 21.6 亿笔、4.2 万亿泰铢；仓库已有：2025-12 单月 23.8 亿笔、2026-03 超 25 亿笔。这些都是 PromptPay 全部交易（主要是转账），不是 Thai QR 商户受理。",
+   "confidence": "medium",
+   "source": "https://thefintechtimes.com/?p=126858 ; https://tazapay.com/blog/promptpay-for-business-thailand-checkout-success ; https://juspay.io/en-sg/blog/promptpay-reshaping-thailand-s-financial-landscape ; docs/research/TH-LA.json",
+   "date": "2025-03 至 2026-03",
+   "notes": "二手转引，各月口径不完全一致。交易量增速平缓（月 21–25 亿笔），P2M 份额未查到。"
+  },
+  {
+   "id": "MARKET-10",
+   "claim": "【已核实事实·沿用】泰国 2024 年入境跨境 QR 支付约 25 亿泰铢（约 USD 8,000 万），已联通国家的游客只占入境游客的 29%；泰中 QR 联通（2025-10-30 上线）到 2025 年底超过 90 万笔、6 亿泰铢。",
+   "confidence": "medium",
+   "source": "https://fintechnews.sg/124222/thailand/top-payment-trends-among-tourists-visiting-thailand/ ; docs/research/TH-LA.json",
+   "date": "2024 / 2025-12",
+   "notes": "计算：USD 8,000 万 ÷ 2024 年约 3,550 万人次入境（记忆）≈ 每位游客 USD 2.3。日本不在已联通入境国之列。"
+  },
+  {
+   "id": "MARKET-11",
+   "claim": "【媒体报道·新】泰国 2025 年国际游客约 3,297 万人次，同比约 −7%（非疫情年份首次年度下降）；日本游客 2025-01 至 11 月 985,612 人次（同比 +4.16%），上半年 470,789 人次；TAT 以全年 100 万为目标。按 1–11 月推算全年约 105–108 万（推论）。",
+   "confidence": "medium",
+   "source": "https://portail-asie.com/en/thailand-tourist-arrivals-2025/ ; https://www.pattayamail.com/news/thailand-expands-japan-connectivity-with-three-new-direct-routes-as-tat-targets-one-million-arrivals-528521 ; https://bangkokpost.com/business/general/2841288/thailand-expects-1m-japanese-visitors-by-end-of-year",
+   "date": "2025",
+   "notes": "WebFetch 对 pattayamail DNS 失败，依据 WebSearch 摘要（转述 TAT/MOTS）。全年日本游客为推算，官方全年值未读到。与 docs/05 的“1–5 月 44.4 万、全年约 100–110 万”一致。"
+  },
+  {
+   "id": "MARKET-12",
+   "claim": "【未查到】越南 VietQR / NAPAS 受理商户数：本轮没有找到。NAPAS 只公布用户与交易：截至 2025-10 约 9,000 万个手机银行账户扫 VietQR；2025 年 1–10 月 VietQR 笔数 +52%、金额 +85%；NAPAS 日均 >3,200 万笔（另一报道称约 3,500 万笔、近一半为 QR）。",
+   "confidence": "medium",
+   "source": "https://thitruongtaichinhtiente.vn/napas-to-chuc-thanh-cong-hoi-nghi-to-chuc-thanh-vien-nam-2025-74031.html ; https://thuehaiquan.tapchikinhtetaichinh.vn/thanh-toan-so-tai-viet-nam-qr-pay-bung-no-nguoi-tieu-dung-chuyen-minh-manh-me-103929.html",
+   "date": "2025-10",
+   "notes": "VietQR 是账户型转账码，任何账户持有人都能收款，“商户”边界本身不清。去重问题：一家店可同时有 VietQR 账户码、VNPAY-QR（tag 26，并行网络）、MoMo/ZaloPay 码。本文假设 300–600 万家经营主体用 QR 收款（低置信度假设；个体户约 500 万户以上为记忆，未核实）。"
+  },
+  {
+   "id": "MARKET-13",
+   "claim": "【媒体报道·新】越南 2025 年国际游客 2,120 万人次（+20.4%，创纪录，未达 2,300–2,500 万目标）；日本游客约 81.4 万人次（+14.4%），位列中、韩、台、美之后；2024 年日本游客 711,464 人次，其中胡志明市 348,239 人次（约 49%）。",
+   "confidence": "medium",
+   "source": "https://www.sggp.org.vn/10-thi-truong-khach-quoc-te-lon-nhat-den-viet-nam-nam-2025-post832221.html ; https://baomoi.com/nhieu-khach-du-lich-nhat-ban-chon-viet-nam-la-diem-den-c51655938.epi ; https://asgam.com/2026/01/08/vietnam-books-all-time-visitor-arrival-record-in-2025-aided-by-strong-growth-from-china/",
+   "date": "2025 / 2024",
+   "notes": "转述越南国家统计口径；WebSearch 摘要，VCCI、VnEconomy 数字一致。胡志明市占比说明日本游客高度集中在少数城市，可按区投放。"
+  },
+  {
+   "id": "MARKET-14",
+   "claim": "【政府数据·沿用】越南强制使用“收银机生成电子发票”的个体户（年营业额 ≥₫10 亿、直接面向消费者）全国约 37,000 户，占个体户 1% 以上；VNPAY 等方案免费到 2028 年底。",
+   "confidence": "medium",
+   "source": "dynqr/econ.json ECON-27 ; https://www.sggp.org.vn/hoa-don-dien-tu-gop-phan-tao-he-sinh-thai-kinh-doanh-minh-bach-hon",
+   "date": "2025-06 / 2026-03",
+   "notes": "这是越南唯一有制度拉力的细分，但规模只有数万户，而且面对免费方案。"
+  },
+  {
+   "id": "MARKET-15",
+   "claim": "【已核实事实·沿用】PayNet：2025 年新增 681,250 个 DuitNow QR 受理点，累计超过 300 万；跨境 QR 2,970 万笔（2.5 倍）；PayNet 全年处理 84.4 亿笔数字支付。另据 BNM 数据，DuitNow QR 2025 年约 30 亿笔（2024 年 15 亿）；BNM 年报称 2025 年电子支付 184 亿笔（+25%）。",
+   "confidence": "high",
+   "source": "https://paynet.my/about-us/media-centre/press-release/8-44-billion-transactions-processed-in-2025-as-digital-payments-be ; https://apac.entrepreneur.com/business-news/wise-plugs-into-malaysias-paynet-as-duitnow-qr-payments-hit-3-bn ; https://www.nst.com.my/amp/business/corporate/2026/03/1407140/bank-negara-malaysias-e-payment-transactions-jump-25pct-184bil",
+   "date": "2025",
+   "notes": "“受理点”不是商户，一家商户可能有 Maybank、TNG、Boost 等多家收单方的 DuitNow 码；本文假设独立商户 150–250 万（低置信度假设）。跨境 2,970 万笔约占 DuitNow QR 的 1%（计算，跨境口径是否含出境未核实）。PayNet 称 Alipay+ 占入境跨境 QR 的 80% 以上（docs/research/SG-MY.json）。"
+  },
+  {
+   "id": "MARKET-16",
+   "claim": "【媒体报道·新】马来西亚 2025 年入境访客 4,220 万人次（+约 11%），口径含不过夜的一日游客（大量来自新加坡），与其他国家不可直接比较；日本游客数本轮未查到。",
+   "confidence": "medium",
+   "source": "https://gulfnews.com/amp/story/world%2Fasia%2Fasean-tourism-countries-leading-the-way-1.500295712 ; https://seasiastats.com/statistic/international-arrivals-in-southeast-asia-20242025-m13vK",
+   "date": "2025",
+   "notes": "二手汇总。"
+  },
+  {
+   "id": "MARKET-17",
+   "claim": "【未查到·只有过时或局部数】菲律宾 QR Ph P2M 全国商户数：本轮没有找到 2025 年 BSP/PPMI 的数字。只有：2021-10 P2M 全面推出时 20,000+ 商户、30,000+ 网点；某一家服务商 2024 年称其企业客户中有 160,000+ 个 QR Ph P2M 受理点（线上线下合计）；仓库中较早报道称 P2M 网点 47.3 万个、17 家参与机构（日期不明）。",
+   "confidence": "low",
+   "source": "https://fintechalliance.ph/bsp-fully-rolls-out-person-to-merchant-qr-code-system/ ; https://opengovasia.com/?p=87627 ; https://www.bworldonline.com/?p=455504",
+   "date": "2021-10 / 2024 / 日期不明",
+   "notes": "去重问题：大量 sari-sari 小店用个人 GCash/Maya P2P 码收款，不计入 P2M。本文假设 P2M 独立商户 50–150 万（低置信度假设）。"
+  },
+  {
+   "id": "MARKET-18",
+   "claim": "【媒体转述 BSP·沿用+新】QR Ph 2025 年 24.7 亿笔、₱1.16 万亿（含 P2P）；数字支付占零售交易笔数 64.69%；菲律宾 2025 年访客 6,484,060 人次（+0.76%，含非外国人口径）；日本游客数本轮未查到。PPMI × Ant International 2026-09-01 在 QR Ph 上启用 Alipay+，商户不需换码。",
+   "confidence": "medium",
+   "source": "https://mb.com.ph/2026/08/17/digital-payments-hit-647-of-philippine-retail-transactions-nearing-bsps-70-target ; https://asgam.com/2026/01/25/philippines-visitor-arrivals-rise-0-76-to-6484060-in-2025-after-strong-december-tourism-numbers/ ; https://fintech.global/2026/09/01/alipay-opens-philippine-merchants-to-global-shoppers/",
+   "date": "2025 / 2026-09",
+   "notes": "QR Ph 交易数沿用 docs/research/PH-MM.json；游客数为本轮新检索（转述 DOT）。"
+  },
+  {
+   "id": "MARKET-19",
+   "claim": "【公司声明·沿用】新加坡：NETS 称 SGQR+ 受理点 24,000 个，扩展到熟食中心后超过 35,000 个（2024-11）；PayNow 约 35 万家企业注册（2025-12，MAS 与 ABS）；dtcpay 自称可在 40,000+ 个 NETS 受理点使用；Alipay+ 经 NETS 覆盖约 11,000 个熟食摊（2023）；FAST 2024 年 5.0 亿笔。",
+   "confidence": "medium",
+   "source": "https://www.nets.com.sg/newsroom/nets-announces-sgqr-islandwide-rollout-following-the-success-of-sgqr-proof-of-concept ; https://www.mas.gov.sg/news/media-releases/2026/mas-and-abs-chart-instant-payments-enhance ; https://dtcpay.com/company/newsroom/dtcpay-rolls-out-qr-payments-and-celebrates-sg60-with-exclusive-rewards",
+   "date": "2023 / 2024-11 / 2025-12",
+   "notes": "沿用 docs/research/SG-MY.json 与 dynqr/econ.json ECON-28。SGQR 全国标签总数未查到；PayNow 35 万家企业包含没有实体门店的企业。本文假设有实体门店并受理 QR 的商户 10–20 万、有收银台的 5–10 万（低置信度假设）。新加坡方向是统一静态标签（PAIN-36）。"
+  },
+  {
+   "id": "MARKET-20",
+   "claim": "【媒体报道·新】新加坡 2025 年国际访客约 1,690 万人次（2024 年 1,650 万）；印尼约 1,539 万（2024 年 1,430 万）；柬埔寨约 560 万（2024 年 670 万，单一来源）。三国的日本游客数本轮未查到。",
+   "confidence": "low",
+   "source": "https://seasiastats.com/statistic/southeast-asian-countries-ranked-by-number-of-visitors-from-2024-to-2025-N1DrT ; https://www.asialifestylemagazine.com/asia-most-visited-countries-2025/",
+   "date": "2025",
+   "notes": "二手统计网站汇总，新加坡、印尼只有单一二手来源，柬埔寨数字尤其需要核实。"
+  },
+  {
+   "id": "MARKET-21",
+   "claim": "【已核实事实·沿用】柬埔寨 KHQR：约 450 万受理商户（2025）；Bakong 2025 年约 13.3 亿笔（2024 年约 6.08 亿笔，+95%），约 3,000 万钱包；其他口径：330 万+（2024-08，Bakong Tourists App）、约 180 万（越柬、银联联通口径）。",
+   "confidence": "medium",
+   "source": "https://cambodiainvestmentreview.com/2026/06/08/exclusive-cambodias-digital-economy-reaches-new-milestone-as-mobile-bank ; https://en.vietstock.vn/2025/03/bakong-volume-now-more-than-300-percent-of-cambodias-gdp-114-606221.htm",
+   "date": "2024 / 2025",
+   "notes": "去重问题：柬埔寨人口约 1,700 万（记忆），450 万“商户”显然包含个人账户码和一户多行码；三种口径（180 万、330 万、450 万）差距很大。本文假设经营性独立商户 80–200 万（低置信度假设）。"
+  },
+  {
+   "id": "MARKET-22",
+   "claim": "【未查到】老挝 LAO QR 商户数、交易量、游客数：本轮未检索（预算限制），仓库里也没有。老挝不进入下文的数值测算。",
+   "confidence": "low",
+   "source": "未检索；docs/research/TH-LA.json 只有码结构与跨境联通",
+   "date": "—",
+   "notes": "“未查到”不等于不存在。"
+  },
+  {
+   "id": "MARKET-23",
+   "claim": "【汇总·部分推论】东南亚的日本游客（接待国口径）：泰国 2025 年约 105–108 万（按 1–11 月 985,612 推算）；越南 2025 年约 81.4 万；印尼、马来西亚、菲律宾、新加坡、柬埔寨的 2025 年数字本轮未查到。凭记忆（未核实）这五国合计约 150–220 万人次。本文对八国日本游客合计取 338–408 万人次（中值 370 万）作为假设。",
+   "confidence": "low",
+   "source": "MARKET-11 ; MARKET-13 ; 其余为记忆",
+   "date": "2026-10-18",
+   "notes": "反方向（东南亚→日本，JNTO 2025）：泰国 123.3 万、菲律宾 88.5 万、新加坡 72.6 万、越南 67.9 万、印尼 64.1 万、马来西亚 63.7 万（docs/05），比日本→东南亚更大，这一点支持网络按双向设计（docs/05），但这是 JP 商户侧的需求，与 SEA 商户的 INSCREEN 需求无关。"
+  },
+  {
+   "id": "MARKET-24",
+   "claim": "【公司声明·参照·沿用】印度：PhonePe 招股文件称截至 2025-09-30 净部署支付设备 919 万台（含 SmartSpeaker 音箱和 EDC）；Paytm 称 FY26 第四季度设备订阅商户 1,500 万（低置信）；2023-06 Paytm 音箱订阅 790 万；有估计称 2024 年全印超过 2,000 万商户用音箱类设备。音箱月租约 ₹125（约 USD 1.5）。这些音箱配的是静态 UPI 码，不是动态码。",
+   "confidence": "medium",
+   "source": "dynqr/devices.json DEVICES-02、DEVICES-03、DEVICES-04 ; dynqr/pain.json PAIN-42 ; https://restofworld.org/2023/india-sound-boxes-paytm-phonepe/",
+   "date": "2023-06 / 2025-09-30 / FY26 Q4",
+   "notes": "参照系：印度规模化的商户设备是“静态码 + 到账播报”，以低价订阅变现。按 GlobalData 密度折算，印度 POS 终端约 1,000 万台（MARKET-07），与音箱规模相当，动态码主要出现在 POS/EDC 侧。"
+  },
+  {
+   "id": "MARKET-25",
+   "claim": "【参照·沿用+记忆】中国：云码称 2018 年以来已出货超过 1,700 万台支付播报音箱（低置信）；人民银行要求经营商户自 2022-03-01 起把个人码换成商用收款码（仍是静态码）；有收银系统的商户主要用“扫码盒子”扫顾客付款码（CPM，被扫），不是商户出示动态码（记忆，未核实）。",
+   "confidence": "low",
+   "source": "dynqr/devices.json DEVICES-06、DEVICES-07 ; dynqr/pain.json PAIN-43",
+   "date": "2018–2024",
+   "notes": "参照系：中国在小微层同样停留在“静态码牌 + 云音箱”，在收银台走向 CPM，而不是商户出示的动态 MPM。这一点削弱了“小微商户会升级到动态 MPM 屏”的假设。"
+  },
+  {
+   "id": "MARKET-26",
+   "claim": "【计算·假设】把各国“QR 受理商户”的公开数字相加（印尼 4,486 万 + 泰国 800 万受理点 + 马来西亚 300 万受理点 + 柬埔寨 450 万 + 新加坡 3.5 万 SGQR+ 受理点；越南、菲律宾、老挝缺数）约 6,000 万以上，但单位混杂（商户、受理点、码），不能直接相加。按本文去重假设（印尼 ×0.85–0.95、泰国 300–500 万、越南 300–600 万、马来西亚 150–250 万、菲律宾 50–150 万、新加坡 10–20 万、柬埔寨 80–200 万），七国独立 QR 商户约 4,700–6,000 万，其中印尼占约 70–80%。",
+   "confidence": "low",
+   "source": "MARKET-01、08、12、15、17、19、21 的计算",
+   "date": "2026-10-18",
+   "notes": "去重系数全部为假设，须向 BI/ASPI、NITMX、PayNet、NBC 索取去重后的商户数核实。"
+  },
+  {
+   "id": "MARKET-27",
+   "claim": "【推论·假设】小微商户（大概率保持静态码）的占比：印尼 96.68% 的 QRIS 商户是 UMKM（其中微型 UMI 的比例未查到），泰国 99.7% 的企业是 MSME（2016）。本文假设七国独立 QR 商户中 90–95% 是店主自营或只有一两名店员的小微户，现状为“静态码 + App 通知或音箱”，对独立的动态码终端没有付费意愿（与 econ.json ECON-33、devices.json DEVICES-27 一致）。",
+   "confidence": "low",
+   "source": "MARKET-01 ; MARKET-08 ; dynqr/econ.json ECON-24、ECON-33",
+   "date": "2026-10-18",
+   "notes": "UMKM 包含中型企业（UME），所以 96.68% 不等于微型比例；微型、小型、中型的分布须向 BI 索取。"
+  },
+  {
+   "id": "MARKET-28",
+   "claim": "【计算·假设】有收银台或 POS 的商户（动态码真正有用的 S3 层）规模：以 POS 终端台数（MARKET-07）除以每店 1.4–2.3 台，再参照印尼非 UMKM 占比 3.32%（约 149 万家），假设独立商户为印尼 100–150 万、泰国 40–70 万、越南 30–50 万、马来西亚 45–70 万、菲律宾 15–40 万、新加坡 5–10 万、柬埔寨 3–8 万，七国合计约 238 万–398 万家，只占独立 QR 商户的约 4–8%。",
+   "confidence": "low",
+   "source": "MARKET-06、MARKET-07、MARKET-01 的计算；菲、新、柬为纯假设",
+   "date": "2026-10-18",
+   "notes": "这是本文测算的关键假设。POS 终端是刷卡终端口径，部分有收银台的商户只用 QR 不用卡，部分终端在无收银台的场景，误差方向不定。"
+  },
+  {
+   "id": "MARKET-29",
+   "claim": "【假设·SAM】S3 收银台动态码外设的可服务市场：有收银台的商户 × 尚未由 EDC/POS 出动态码的比例（假设低 40%、基准 50%、高 60%；BRI 等收单方的 EDC 和 POS 软件已能出动态码，见 devices.json DEVICES-15、DEVICES-25）= 低 95.2 万、基准 159 万、高 239 万家商户。",
+   "confidence": "low",
+   "source": "MARKET-28 ; dynqr/devices.json DEVICES-15、DEVICES-25、DEVICES-31",
+   "date": "2026-10-18",
+   "notes": "“尚未覆盖比例”没有任何数据，是最敏感的假设之一。"
+  },
+  {
+   "id": "MARKET-30",
+   "claim": "【假设·SOM，商户/设备/收入分开】3 年内 INSPAY 经 1–2 家收单方或 POS 厂商伙伴、在 2–3 个国家能触达的比例（低 5%、基准 10%、高 15%）× 触达后的采用率（10% / 15% / 25%）：SOM 商户 = 低 4,800、基准 23,800、高 89,600 家；每户收银台数 1.2 / 1.5 / 2.0，设备 = 低 5,700、基准 35,800、高 179,100 台；按每台每月 USD 5 / 8 / 13（13 ≈ ¥2,000）计，年经常性收入 = 低 USD 34.3 万、基准 USD 343 万、高 USD 2,794 万。",
+   "confidence": "low",
+   "source": "MARKET-29 ; 价格区间参照 dynqr/econ.json ECON-35（S3 USD 5–15/收银台/月）、ECON-01（¥2,000 ≈ USD 13）",
+   "date": "2026-10-18",
+   "notes": "这不是需求验证：触达率和采用率没有任何市场数据，须用试点数据替换。高情景要求每台 ¥2,000，而 econ.json 认为 S3 的可承受上限约 USD 5–15；POS 和 EDC 厂商可以用软件更新做同样的事，竞争会压低价格。若改为一次性硬件销售（假设 USD 60–120/台），基准情景约 35,800 台 × USD 90 ≈ USD 322 万 一次性收入。"
+  },
+  {
+   "id": "MARKET-31",
+   "claim": "【假设·SAM】S4 日本客游客区商户（跨境锁价是 INSPAY 网络的需求）：日本游客 338 / 370 / 408 万人次 × 在商户的人均消费 USD 300 / 450 / 600（不含机票、预付酒店，假设）× PayPay 等日本钱包经本网络扫码的份额 5% / 10% / 20%（前提是 PayPay 接入本网络，截至 2026-10 东南亚尚无日本钱包入境通道）= 日本钱包 QR 年流水 USD 5,070 万 / 1.67 亿 / 4.90 亿；按 docs/10 的 82 bps 假设，网络毛收入只有 USD 41.6 万 / 137 万 / 401 万。",
+   "confidence": "low",
+   "source": "MARKET-23 ; docs/10-economics.md 10.2–10.3 ; dynqr/econ.json ECON-36",
+   "date": "2026-10-18",
+   "notes": "人均消费和钱包份额都是假设；日本游客数中有约一半为推算或记忆。"
+  },
+  {
+   "id": "MARKET-32",
+   "claim": "【假设·SOM】S4 中能撑起一台动态码终端的商户数上限：econ.json ECON-36 算出一家商户每月日本钱包流水要达到约 USD 1,585（每年约 USD 19,000），网络毛收入才够付 ¥2,000/月。假设流水中 30% / 50% / 60% 集中在达标商户，则八国达标商户最多约 800 / 4,400 / 15,400 家（上限：达标商户的流水通常高于门槛，实际家数更少）；按每户 1.0 / 1.5 / 2.0 台、每台 USD 13/月计，设备收入约 USD 12.5 万 / 102 万 / 482 万 每年，而且要由网络收入补贴，不能超过上面的网络毛收入。",
+   "confidence": "low",
+   "source": "MARKET-31 ; dynqr/econ.json ECON-36",
+   "date": "2026-10-18",
+   "notes": "结论对参数不敏感：即使用高情景，游客区也只有约一万多家商户、约 USD 500 万/年的量级。日本游客高度集中（胡志明市约占越南日本游客 49%，MARKET-13），适合按商圈定点投放，不适合做全国铺设。"
+  },
+  {
+   "id": "MARKET-33",
+   "claim": "【假设·对照】如果 INSCREEN 改走“带屏到账音箱”路线卖给银行或收单方（满足的是到账确认需求，不是动态码需求）：独立 QR 商户 4,700 / 5,300 / 6,000 万 × 5 年内带屏或音箱设备渗透率 5% / 10% / 20%（参照印度约 2,000 万台音箱，假设）× INSCREEN 份额 0.5% / 1% / 3% = 设备 11,800 / 53,000 / 360,000 台；按 B2B 单价 USD 25 / 30 / 40 计，一次性硬件收入 USD 29.4 万 / 159 万 / 1,440 万（5 年累计）。",
+   "confidence": "low",
+   "source": "MARKET-26 ; MARKET-24 ; dynqr/devices.json DEVICES-27、DEVICES-28",
+   "date": "2026-10-18",
+   "notes": "设备数量比 S3 大得多，但单价要对标 USD 11–65 的音箱，毛利薄，买方是银行和收单方，竞争对手是中国 ODM。这条路线不能证明“动态码需求强”。"
+  },
+  {
+   "id": "MARKET-34",
+   "claim": "【推论·方法】去重与口径陷阱：(1) 泰国“800 万受理点”、马来西亚“300 万受理点”是码或受理点口径，不是商户；(2) 印尼 QRIS 按 NMID 统计，一家商户在多家 PJP 注册时可能被重复计数（未核实）；(3) 柬埔寨 450 万远超经营主体规模，含个人码；(4) 越南 VietQR 是账户码，没有商户口径；(5) 菲律宾小店多用个人 GCash P2P 码，不在 P2M 统计里；(6) POS 终端是一店多机；(7) BI 4,500 万商户、6,932 万用户等是部署目标，不是需求证据。各国数字单位不同，不能直接相加或比较。",
+   "confidence": "medium",
+   "source": "MARKET-01、08、12、15、17、21、07",
+   "date": "2026-10-18",
+   "notes": "推论；去重后的商户数须向 BI/ASPI、NITMX、PayNet、PPMI、NBC 索取。"
+  },
+  {
+   "id": "MARKET-35",
+   "claim": "【推论·结论】自下而上的测算不支持“东南亚动态码升级需求很强”。表面上有约 6,000 万个 QR 受理点，但 90–95% 是会留在静态码上的小微户；动态码真正有用的是约 238 万–398 万家有收银台的商户（约 4–8%），其中相当一部分已由 EDC 和 POS 软件出码；游客区（日本客）能撑起终端的商户只有约数千到一万多家。INSCREEN 作为“动态码终端”，3 年 SOM 的量级是数千到约 18 万台设备、年收入约 USD 30 万到 2,800 万（基准约 3.6 万台、USD 340 万），而不是按数千万商户计的市场。",
+   "confidence": "low",
+   "source": "MARKET-26 至 MARKET-34",
+   "date": "2026-10-18",
+   "notes": "所有 SAM/SOM 数字都是假设推导的数量级，不是预测；与兄弟调研 econ、devices、pain 的结论方向一致。"
+  },
+  {
+   "id": "MARKET-36",
+   "claim": "【推论·交易增长的含义】交易增长很快（QRIS 2025 年 +148.54%、2026 年中同比 +82.42%；DuitNow QR 2025 年翻倍至约 30 亿笔；Bakong 2025 年 +约 119%；VietQR 2025 年 1–10 月笔数 +52%；PromptPay 月 21–25 亿笔），但增长发生在现有的静态码体系中，主要来自小微商户和 P2P 使用频率。仓库和兄弟调研都没有找到任何一国按静态、动态拆分的交易数据（pain.json PAIN-04、PAIN-18），所以增长不能当作动态码需求的证据。",
+   "confidence": "medium",
+   "source": "MARKET-02、09、12、15、21 ; dynqr/pain.json PAIN-04、PAIN-18",
+   "date": "2026-10-18",
+   "notes": "Bakong 增速按 13.3 亿 ÷ 6.08 亿计算。"
+  },
+  {
+   "id": "MARKET-37",
+   "claim": "【推论·优先级】如果仍要做东南亚，按测算的优先顺序是：(1) 印尼的 S3（有收银台的商户最多，约 100–150 万家），但必须接收单方 API（integration.json），并和 BRI 等的 EDC 竞争；(2) 越南（日本游客约 81 万、集中在胡志明市，账户型 VietQR 允许终端自己出码，有 3.7 万户强制开票户），但与 SePay 等竞争；(3) 泰国（日本游客最多，约 105 万），但 Thai QR 商户数未知，日本钱包入境通道尚无；(4) 新加坡、马来西亚、菲律宾、柬埔寨的游客商户已能被 Alipay+ 钱包扫静态码，动态码的增量价值主要在 INSPAY 网络一侧。",
+   "confidence": "low",
+   "source": "MARKET-28 ; MARKET-13 ; MARKET-14 ; MARKET-11 ; dynqr/integration.json",
+   "date": "2026-10-18",
+   "notes": "推论，取决于伙伴可得性，没有比较过获客成本。"
+  },
+  {
+   "id": "MARKET-38",
+   "claim": "【推论·与稳定币的关系】INSCREEN 的稳定币受理（docs/11 正在并行撰写）不改变测算的数量级：泰、越、印尼不允许本地商户把稳定币当支付手段，新加坡（dtcpay 在 4 万+ NETS 受理点）与菲律宾（加密钱包经本地出款方扫 QR Ph）是例外，而这两国在本测算中的 S3 商户合计只有约 20–50 万家，游客流量也已经被现有通道覆盖。",
+   "confidence": "low",
+   "source": "dynqr/econ.json ECON-40 ; dynqr/integration.json INTEGRATION-46 ; MARKET-19",
+   "date": "2026-10-18",
+   "notes": "推论；稳定币部分以 docs/11 为准。"
+  }
+ ],
+ "key_claims": [
+  "公开的 QR 受理数相加超过 6,000 万，但口径混杂（商户、受理点、码）且有重复；泰国、越南、菲律宾、老挝没有官方商户数，不能把这个数当作动态码的可服务市场。",
+  "按印尼 UMKM 占 96.68%、泰国 MSME 占 99.7% 推断，独立 QR 商户中 90–95% 是会留在“静态码 + 到账播报”上的小微户。印度（音箱约 2,000 万台）和中国（云音箱、码牌，收银台用扫码盒子）也走同一路线。",
+  "动态码真正有用的是有收银台或 POS 的商户，按 GlobalData POS 密度推算七国约 240–400 万家（假设），只占独立 QR 商户的约 4–8%，而且其中相当一部分已由 EDC 和 POS 软件出码。",
+  "S3 收银台外设 3 年 SOM（假设）：商户约 0.5 万 / 2.4 万 / 9.0 万家，设备约 0.6 万 / 3.6 万 / 17.9 万台，年收入约 USD 34 万 / 343 万 / 2,794 万（低 / 基准 / 高）。高情景要求每台 ¥2,000/月，超出 econ 测算的 S3 可承受价。",
+  "日本游客：泰国 2025 年 1–11 月 985,612（全年推算约 105 万），越南 2025 年约 81.4 万（胡志明市约占一半），其他国家未查到。即使 PayPay 接入，八国能撑起 ¥2,000/月终端的游客商户上限也只有约 800 到 1.5 万家，基准约 4,400 家。",
+  "游客跨境 QR 需求目前很稀薄：印尼 2025 年入境跨境 QRIS 约 589 万笔，只占境内 155 亿笔的约 0.04%；巴厘约 100 万家商户全年只有 148,717 笔跨境交易，平均每户约 USD 2.2。",
+  "交易增长（QRIS +148%、DuitNow QR 翻倍、Bakong +119%、VietQR +52%）发生在静态码体系中，各国都没有静态与动态的拆分，所以不能当作动态码需求的证据。",
+  "“动态码”主要是 INSPAY 跨境网络（外国钱包锁价）的需求，不是本地商户的需求。可行的商业化路线只有两条：一是作为 POS 外设向收单方或 POS 厂商按收银台收费，二是由网络在日本客集中的商圈补贴投放。小微层只能以带屏音箱的形式卖给银行，那满足的是到账确认需求。"
+ ],
+ "open_questions": [
+  "Thai QR / PromptPay 的去重商户数和各行份额（BOT 支付统计、NITMX；SCB、KBank、Krungthai 的 Thai QR 商户数），以及 P2M 在 PromptPay 交易中的占比。",
+  "VietQR / NAPAS 与 VNPAY-QR 的受理商户数，以及个体户总数（GSO）；越南 P2M 与 P2P 的拆分。",
+  "QR Ph P2M 的全国商户数（BSP 支付统计或 PPMI），以及 GCash/Maya 个人码商户的规模。",
+  "BI/ASPI 的 QRIS 商户是否按 NMID 去重？UMI/UKE/UME/UBE 各类商户的数量，以及静态与动态 QRIS 的商户数和交易占比。",
+  "各国 EDC/POS 终端数的官方数据（BI SPIP 统计表、BNM 支付统计、BOT），以及“每店台数”，用来替换 GlobalData 密度和每店 1.4–2.3 台的假设。",
+  "印尼、马来西亚、菲律宾、新加坡、柬埔寨 2025 年的日本游客数（接待国统计），以及日本游客在东南亚的人均当地消费（JTB 或观光厅出境消费调查）。",
+  "游客区商户数：曼谷素坤逸、普吉、芭堤雅、胡志明市一郡、岘港、巴厘、新加坡乌节路等商圈的 QR 商户数，以及日本客流水的集中度（前 1% 商户占多少）。",
+  "收单方、POS 厂商对“POS 外设型动态码屏”的采购意愿和价格（BRI、Mandiri、KBank、SCB、Maybank、StoreHub、Moka、Qashier）：用 3–5 次访谈替换本文的触达率和采用率假设。",
+  "PayPay 或其他日本钱包何时、以什么条件接入东南亚国家码。这决定 S4 是否存在，在此之前 S4 的流水为零。",
+  "老挝 LAO QR 的商户数与交易量（BOL、LAPNet），本轮未检索。"
+ ]
+}

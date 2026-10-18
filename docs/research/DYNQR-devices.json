@@ -1,0 +1,281 @@
+{
+  "summary": "本轮（14 次 WebSearch 用完；WebFetch 对 vneconomy、nilsonreport、detik、phonepe 均 DNS 失败，curl 被代理拒绝，全部据搜索摘要）检验了“东南亚商户强烈需要把静态码升级为动态码”这一假设。结论：在小微商户这一层，证据不支持该假设。各国在静态码之后普遍采用的是“静态码 + 语音播报”（音箱或银行 App 语音通知），解决的是“确认到账、防假转账截图”，而不是“由码内带金额”。越南 VietinBank、MB、VPBank、Woori 按开户或套餐免费送音箱；印尼 DANA、BSI、Netzme×Hijra 推出 QRIS 音箱（DANA 明确称其为“静态 QRIS + 语音”）；泰国 K SHOP、Tung Ngern、แม่มณี 走免费 App 语音或推送通知，本轮未发现银行专门分发音箱；马来西亚 Maybank QRPay Soundbox 标价 RM199.90/279.90，促销 RM50 或免费，Qashier 标价 RM179 起、无月费、收 0.8% MDR；菲律宾 HitPay 音箱 ₱2,500。价格锚点为免费到一次性约 USD 11–65；印度订阅制为约 USD 0.3–1.5/月（PhonePe ₹125/月或 ₹999 一次性加 ₹25/月；Paytm 2023 年 790 万音箱订阅）。中国厂商云码称 2018 年以来出货超过 1,700 万台播报音箱。补贴方的动机是开户、CASA 存款和锁定商户（银行），以及 MDR 和订阅（钱包、收单方、印度）。印尼 UMI 单笔 ≤Rp500k 的 MDR 为 0%，MDR 无法支撑设备成本。动态码目前主要出自 POS 或 EDC 收银环节（例如 BRI 经 EDC 和 API 提供动态 QRIS；HitPay 称动态码来自 POS App），对应已为 POS 软件付月费的餐饮零售商户（StoreHub USD39–149/月，Moka Rp249k/月），这一层已有 POS 和 EDC 厂商。能为“屏幕”付费的细分可能是：多收银台、需自动对账的 POS 商户；希望 QR 与刷卡一机的商户（RHB Sound Box Plus）；以及游客商户（但 Alipay+ 在 PH、ID、KH 已能扫现有静态码，削弱了这一论据）。东南亚各国音箱装机量、越南银行是否分发动态码屏、新加坡、柬埔寨和老挝的设备情况，本轮均未查到（未查到不等于不存在）。",
+  "facts": [
+    {
+      "id": "DEVICES-01",
+      "claim": "印度 PhonePe SmartSpeaker 官方帮助页定价：月租方案为一次性开通费 ₹318 + 月费 ₹125；“零租金”方案为一次性 ₹999（含 GST）+ 月服务费 ₹25；已有设备加装语音功能（Superstar Voice）每月 ₹15。",
+      "confidence": "medium",
+      "source": "https://cms.phonepe.com/en/mx/merchant-help/phonepe-smartspeaker/about-phonepe-smartspeaker/what-are-charges-applicable-phonepe-smartspeaker",
+      "date": "页面日期未知；检索于 2026-10-18",
+      "notes": "类型：公司官方声明。WebFetch 因 DNS 失败，仅据 WebSearch 摘要。按假设汇率 1 USD≈₹87 计，₹125/月约 USD 1.4，₹25/月约 USD 0.3，₹999 约 USD 11.5。说明印度小微商户能接受的价位是约 USD 1–1.5/月。"
+    },
+    {
+      "id": "DEVICES-02",
+      "claim": "PhonePe 招股文件（UDRHP）披露：截至 2025-09-30，其商户网络中净部署的支付设备为 919 万台，包括 SmartSpeaker 音箱和 EDC 刷卡机，不是纯音箱口径。",
+      "confidence": "medium",
+      "source": "WebSearch 摘要（引 PhonePe UDRHP），未取得原文 URL；检索词 'Paytm soundbox subscription price per month devices installed base 2025 PhonePe Smart Speaker'",
+      "date": "2025-09-30（数据截止）",
+      "notes": "类型：公司披露（监管申报）。原文未读到，音箱与 EDC 的拆分未知。"
+    },
+    {
+      "id": "DEVICES-03",
+      "claim": "Paytm 音箱 2023 年的平均月租约 ₹125（约 USD 1.53），实际费用随商户规模和地推促销浮动；截至 2023-06，Paytm 音箱订阅数同比翻倍以上，达 790 万。",
+      "confidence": "medium",
+      "source": "https://restofworld.org/2023/india-sound-boxes-paytm-phonepe/",
+      "date": "2023",
+      "notes": "类型：媒体报道，引用公司数据。数据较旧。Paytm 音箱同样配合静态 UPI 码牌使用，金额由付款人输入（背景知识，本轮未单独核实）。"
+    },
+    {
+      "id": "DEVICES-04",
+      "claim": "Paytm 称 FY26 第四季度订阅商户增至 1,500 万（1.5 Cr），增长来自音箱等设备的铺设；该口径覆盖全部设备订阅，不是纯音箱。",
+      "confidence": "low",
+      "source": "WebSearch 摘要（Paytm 业绩口径），原始股东信 URL 未取得",
+      "date": "FY26 Q4（约 2026-01 至 03）",
+      "notes": "类型：公司声称。未读到原文，仅作量级参考。"
+    },
+    {
+      "id": "DEVICES-05",
+      "claim": "印度音箱市场的竞争格局：2023 年 Business Standard 社论称 Paytm 约占音箱市场 85%；Google Pay 于 2023-01 在印度试点自有 soundbox；另有报道称 NPCI 拟推出统一的音箱基础设施。",
+      "confidence": "low",
+      "source": "https://www.business-standard.com/amp/opinion/editorial/innovation-gains-123090601440_1.html ; https://techcrunch.com/2023/01/17/google-pay-soundbox-india/ ; https://inc42.com/buzz/npci-to-roll-out-unified-soundbox-infrastructure-for-merchants-report/",
+      "date": "2023-01 / 2023-09 / NPCI 报道日期未知",
+      "notes": "类型：媒体报道。85% 份额为旧社论数据；NPCI 一项只见标题，内容未核实。可作参考：音箱在印度已被视为基础设施，各家都把它当作获客和收订阅费的手段，而不是靠动态码。"
+    },
+    {
+      "id": "DEVICES-06",
+      "claim": "中国支付硬件厂商云码（CloudCode Technology）称，自 2018 年以来已出货超过 1,700 万台支付播报音箱；Nilson Report 摘要称这些设备服务于受理 QR 支付的中小商户，大部分在中国，买家扫码后经安全网络协议播报支付结果。",
+      "confidence": "low",
+      "source": "https://nilsonreport.com/articles/cloud-codes-payment-broadcast-speakers/",
+      "date": "文章日期未知（2018 年起累计）",
+      "notes": "类型：公司声称（经 Nilson 转述）。Nilson 有付费墙，WebFetch 失败（DNS）。这只是单一厂商的累计出货，不是中国全市场装机量；全国收款音箱的出货量与价格未查到。"
+    },
+    {
+      "id": "DEVICES-07",
+      "claim": "中国人民银行 2021 年通知要求：使用“码牌”或打印封装二维码的经营商户，须向收款服务机构（微信、支付宝等）申请转为商用收款码，自 2022-03-01 施行；报道称收款服务机构须免费为商户提供商用收款码。",
+      "confidence": "medium",
+      "source": "https://www.yicai.com/news/101242396.html（据 WebSearch 摘要，具体出处可能为同组结果中的 lanjinger.com）",
+      "date": "2021（施行日 2022-03-01）",
+      "notes": "类型：媒体转述监管文件，原文未读。背景知识（本轮未核实）：该通知后经央行澄清，个人收款码并未被禁止用于小额经营。它说明中国的升级方向是“个人码→经营码”（身份与合规），而不是“静态→动态”。"
+    },
+    {
+      "id": "DEVICES-08",
+      "claim": "中国收单方的地推模式是“免费配备收款语音小音箱”，绑定收单服务，实时播报到账；1688 上有多平台（微信、支付宝、银联）收款音箱在售。本轮未找到收款音箱的人民币价格和行业出货量。",
+      "confidence": "low",
+      "source": "https://www.douyin.com/shipin/7300377380185671730 ; https://www.1688.com/wiki/Tfcjd04vsix34",
+      "date": "约 2023–2024",
+      "notes": "类型：营销视频或商品页，可靠性低。背景知识（本轮未核实，属假设）：中国中型以上商户的收银升级主流是 B 扫 C（扫码枪、扫码盒子，CPM），而不是商户展示动态码；小微商户则停留在静态码加音箱。"
+    },
+    {
+      "id": "DEVICES-09",
+      "claim": "越南 VietinBank 推出到账语音播报音箱：成功交易后读出金额，适合小店，支持 Wi-Fi/4G，款项直接入 VietinBank 账户；加入“Gói Tài chính thông minh Kinh doanh lộc phát”套餐、经 VietQR 收款的客户可获赠音箱，活动至 2025-11-30。",
+      "confidence": "medium",
+      "source": "https://vneconomy.vn/trai-nghiem-dich-vu-loa-thong-bao-nhan-tien-tu-vietinbank.htm",
+      "date": "2025（活动截至 2025-11-30）",
+      "notes": "类型：银行产品，经媒体报道。WebFetch 失败（DNS）。赠送以开户和套餐为条件，补贴动机是 CASA 存款。活动已过期，现行政策未知。未见该设备显示动态码。"
+    },
+    {
+      "id": "DEVICES-10",
+      "claim": "越南多家银行免费送到账音箱：MB 向小型个体户免费赠送“loa thanh toán”并上线读金额功能；VPBank 把余额变动播报音箱放进商户套餐 Biz Prime 免费提供；Woori Bank Vietnam 2025-07 有“Trải nghiệm Dịch vụ Loa thông báo giao dịch QR”促销细则。",
+      "confidence": "medium",
+      "source": "https://vneconomy.vn/mb-tang-mien-phi-thiet-bi-loa-thanh-toan-cho-ho-kinh-doanh-nho.htm ; https://baodauthau.vn/vpbank-tang-loa-thong-bao-so-du-giai-phap-quan-ly-tai-chinh-hien-dai-cho-ho-kinh-doanh-post173671.html ; https://woori.com.vn/wp-content/uploads/2025/07/The-le-CTKM-tang-loa-thong-bao-VIET.pdf",
+      "date": "约 2024–2025（MB 文章日期未知；Woori 2025-07）",
+      "notes": "类型：银行产品，经媒体报道。各行发放数量均未披露。Vietcombank、BIDV、Techcombank 的同类设备本轮未查到（未查到不等于不存在）。"
+    },
+    {
+      "id": "DEVICES-11",
+      "claim": "《Đại biểu Nhân dân》2026-03-20 报道：转账到账播报音箱已成为越南小商贩在春节后销售旺季的得力工具。",
+      "confidence": "medium",
+      "source": "https://daibieunhandan.vn/mua-cao-diem-ban-hang-loa-thong-bao-chuyen-khoan-tro-thanh-tro-thu-dac-luc-cua-tieu-thuong-10410575.html",
+      "date": "2026-03-20",
+      "notes": "类型：媒体报道（越南国会机关报）。说明在越南，“静态 VietQR + 音箱”在小商贩中已普及，痛点是确认到账。"
+    },
+    {
+      "id": "DEVICES-12",
+      "claim": "越南金融科技 SePay 的到账播报音箱零售价 ₫599,000（含 VAT，12 个月保修），内置 4G SIM，一台可播报多个收款账户；可设为播报所有入账，或只播报在该音箱上扫码的付款。SePay App 用虚拟账户按门店拆分收入，提供 API 接入 CRM、ERP 和电商自动确认收款。",
+      "confidence": "medium",
+      "source": "https://didongviet.vn/thiet-bi-am-thanh/loa-thong-bao-chuyen-khoan-sepay.html ; https://apps.apple.com/app/sepay/id6523435118",
+      "date": "检索于 2026-10-18",
+      "notes": "类型：零售商标价加公司 App 描述。按假设汇率 1 USD≈26,000 VND，约 USD 23。推断：“只播报在本音箱扫码的付款”意味着每台设备绑定一个虚拟账户的静态码，靠虚拟账户而不是动态码实现门店或收银台级别的归因和对账。Casso 的价格本轮未查到。"
+    },
+    {
+      "id": "DEVICES-13",
+      "claim": "印尼 DANA 推出 QRIS soundbox，自述为“静态 QRIS 扫码收款牌加语音”，交易成功后播报金额，目的是提升商户信任。",
+      "confidence": "medium",
+      "source": "https://keuangan.kontan.co.id/news/tingakatkan-kepercayaan-pelaku-usaha-dana-luncurkan-soundbox-qris",
+      "date": "日期未知（约 2024–2025）",
+      "notes": "类型：钱包产品，经媒体报道。价格未查到。这是钱包方把“静态码 + 音箱”当作商户产品的直接证据。"
+    },
+    {
+      "id": "DEVICES-14",
+      "claim": "印尼银行和金融科技也在推 QRIS 音箱：BSI 推出 Soundbox QRIS BSI，接入 BYOND Merchant App 实时下载交易报表；Netzme 与 Hijra Bank 签 MoU 推伊斯兰版 QRIS soundbox，款项入商户在 Hijra Bank 的伊斯兰账户。detik 报道称 QRIS soundbox 能保护商户免受假转账凭证之害。",
+      "confidence": "medium",
+      "source": "https://bcasekuritas.co.id/latest-news/news/bsi-perkuat-transformasi-digital-lewat-qris-soundbox ; https://www.fortuneidn.com/sharia/hijra-bank-dan-netzme-teken-mou-layanan-qris-soundbox-syariah-00-4vfn9-2xyrr5 ; https://inet.detik.com/business/d-8207135/cara-kerja-qris-soundbox-lindungi-pedagang-dari-bukti-transfer-palsu/amp",
+      "date": "约 2025",
+      "notes": "类型：银行产品，经媒体报道。BRI、Mandiri、BCA、BNI、GoPay/GoBiz、ShopeePay 的音箱价格或租金本轮均未查到。“款项入本行账户”说明银行补贴的动机是 CASA 存款。"
+    },
+    {
+      "id": "DEVICES-15",
+      "claim": "BRI 向商户提供静态和动态 QRIS，渠道包括 EDC 和面向线上商户的 API；截至 2024-12，BRI Merchant App 用户 27 万，支持结算报表和动态 QRIS（QRIS Dinamis）。另有 Kontan 报道（年份不明）引 BRI 高管称其商户数接近 50 万。",
+      "confidence": "medium",
+      "source": "https://www.idxchannel.com/banking/mudah-dan-cepat-begini-cara-buat-qris-lewat-aplikasi-brimerchant ; https://momsmoney.kontan.co.id/news/begini-cara-buat-qris-melalui-aplikasi-brimerchant ; https://keuangan.kontan.co.id/news/bidik-merchant-kecil-dan-menengah-bri-perluas-jumlah-qris",
+      "date": "2024-12",
+      "notes": "类型：银行披露，经媒体报道。说明在印尼，动态码由收单行经 EDC、API 或商户 App 签发，是收单方能力而不是独立硬件能力。印尼全国 QRIS 商户在 2026 年中为 4,486 万（据 docs/research/ID.json）。"
+    },
+    {
+      "id": "DEVICES-16",
+      "claim": "印尼 QRIS 商户以小微为主：BI 数据显示 2025 上半年用户超 5,700 万、商户 3,930 万，其中 93.16% 为 UMKM；2026 年中商户 4,486 万，96.68% 为 UMKM。QRIS 的 UMI 商户单笔 ≤Rp500,000 时 MDR 为 0%。",
+      "confidence": "medium",
+      "source": "https://momsmoney.kontan.co.id/news/dengan-qris-soundbox-pembayaran-tak-lagi-perlu-dicek-manual-1 ；docs/research/ID.json（https://www.fortuneidn.com/finance/transaksi-digital-melesat-qris-tumbuh-82-4-persen-d7w02-00-lflgw-8hs5kx ；https://www.bi.go.id/id/fungsi-utama/sistem-pembayaran/ritel/kanal-layanan/QRIS/default.aspx）",
+      "date": "2025 H1 / 2026 年中",
+      "notes": "类型：监管数据经媒体转述，与仓库已核实事实一致，未重复检索。推断：绝大多数小微商户的小额交易 MDR 为零，收单方无法靠 MDR 回收设备补贴，补贴只能出自存款、数据或交叉销售。"
+    },
+    {
+      "id": "DEVICES-17",
+      "claim": "泰国 KBank 的 K SHOP（原 K PLUS shop）是免费商户 App，支持 Thai QR PromptPay、QR Credit、Alipay、WeChat Pay、K Point 收款，提供到账语音播报和推送通知；2022 年称全国受理点超过 200 万。",
+      "confidence": "medium",
+      "source": "https://www.wealthythai.com/th/updates/banking/14133 ; https://www.kasikornbank.com/th/business/sme/digital-banking/kshop/help/Pages/qualification.aspx",
+      "date": "2022",
+      "notes": "类型：银行声明。泰国在静态码之后的方向是“手机 App 语音”，不额外发硬件。K SHOP 专用音箱的价格本轮未查到。"
+    },
+    {
+      "id": "DEVICES-18",
+      "claim": "泰国其他银行的小微商户方案：KTC 页面称 Krungthai 的 ถุงเงิน（Tung Ngern）网络覆盖全国超过 200 万商户，Krungthai 在分行免费发放 PromptPay 台卡（Tent Card QR），并下市场地推；SCB 的 แม่มณี（Mae Manee）是面向小型 SME 的 App，受理 tag 30 账户码、信用卡 QR、Alipay/WeChat Pay，店主和店员都能即时收到收款通知。",
+      "confidence": "medium",
+      "source": "https://www.ktc.co.th/en/maai-tungngern ; https://www.mitihoon.com/2022/12/23/354339/ ; https://developer.scb.co.th/assets/documents/documentation/mae-manee-marchants/mae-manee-introduction.html",
+      "date": "2022–2025",
+      "notes": "类型：公司声明。“200 万”出自 KTC 的推广页，不是 Krungthai 的统计。本轮未发现泰国银行专门分发音箱或动态码屏（未查到不等于不存在）。泰国小微商户的默认配置是“免费打印的静态码台卡 + App 通知”。"
+    },
+    {
+      "id": "DEVICES-19",
+      "claim": "泰国假转账截图（สลิปปลอม）泛滥：数字经济部（DES）警告网上有人出售伪造转账截图的程序，建议商户先在自己的银行 App 核对入账再交货；警方和银行（Krungsri、SCB）均发布了识别假截图的指引。",
+      "confidence": "medium",
+      "source": "https://www.infoquest.co.th/?p=221031 ; https://www.thaipost.net/criminality-news/263637/ ; https://www.scb.co.th/th/personal-banking/stories/tips-for-you/check-transfer-slip.html",
+      "date": "约 2022–2025",
+      "notes": "类型：政府和银行警示。推断：东南亚小微商户的真实痛点是“确认钱是否到账”。到账通知（音箱或 App）可以解决，动态码本身不能解决（付款人仍可伪造截图）。泰国第三方验单服务（如 SlipOK）的价格本轮未查到。"
+    },
+    {
+      "id": "DEVICES-20",
+      "claim": "马来西亚 Maybank QRPay Soundbox 官方标价：Wi-Fi 版 RM199.90，含一年 SIM 套餐版 RM279.90；2025 年商户促销价 RM50，2026 年活动向首批 4,000 家符合条件的非城市商户免费赠送。两项活动似已结束。",
+      "confidence": "medium",
+      "source": "https://maybank2u.com.my/maybank2u/malaysia/en/personal/services/digital_banking/qrpay-soundbox.page ; https://www.maybank2u.com.my/maybank2u/malaysia/en/personal/promotions/scanandpay/merchant-acquisition2025.page",
+      "date": "2025–2026",
+      "notes": "类型：银行官方页面，仅据 WebSearch 摘要（curl 被代理拒绝）。按假设汇率 1 USD≈RM4.3，标价约 USD 46 和 65，促销价约 USD 12。银行用大幅补贴推动非城市商户，说明标价高于小微商户的接受度。"
+    },
+    {
+      "id": "DEVICES-21",
+      "claim": "马来西亚 Qashier 的 QashierPay Soundbox 起价 RM179，含 SIM 版 RM239；商户 MDR 0.8%，无月费，并定位为升级到其智能 POS 的入口产品。",
+      "confidence": "medium",
+      "source": "https://qashier.com/my/qashier-soundbox ; https://qashier.com/my/?p=16023",
+      "date": "检索于 2026-10-18",
+      "notes": "类型：公司声称。商业模式是用低价硬件换 MDR 收入，再向 POS 订阅升级。音箱是否显示动态码未核实。"
+    },
+    {
+      "id": "DEVICES-22",
+      "claim": "马来西亚 RHB 与 PayNet 于 2023-11 推出 RHB Sound Box，对 QR 收款同时提供语音和屏幕显示提醒；之后的 RHB Sound Box Plus 在一台设备上支持 DuitNow QR 和借记卡、信用卡受理。价格未查到。",
+      "confidence": "medium",
+      "source": "https://fintechnews.my/41334/payments-remittance-malaysia/rhb-paynets-sound-box-delivers-instant-audio-and-display-alerts-for-qr-payments/ ; https://www.theasianbanker.com/press-releases/rhb-launches-sound-box-plus-multi-payment-device-for-merchants ; https://rhbfoundation.rhbgroup.com/-/media/Assets/Corporate-Website/Document/Highlights/Media-Release/20231130.pdf",
+      "date": "2023-11-30 及之后",
+      "notes": "类型：银行新闻稿。“显示提醒”指屏幕显示到账金额，是否显示动态 DuitNow 码未核实。这是东南亚“带屏音箱”最接近 INSCREEN 的银行产品，卖点是“QR + 刷卡一机”。"
+    },
+    {
+      "id": "DEVICES-23",
+      "claim": "菲律宾 HitPay 的 Payment Soundbox 标价 ₱2,500（未含 VAT 和运费），用 SIM 卡联网、无需 Wi-Fi，支持 QR Ph、GCash、Maya；HitPay 称商户可在柜台放静态码，或用 POS App 显示动态码。",
+      "confidence": "medium",
+      "source": "https://hitpayapp.com/ph/payment-soundbox-philippines ; https://hitpayapp.com/ph/blog/qr-payment-soundbox-philippines",
+      "date": "检索于 2026-10-18",
+      "notes": "类型：公司声称（营销页）。按假设汇率 1 USD≈₱57，约 USD 44。GCash、Maya 自有音箱或终端的价格本轮未查到。"
+    },
+    {
+      "id": "DEVICES-24",
+      "claim": "东南亚一体化 POS 的月费：StoreHub 官网定价 Starter USD39/月、Advanced USD79/月、Enterprise USD149/月（较早报道为每个 iPad 授权 RM120–449/月，追加 RM89/月）；印尼 Moka 起价 Rp249,000/月（按年付），Moka Order 外卖、自取、堂食功能 Rp99,000/月/门店（约 2023 年）。",
+      "confidence": "medium",
+      "source": "https://storehub.com/pricing ; https://www.storehub.com/th/pricing ; https://moka.dev.fleava.com/en/faq",
+      "date": "检索于 2026-10-18（Moka 页面为开发子域，日期不明）",
+      "notes": "类型：公司定价页。这些 POS 是否在客显屏或小票上生成动态 DuitNow、QRIS 码，本轮未核实；Sunmi、PAX、iPOS.vn、KiotViet、Sapo、Pawoon 的动态码支持和价格也未查到。Moka 页面在开发子域，可靠性较低。"
+    },
+    {
+      "id": "DEVICES-25",
+      "claim": "在设备上把静态 QRIS 改成“动态”（把 010211 改为 010212、插入 tag 54 金额、重算 CRC）在技术上可行，但仓库的国家手册指出，这种码不能作为对账依据；真正可对账的动态码须由收单方签发（如 BRI 经 EDC 或 API 提供）。",
+      "confidence": "medium",
+      "source": "docs/research/ID.json（开源库做法）；docs/05-country-playbooks.md 印尼技术要点；DEVICES-15",
+      "date": "2026",
+      "notes": "类型：仓库已核实事实加推断。对 INSCREEN 的含义：设备“能显示动态码”不等于能提供动态码，每个国家都要接入收单方的动态码 API 或到账通知。设备本身不是护城河，收单方集成才是。"
+    },
+    {
+      "id": "DEVICES-26",
+      "claim": "跨境方面，仓库已核实：Alipay+ 接入菲律宾 QR Ph（2026-09）、印尼 QRIS（2026-04-30）后，海外钱包可直接扫商户现有码，商户“无需新码或新硬件”；KHQR 也已被 12 个 Alipay+ 钱包受理。",
+      "confidence": "high",
+      "source": "docs/research/ALIPAY-VERIFY.json ; docs/research/PH-MM.json ; docs/research/ID.json（https://fintech.global/2026/09/01/alipay-opens-philippine-merchants-to-global-shoppers/ ；https://ibsintelligence.com/ibsi-news/indonesia-and-china-launch-cross-border-qr-payments-link/）",
+      "date": "2024-10 至 2026-09",
+      "notes": "类型：仓库已核实事实，未重复检索。推断：游客扫静态码时，在钱包里输入金额后锁汇即可（docs/02 已按此实现）。“跨境需要动态码锁价”对设备销售只是加分项，不足以构成商户的刚需。"
+    },
+    {
+      "id": "DEVICES-27",
+      "claim": "推断：东南亚小微商户在静态码之后的事实标准是“静态码 + 到账语音播报”（音箱或银行 App），不是“动态码屏”。越南（VietinBank、MB、VPBank、Woori、SePay）、印尼（DANA、BSI、Netzme）、马来西亚（Maybank、Qashier、RHB）、菲律宾（HitPay）、泰国（K SHOP、Tung Ngern、แม่มณี 的 App 通知）都是这一模式，与印度 Paytm/PhonePe 和中国云码路线一致。",
+      "confidence": "medium",
+      "source": "推断，依据 DEVICES-03、06、09–14、17–23",
+      "date": "2026-10-18",
+      "notes": "类型：推断。反例风险：未查到越南、印尼银行是否在推带屏动态码盒子；若存在且规模大，结论需修正。"
+    },
+    {
+      "id": "DEVICES-28",
+      "claim": "推断：小微商户可接受的价格锚点是“免费”（银行或钱包补贴，通常以开户或套餐为条件）到一次性约 USD 11–65（RM50 促销价约 USD 12；SePay ₫599k 约 USD 23；Qashier RM179 约 USD 42；HitPay ₱2,500 约 USD 44；Maybank RM199.90–279.90 约 USD 46–65）；印度订阅制约 USD 0.3–1.5/月。一台带屏的动态码终端若成本明显高于 USD 50，要进入小微层必须由收单方或银行全额补贴。",
+      "confidence": "medium",
+      "source": "推断，依据 DEVICES-01、03、09、10、12、20、21、23；汇率见 DEVICES-30",
+      "date": "2026-10-18",
+      "notes": "类型：推断加假设汇率。Maybank 需要打到 RM50 或免费才能铺向非城市商户，说明约 USD 45 的标价已经偏高。"
+    },
+    {
+      "id": "DEVICES-29",
+      "claim": "推断：补贴方及动机。银行补贴为换开户和 CASA 存款（VietinBank 绑套餐，VPBank 绑 Biz Prime，BSI、Hijra 款项入本行账户）；钱包和收单方补贴为换 MDR 和锁定商户（Qashier 0.8% MDR，DANA 提升商户信任）；印度把音箱月租本身当作利润线（Paytm、PhonePe）。印尼 UMI 小额 MDR 为 0%，越南、泰国个人账户转账码多数免费，因此东南亚靠 MDR 回收设备成本的空间很小（越南、泰国 MDR 本轮未核实）。",
+      "confidence": "medium",
+      "source": "推断，依据 DEVICES-01、03、09、10、14、16、21",
+      "date": "2026-10-18",
+      "notes": "类型：推断。越南、泰国小微商户的 MDR 实际水平需另行核实。"
+    },
+    {
+      "id": "DEVICES-30",
+      "claim": "假设：本文用于换算的汇率为 1 USD ≈ ₹87 ≈ RM4.3 ≈ ₱57 ≈ ₫26,000 ≈ Rp16,400，均为 2025–2026 年近似水平，未逐日核实。",
+      "confidence": "low",
+      "source": "假设（未检索）",
+      "date": "2026-10-18",
+      "notes": "类型：假设，仅用于量级比较。"
+    },
+    {
+      "id": "DEVICES-31",
+      "claim": "推断：愿意为“屏幕和动态码”付费的细分有三类。（a）已在用 POS 的餐饮和零售（已付 USD 15–150/月软件费），需要多收银台、按单自动对账，动态码通常由 POS 软件在客显屏、小票或 EDC 上生成，已有 POS 和 EDC 厂商；（b）希望 QR 与刷卡一机的商户（RHB Sound Box Plus 的定位）；（c）游客密集商户，但因 DEVICES-26，这一论据偏弱。小微商户主要要的是“声音确认”，不是“屏幕”。",
+      "confidence": "medium",
+      "source": "推断，依据 DEVICES-15、22–24、26、27",
+      "date": "2026-10-18",
+      "notes": "类型：推断。本轮没有商户调研数据，各细分的规模未量化。"
+    },
+    {
+      "id": "DEVICES-32",
+      "claim": "对创始人假设的检验结论：本轮证据不支持“东南亚小微商户强烈需要把静态码升级为动态码”。需求集中在 POS 集成的中型商户和收单方（对账、防错金额），而这一层已由 POS 软件和 EDC 满足。INSCREEN 的机会更可能在于：作为收单方或银行补贴的带屏音箱（“到账播报 + 按需动态码 + 刷卡或稳定币”），或作为 POS 的客显外设；而不是直接卖给小微商户。",
+      "confidence": "low",
+      "source": "推断，依据 DEVICES-27–31",
+      "date": "2026-10-18",
+      "notes": "类型：推断。置信度低，因为缺少商户访谈或问卷数据、东南亚音箱装机量，也未核实越南和印尼是否有银行在推动态码屏。"
+    }
+  ],
+  "key_claims": [
+    "东南亚小微商户在静态码之后的事实标准是“静态码 + 到账语音播报”（音箱或银行 App），解决的是确认到账和假转账截图，而不是由码内带金额；DANA 明确把 QRIS 音箱称为“静态 QRIS + 语音”。",
+    "价格锚点：银行或钱包免费送（越南 VietinBank、MB、VPBank 以开户或套餐为条件；Maybank 2026 年向 4,000 家非城市商户免费送），或一次性约 USD 11–65（SePay ₫599k、Qashier RM179/239、HitPay ₱2,500、Maybank RM199.90/279.90，促销 RM50）；印度 PhonePe ₹125/月或 ₹999 一次性加 ₹25/月，Paytm 2023 年平均 ₹125/月。",
+    "规模参照：Paytm 2023-06 有 790 万音箱订阅；PhonePe 截至 2025-09-30 部署 919 万台设备（含 EDC）；中国厂商云码称 2018 年以来出货 1,700 万台以上。东南亚各国音箱装机量本轮均未查到。",
+    "补贴动机：银行为开户和 CASA，钱包和收单方为 MDR 和锁定商户，印度把月租当利润线；印尼 UMI 小额 MDR 为 0%，MDR 回收设备成本的空间小。",
+    "动态码目前由收单方经 EDC、API、POS 签发（BRI 经 EDC 和 API；HitPay 称动态码来自 POS App），对应已付 POS 月费的商户（StoreHub USD39–149/月，Moka Rp249k/月）。设备能显示动态码不是护城河，每个国家的收单方集成才是。",
+    "跨境：Alipay+ 在 PH、ID、KH 让海外钱包直接扫现有静态码，商户无需新硬件，“跨境需要动态码锁价”难以构成商户刚需。",
+    "结论（低置信度）：假设“小微商户强烈需要升级为动态码”不被支持；INSCREEN 更可能的路径是由收单方或银行补贴的带屏音箱，或 POS 客显外设，目标为多收银台、需自动对账的中型商户，以及 QR 加刷卡或稳定币的一机需求。"
+  ],
+  "open_questions": [
+    "东南亚各国银行和钱包音箱的装机量（VietinBank、MB、VPBank、BRI、DANA、GoPay、Maybank 等）均未披露或未查到。",
+    "越南 Vietcombank、BIDV、Techcombank 及印尼 BRI、Mandiri、BCA、BNI、GoPay/GoBiz、ShopeePay 的音箱价格或租金，以及是否有带屏动态码盒子（“QR box”“màn hình QR động”）。",
+    "泰国是否有银行分发实体音箱（本轮只见 App 语音和台卡），以及 SlipOK 等验单服务的价格和用户量。",
+    "GCash、Maya 自有商户设备；新加坡（SGQR、PayNow、NETS）、柬埔寨（ABA、ACLEDA、Bakong 音箱）、老挝的设备与价格本轮未覆盖。",
+    "StoreHub、Qashier、Moka、Pawoon、iPOS.vn、KiotViet、Sapo 是否在客显屏上生成国家动态码；Sunmi、PAX 客显机型在东南亚的价格。",
+    "越南和泰国小微商户收款的实际 MDR，决定收单方能否靠 MDR 补贴设备。",
+    "中国收款音箱和码牌的人民币价格与行业出货量（需艾瑞、易观或拉卡拉、富友、随行付等年报）；中国中型商户的升级路径是否以 B 扫 C 扫码盒子为主（本文作为假设）。",
+    "商户侧对“动态码”的直接需求证据（访谈或问卷）：多收银台对账失败率、金额输错率、假截图损失，用来量化 INSCREEN 的付费细分。",
+    "INSCREEN 在各国能否拿到收单方动态码 API 或到账通知（webhook、虚拟账户），这决定它能否真正提供可对账的动态码。"
+  ]
+}
