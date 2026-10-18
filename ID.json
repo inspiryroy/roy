@@ -1,0 +1,355 @@
+{
+ "topic": "印度尼西亚（QRIS / Bank Indonesia / ASPI / GPN 交换机 / BI-FAST）——稳定币版 Alipay+ 接入可行性研究",
+ "report_md": "# 印度尼西亚 QRIS 研究报告（INSPAY 稳定币版 Alipay+ 网络）\n\n> 研究日期：2026-10-18｜主题：印尼（QRIS、Bank Indonesia、ASPI、GPN 交换机 Artajasa/Rintis/Jalin/Alto、BI-FAST）\n\n## 0. 方法与局限\n\n- **WebSearch 用了 30 次，额度已用完**。WebFetch 试了 4 次：bi.go.id、docs.antom.com、en.wikipedia.org 都是 DNS 失败（ENOTFOUND），只有 pkg.go.dev 拿到了内容（开源 go-qris 的 README）。所以 **BI、ASPI、OJK 的官方原文一份都没能在线打开**，引用的官方内容全部来自搜索摘要。\n- **二手源码证据**：从 npm 下载了 `qris@0.0.1`、`qris-dinamis@1.0.2`、`@agungjsp/qris-dinamis@1.0.7` 并阅读，解压在 `/tmp/claude-0/-home-user-roy/bae04deb-36b8-5b47-bbfe-be5b01336a0d/scratchpad/r2/indonesia/`，代码没有执行。我另写了一个独立的 TLV 解析和 CRC 校验脚本，放在 `/tmp/claude-0/-home-user-roy/bae04deb-36b8-5b47-bbfe-be5b01336a0d/scratchpad/r2/indonesia_scripts/`，用它核对了样例 payload 的结构和 CRC（CRC-16/CCITT-FALSE，校验通过）。\n- **没查到的内容**：\n  - ASPI《QRIS 技术规范》原文（不公开）及其版本号；\n  - URE 的官方定义，UME/UBE 的营业额阈值；\n  - QRIS 跨境入境游客的单笔/日限额；\n  - 跨境 FX 报价方和结算频率的官方细则；\n  - 日本游客在印尼扫 QRIS（Japan inbound）是否已正式上线；\n  - 外国 PJP 接入的 PADG 条文；\n  - QRIS 退款报文标准；\n  - P2P 个人码的官方 payload 格式；\n  - PBI 7/14/PBI/2005 现在是否仍然有效。\n- **置信度约定**：high = 官方一手且在线核实（本轮几乎没有）；medium = 权威二手、开源实现或只核实了一部分；low = 凭记忆，没有核实。\n\n---\n\n## 1. 国家二维码标准：QRIS\n\n| 项目 | 内容 | 置信度 |\n|---|---|---|\n| 名称 | QRIS（Quick Response Code Indonesian Standard） | high |\n| 所有者 / 监管 | Bank Indonesia（BI）拥有并监管；标准由 ASPI（Asosiasi Sistem Pembayaran Indonesia）制定和维护 | medium |\n| 发布时间 | 2019-08-17 发布，2020-01-01 起强制使用（凭记忆）；法规为 PADG 21/18/PADG/2019，后由 PADG 24/1/PADG/2022 修订（凭记忆，未核实） | low |\n| 技术基础 | EMVCo MPM（tag 00/01/26–51/52–63，CRC-16/CCITT-FALSE），已用开源样例核对 | medium |\n| CPM | 有 QRIS CPM（用户出示码、商户扫码），BI 的 QRIS Tap 页面里拿它和 Tap 做对比 | medium |\n| QRIS Tap（NFC） | 2025-03-14 正式上线。交易约 0.3 秒，首批用于 MRT Jakarta、TransJakarta、Damri、Trans Sarbagita 等交通场景 | medium |\n| QRIS TUNTAS | 用 QR 做转账、取现、存现（P2P 与现金），只在非官方来源中看到 | low |\n| 静态 / 动态 | tag 01：`11` 为静态，`12` 为动态 | medium |\n| 单笔上限 | Rp10 juta（2022-03 起，此前为 Rp5 juta）；2026 年是否又上调，没查到 | medium |\n\n**规模数据（各来源口径不一，使用前须对照 BI 原始数据）**\n\n- 2025 全年：交易笔数 15.51 亿，同比 +148.54%（Kontan 转引 BI）。\n- 2026 年 1 月：商户 4,306 万（+17.76% YoY），用户 5,998 万；当月 18.3 亿笔，金额 Rp164.48 万亿（+103.35%）。\n- 2026 年 2 月：用户 6,077 万。\n- 2026 年中（Fortune IDN）：用户 6,577 万、商户 4,486 万，其中 96.68% 为 UMKM；交易量同比 +82.42%。\n- 另一报道称商户 4,711 万、BI 年末用户目标 6,932 万（日期不明）。\n- BI 2026 年目标：170 亿笔、约 4,500 万商户。\n\n---\n\n## 2. 码结构细节\n\n### 2.1 顶层 tag\n\n| Tag | 含义 | QRIS 用法与要点 |\n|---|---|---|\n| 00 | Payload Format Indicator | `01` |\n| 01 | Point of Initiation | `11` 静态 / `12` 动态。开源库把静态码改成动态码的做法，就是把 `010211` 换成 `010212`，再插入 tag 54 |\n| 26–45 | Merchant Account Information（PJSP / 收单域） | 每个收单 PJSP 一个模板，同一张码可以放多个（26、27、…） |\n| 51 | QRIS 国家域 | 子标签 00 = `ID.CO.QRIS.WWW`，02 = NMID，03 = merchant criteria |\n| 52 | MCC | 例如 5499、4829 |\n| 53 | 币种 | `360`（IDR） |\n| 54 | 金额 | 动态码必填；静态码没有，由用户输入 |\n| 55/56/57 | 小费 / 便利费 | `55=01` 提示输入小费；`55=02` 加 56 固定费；`55=03` 加 57 百分比（见开源代码 `55020256…` / `55020357…`） |\n| 58 | 国家 | `ID` |\n| 59 / 60 / 61 | 商户名 / 城市 / 邮编 | EMVCo 长度上限 25 / 15 / 10 |\n| 62 | Additional Data | 01 Bill No.、02 Mobile、03 Store Label、04 Loyalty、05 Reference Label、06 Customer Label、07 Terminal Label（常见值 `A01`）、08 Purpose、09 Additional Consumer Data Request。go-qris 还列出 Merchant Tax ID、Merchant Channel、RFU、payment system specific |\n| 63 | CRC | CRC-16/CCITT-FALSE（poly 0x1021，init 0xFFFF），计算范围包括 `6304` 本身 |\n\n### 2.2 tag 26–45 子标签（收单 PJSP 域）\n\n- **00 GUID**：反向域名，例如：\n  - `COM.NOBUBANK.WWW`（npm qris 样例）\n  - `COM.MEMBASUH.WWW`（go-qris 样例）\n  - `COM.GO-JEK.WWW`（开源库样例，GoPay）\n  - `ID.CO.BCA.WWW`、`ID.DANA.WWW` 在搜索结果里只是间接出现\n  - 完整的 GUID 注册表（ASPI 维护）不公开，**未查到**。\n- **01 Merchant PAN（MPAN）**：18–19 位，形如 `9360` + 4 位机构码（前 8 位即 **NNS，National Numbering System**）+ 商户序号 + 校验位。\n  - 样例：`936005030000080819`（Nobu，NNS 93600503），`936000091100004515`，`936009143805979959`（GoPay 样例，NNS 93600914）。\n  - 用 Luhn 校验时，只有 Nobu 那条通过，另两条疑似测试数据。结论：NNS 结构为 medium，末位是否为 Luhn 校验位为 low。\n- **02 Merchant ID**：收单机构内部的商户号或终端号，例如 `08040000679159`、`0489371081`。\n- **03 Merchant Criteria**：`UMI` / `UKE` / `UME` / `UBE` / `URE`。\n\n### 2.3 tag 51（国家域）\n\n- 00 = `ID.CO.QRIS.WWW`\n- 02 = **NMID**（National Merchant ID），格式为 `ID` + 13 位数字，例如 `ID2020034073193`、`ID2021084066657`。前 4 位数字看起来是注册年份（据样例推断，medium）。\n- 03 = merchant criteria\n- 01 在样例中通常为空。\n\n### 2.4 Merchant criteria 与 MDR\n\n- **定义**（Bank Sampoerna FAQ，依据 UU 20/2008 的 UMKM 划分）：\n  - UMI（Usaha Mikro）：资产 ≤ Rp50 juta / 营业额 ≤ Rp300 juta\n  - UKE（Usaha Kecil）：资产 Rp50–500 juta / 营业额 Rp300 juta–2.5 miliar\n  - UME（Usaha Menengah）、UBE（Usaha Besar）：阈值本轮没查到\n  - URE：官方定义没查到（疑为 \"Usaha Reguler\"，未核实）\n- **MDR**（BI QRIS 页面的搜索摘要，另与 Mandiri、Sampoerna 交叉核对）：\n  - UMI：单笔 ≤ Rp500,000 为 0%，> Rp500,000 为 0.3%（0.3% 自 2023-07-01 起恢复收取）\n  - UKE / UME / UBE：0.7%\n  - 教育：0.6%；加油站（SPBU）：0.4%；G2P / P2G：0%\n  - BRI 自 2024-12-01 起对 < Rp500k 的交易免 MDR。\n\n### 2.5 样例 payload（开源样例，非真实商户）\n\n① **go-qris 样例**（动态码，已独立校验 CRC=F98B，正确）：\n\n```\n00020101021226630016COM.MEMBASUH.WWW0118936000091100004515021004893710810303UMI51440014ID.CO.QRIS.WWW0215ID20200340731930303UKE5204482953033605404133755020256036665802ID5912Sintas Store6015Kota Yogyakarta61055500062070703A016304F98B\n```\n\n逐段解析：\n\n| 段 | 内容 |\n|---|---|\n| `0002 01` | 版本 |\n| `0102 12` | 动态 |\n| `26` | 00 `COM.MEMBASUH.WWW`／01 `936000091100004515`／02 `0489371081`／03 `UMI` |\n| `51` | 00 `ID.CO.QRIS.WWW`／02 `ID2020034073193`／03 `UKE` |\n| `52` | `4829` |\n| `53` | `360` |\n| `54` | `1337` |\n| `55` / `56` | `02` / `666`（固定便利费） |\n| `58` | `ID` |\n| `59` | Sintas Store |\n| `60` | Kota Yogyakarta |\n| `61` | 55000 |\n| `62` | 07 = `A01` |\n| `63` | `F98B` |\n\n注意：这个样例里 tag 26 与 tag 51 的 criteria 不一致（UMI 对 UKE），可见实际码中可能出现不一致。\n\n② **npm `qris` 样例字段**（Nobu Bank，UME），按字段重新组装，并用我自己的脚本算出 CRC=4FBA：\n\n```\n00020101021226670016COM.NOBUBANK.WWW01189360050300000808190214080400006791590303UME51440014ID.CO.QRIS.WWW0215ID20210840666570303UME5204549953033605405527505802ID5913TOKO MARENGGA6009Tangerang61051581062730114082700020430200520PN2UQIR0M4YRPFIBYAAE0620PN2UQIR0M4YRPFIBYAAE0703A0163044FBA\n```\n\n### 2.6 如何识别\"这是 QRIS 国家码\"以及应路由到哪里\n\n1. **判定为 QRIS**：`58=ID`、`53=360`，存在 tag 51 且 51-00 = `ID.CO.QRIS.WWW`，51-02 符合 NMID 格式 `ID\\d{13}`，CRC 校验通过。\n2. **路由**：\n   - 境内 issuer 按 tag 26–45 里的 MPAN 前 8 位 NNS 识别收单 PJSP，同行就 on-us 处理，否则经 GPN switching 走 off-us。\n   - NMID 用于全国商户库登记、去重和展示。\n   - **外国钱包不需要、也不应自行解析 NNS 去找收单方**：在跨境模型下，它把整串 payload 交给本国 switch 或 hub，由对端的印尼 switch 路由（推断，medium）。\n3. **P2M 与 P2P 的区分**：P2M 码一定带 tag 51 NMID 和 merchant criteria。QRIS TUNTAS 转账码（P2P）的官方格式**未查到**。建议只受理同时满足\"tag 51 存在、NMID 合法、MCC 不属于 4829/6012/6051 这类转账或准现金类\"的码，其余一律拒绝（属工程建议，不是规范要求）。\n\n---\n\n## 3. 底层支付轨道\n\n| 层 | 机构 / 系统 | 要点 | 置信度 |\n|---|---|---|---|\n| QR 交换（switching） | GPN 持牌 switching：PT Artajasa Pembayaran Elektronis（ATM Bersama）、PT Rintis Sejahtera（ATM Prima）、PT Daya Network Lestari（Alto）、PT Jalin Pembayaran Nusantara（Jalin，2019 年起大股东由 Telkom 变为 PT Danareksa (Persero)） | Jalin 2019 年取得 QRIS 运营许可，2018 年取得 BI-RTGS 参与许可。2024-08 时 Artajasa 的 ATM Bersama QR 有 59 家成员，自称占全国 off-us QR 交易量的 61% | medium |\n| GPN 规则 | PBI 19/8/PBI/2017 | 境内交易（印尼发行的工具 + 在印尼发生）必须经 GPN 处理。switching 机构须 ≥80% 本国持股（外资 ≤20%），系统、应用、数据中心、灾备都须在境内；issuer/acquirer 至少接 2 家 switching；最终结算在 BI | medium（律所摘要） |\n| 结算 | BI-RTGS | switching 之间、银行之间的最终结算在 BI。QRIS 商户的入账时限（如 D+1）没查到 | low |\n| 即时支付 | **BI-FAST**（BI 运营） | 2021-12 上线（PADG 23/25/PADG/2021）；7x24、实时，约 25 秒完成；单笔上限起始 Rp250 juta；BI 向参与者收 Rp19/笔，参与者向客户收费最高 Rp2,500。参与者为银行和非银行机构（LSB），首批 22 家、第二批 22 家。采用 ISO 20022 和 proxy（手机号/邮箱）寻址：未核实 | medium / low |\n| 外国机构接入 | 外国机构不能直接成为 GPN 或 BI-FAST 参与者 | 只能通过印尼持牌 PJP、银行，或经 BI 双边框架下的跨境 switch 接入（推断，medium） | medium |\n\n---\n\n## 4. 跨境 QR 联通现状\n\n### 4.1 已联通或在推进的国家（截至 2026-10）\n\n| 国家 / 地区 | 方向 | 上线时间 | 对端系统 / 机构 | 备注 |\n|---|---|---|---|---|\n| 泰国 | 双向 | 2021-08 试点，2022-08 商业化 | PromptPay（ITMX，名称未核实） | 截至某时点约 164 万笔 |\n| 马来西亚 | 双向 | 2022 年试点，2023-05 商业化 | DuitNow（PayNet） | 马来游客是入境最大用户群，交易集中在 Bandung、Tanah Abang |\n| 新加坡 | 双向 | 2023-11-17 | NETS QR / SGQR | 日期来自二手博客，medium |\n| **日本** | **出境**（印尼人在日本扫 JPQR Global） | **2025-08-17**（BI 新闻稿日期）；2025-08-25 在大阪世博印尼馆办启动仪式 | BI、ASPI、METI、PJA，JPQR Global 运营方 **Netstars** | 首批 35 家商户，14 家银行的手机银行加若干钱包；GoPay 2025-09 加入；早期累计 5,088 笔、Rp4.288 亿；日本 UC Card 为日本商户提供 QRIS 受理导入支持 |\n| 日本（入境） | 日本钱包在印尼扫 QRIS | **未确认上线** | — | 2026-04 BI 副行长 Filianingsih 称已取得 **日本 FSA 许可**，\"很快会有 Indonesia inbound\"；BI 2026-09 的入境统计口径列出 6 国，包括日本，但没有逐国拆分。第 7 节的建议以此为前提 |\n| 韩国 | **出境** | 2026-04-01 | BI 与 Bank of Korea，ASPI 与 KFTC | 本币直接结算；韩国游客入境方向是否开通未查到 |\n| 中国 | 双向 | 2025-08-17 起沙盒；2026-04-30 软启动；2026-05-07 Ant International 新闻稿；2026-06 上海 grand launch（计划） | **Alipay+（Ant International）**、UnionPay International，在 BI–PBoC 指导下 | 支付宝和云闪付用户可在 4,000 万以上 QRIS 商户付款，**商户无需改造**；印尼用户可扫中国 8,000 万以上支付宝/银联码；印方 24 家 PJP（16 家银行、8 家非银行）；沙盒期入境 164 万笔、Rp5,560 亿；微信支付\"后续\" |\n| 印度 | 计划 | 目标 2026 年底（QRIS–UPI） | NPCI | 2026-10 报道称\"仍受阻\" |\n| 沙特、香港、东帝汶 | 计划 | ASPI（2026-10-14）：2026 年底试点，2027 年全面运营 | 沙特侧另有 mada 与 Alipay+ 的连接 | 东帝汶、香港已签约 |\n| 阿联酋 | 2024 年签 MoU（与韩国同批） | 进展未查到 | AANI（未核实） | low |\n\n**整体数据**：\n\n- 2025 年入境 5,892,621 笔，出境 1,681,112 笔。\n- 截至 2026-08，入境累计 1,780 万笔、Rp6.2 万亿（6 国：新、泰、马、日、韩、中）。\n\n### 4.2 技术模型\n\n- **switch-to-switch，本币结算**：BI 页面称，消费者以本币支付，**商户按账单金额收 IDR**。\n- **FX**：在 LCS（Local Currency Settlement）框架下，由 ACCD（Appointed Cross Currency Dealer）银行提供直接汇率（IDR/THB、IDR/MYR 等）。中国线由 Alipay+ 与 UnionPay International 承担对端 hub。\n- **没查到的细节**：谁具体报价、加点多少、结算行是谁、结算频率。\n- **入境游客限额**：没查到官方数字。合理推测是境内单笔 Rp10 juta 上限加上发卡（钱包）方自身的限额。\n\n### 4.3 外国钱包在印尼怎么受理\n\n- **有双边框架的国家**：直接扫商户现有的 QRIS 码（中国线已明确\"商户无需新硬件或集成\"）。只有 BI 公布名单里的 PJP（各国参与者）能用。\n- **没有框架的钱包**：历史上 Alipay+、银联等靠本地收单行给商户另贴品牌码，或者接入特定商户（推断，low）。\n- **游客自己下载印尼本地钱包**：DANA 官方博客称可以用外国手机号注册，并绑定 Visa/MC/Amex/JCB 卡（厂商宣传）。旅游博客提到可用护照加本地 SIM 认证。BI 没有对此出台统一规则。\n- **PayPay**：\"海外支付模式\"2025-09 在韩国上线（走 Alipay+，需要 eKYC，加收 3.85% 手续费）。截至本次检索，**印尼不在 PayPay 海外可用国之列**。\n\n### 4.4 重点问题：没有双边联通安排的日本钱包（如 PayPay 或 INSPAY 合作钱包）怎样覆盖全印尼 QRIS 商户\n\n> 前提：BI–日本框架已经存在（出境已上线，入境据称拿到了 FSA 许可）。所以对日本而言，\"央行双边路径\"不是从零开始。\n\n| 路径 | 机制 | 覆盖面 | 审批 / 难度 | 与稳定币结算的兼容性 |\n|---|---|---|---|---|\n| **A. 搭 BI–日本既有双边框架（入境方向）** | 日本钱包 → 日方 hub（大概率是 Netstars 的 JPQR Global，未确认）→ ASPI 指定的印尼 switching → QRIS 收单 → 商户收 IDR | **全部 QRIS 商户（约 4,500 万）** | 要成为 BI 批准名单中的日方参与者（日方监管为 FSA，日方 hub 运营方要同意接入）；时间取决于入境方向何时正式上线。难度中高，但最有确定性 | 印尼一侧必须是法币 IDR，经 ACCD 银行和 LCS 结算。稳定币只能用在日本境内或离岸：INSPAY ↔ 日本钱包 ↔ 日方 hub 结算行，之间用 JPY 稳定币或 USDC 做内部清算 |\n| **B. 经印尼本地 switching 的跨境平台**（Artajasa/Rintis/Jalin/Alto 直接对接 INSPAY） | INSPAY 作为境外 issuer 或 hub 直连某家印尼 switch | 技术上覆盖全部 QRIS 商户（switch 之间互通） | 很可能仍要 BI 批准，而且要放在某个双边框架之下；switch 单方面接入外国 issuer 没有先例（未查到）。难度高 | 印尼侧同上，只能 IDR 法币 |\n| **C1. 与单一本地收单行或聚合商合作**（如 Nobu、BCA、Xendit、DOKU） | 只受理该收单方自己的商户（on-us），或另发品牌码 | 只有该收单方的商户，覆盖有限 | 商业合同为主，难度低到中；但用外币付款、境外 issuer 的交易是否算\"境内交易须经 GPN\"仍需确认 | 收单方收 IDR；INSPAY 须在印尼银行用外汇兑成 IDR 后结算 |\n| **C2. 与单一本地 issuer（钱包或银行）合作，\"代发行\"** | 日本用户在印尼钱包开户（KYC 由印尼 PJP 完成），INSPAY 向其 IDR 账户跨境充值（汇款或外汇） | 技术上覆盖全部 QRIS 商户 | 实际是外国人开立印尼电子钱包，牵涉 e-money KYC 和余额上限、反洗钱、外汇；体验割裂（两个 App 或 SDK 内嵌）。难度中高 | 印尼侧只能 IDR；充值是跨境汇款，需要持牌汇款机构 |\n| **D. 借道 Alipay+** | 日本钱包以 Alipay+ 合作钱包身份出境（PayPay 已在韩国这样做） | 中国线是在 BI–PBoC 框架下、限支付宝和云闪付；非中国钱包能否经 Alipay+ 扫 QRIS **未确认**，很可能要 BI 另行认可。否则只能用 Alipay+ 的直连商户（覆盖有限） | 商业上取决于 Ant，监管上仍要 BI 点头。对 INSPAY 来说这等于不自建网络，与\"替代 Alipay+\"的定位冲突 | 结算由 Ant 掌控，INSPAY 的稳定币层插不进去 |\n\n**结论**：\n\n- 覆盖面最大、合规上最确定的是 **A**。\n- 短期能落地的是 **C1**（少数旅游区大商户，或单一收单方的商户群）。\n- **C2** 适合作补充和过渡。\n- **D** 可以短期借用，但会把 INSPAY 变成 Alipay+ 的下游。\n\n---\n\n## 5. 监管\n\n1. **外国 PJP 牌照与持股**（PBI 22/23/2020，实施细则 PBI 23/6/PBI/2021（PJP）、PBI 23/7/PBI/2021（PIP））：\n   - 非银行 PJP 外资最多 85%，本国持股至少 15%，且有表决权股份的 51% 须由本国持有；外资持股按直接加间接、穿透到最终股东计算。\n   - PIP（switching、清算、最终结算等基础设施）外资最多 20%。\n   - 外国电子钱包要在印尼\"发行\"，必须设立或参股印尼 PJP，否则只能走 4.4 节的 A、B、D 路径。\n2. **数据与处理境内化**：GPN 规定境内交易须经境内 switching，基础设施（数据中心、灾备）须在境内。PBI 22/23/2020 另有数据境内保存要求（凭记忆，low）。跨境 QRIS 由印尼 switch 处理印尼侧报文。\n3. **外汇与卢比离岸**：\n   - PBI 7/14/PBI/2005 限制银行向非居民转账卢比、提供卢比授信等，例外条款很多；它在 2026 年是否仍然有效没查到。\n   - PBI 24/6/2022（Allen & Gledhill 摘要）重申禁止卢比离岸使用：非居民只能在印尼境内、并且有真实经济活动（underlying）时才能使用卢比。\n   - 对 INSPAY 的含义：**不能在境外持有或转移 IDR 头寸，也不能发行或持有 IDR 稳定币做离岸结算**。JPY/USD 兑 IDR 应在印尼境内银行（ACCD）完成。\n4. **加密资产与稳定币**：\n   - Bappebti 的监管职能 2025-01-10 移交 OJK 和 BI（依据 PP 49/2024 和 P2SK 法）；POJK 27/2024 同日生效，Bappebti 已发的牌照继续有效。\n   - 加密资产在印尼是交易标的，不是支付工具。依据是 BI 禁止 PJP 处理虚拟货币（PBI 18/40/2016、19/12/2017 一路延续）和《货币法》UU 7/2011 规定境内支付须用卢比，两者均凭记忆（low）。\n   - OJK 表示稳定币\"不能成为创造私人卢比的后门\"，**稳定币 POJK 预计 2027 年 1 月发布**。\n   - 2026-06 有 IDRP（并据报道有 IDDR）从 OJK 沙盒毕业，100% 卢比储备（Kontan 单一来源，medium-low）。\n   - IDRT 2019 年面世；IDRX 2024 年面世，多链运行，2026 年在新加坡 MASA 推介；BIDR 已停止。\n   - BI 自己在推进 Rupiah Digital（CBDC），明确它不是加密资产也不是稳定币。\n5. **贸易摩擦背景**：USTR 2025 NTE（2025-03-31）批评 QRIS 和 GPN 限制外国支付机构参与；BI 坚持支付主权。外国机构\"直连 QRIS\"在政策上很敏感。\n\n---\n\n## 6. 本地合作方候选与先例\n\n- **银行（收单、ACCD、结算）**：\n  - 大型 QRIS 收单兼跨境参与行：BRI、Bank Mandiri、BNI、BCA、CIMB Niaga。\n  - **日资背景**：Bank Danamon（MUFG 子公司）、SMBC Indonesia（原 BTPN）、Mizuho Indonesia、Resona Perdania。哪些是 ACCD（IDR/JPY）没查到，low。\n  - Bank Nobu：QRIS 收单与 fintech 赞助较多，样例码出自 Nobu。\n- **钱包、PJP**：GoPay（GoTo，已支持日本出境）、DANA（支持外国手机号注册）、OVO、ShopeePay、LinkAja；聚合商 Xendit、Midtrans、DOKU、Netzme（QRIS Tap 合作方）。\n- **switching**：Artajasa、Rintis、Jalin、Alto。\n- **日方**：Netstars（JPQR Global 运营方，BI–日本线的日方 hub）、PJA、METI；UC Card（在日本为商户受理 QRIS 提供支持）。\n- **VASP、稳定币**：OJK 持牌 PAKD（交易平台如 Indodax、Tokocrypto、Pintu 等，凭记忆，low）；IDRX、IDRT 发行方；IDRP（沙盒毕业）。目前都不能用于支付结算。\n- **先例**：Ant International / Alipay+ 与 UnionPay International（中国线 hub）、KFTC（韩国）、PayNet、NETS、ITMX。\n\n---\n\n## 7. 对 INSPAY 方案的技术含义\n\n### 7.1 接入路径建议\n\n1. **主线（路径 A）**：与 Netstars（JPQR Global）以及 BI–日本入境方向的日方参与者体系对接。INSPAY 定位为日方的 issuer 侧聚合者，把 PayPay 等日本钱包聚合进来。和 BI、ASPI 确认入境上线时间表，以及外国参与者的准入条件。\n2. **稳定币层的位置**：只放在日本境内或离岸，在 INSPAY 与日本钱包、日方 hub 结算行之间流转（例如 JPY 稳定币、USDC 的内部净额清算）。**跨进印尼的那一段必须是 JPY 或 USD 法币进入印尼 ACCD 银行，在境内兑成 IDR**，再由印尼 switch 或收单方给商户入账。不要设计 IDR 稳定币离岸结算。\n3. **过渡**：找 1–2 家收单方或聚合商（Xendit、Nobu、BCA 等）做旅游区大商户试点（C1），或者与 DANA、GoPay 合作发行游客账户（C2）。\n\n### 7.2 主要风险\n\n- 日本入境方向上线时间不确定。\n- BI 是否允许新的日方参与者或聚合者加入。\n- 稳定币在印尼支付链条中无合法地位（BI 和 UU 7/2011）。\n- 卢比离岸限制。\n- 中国线由 Alipay+ 主导，形成先发优势。\n- USTR 争议带来的政治敏感度。\n- 外资持股限制（PJP 85%，PIP 20%）。\n\n### 7.3 技术坑\n\n- **静态码（01=11）**：用户输入 IDR 金额，App 端要显示 IDR 和换算后的 JPY，并在报价有效期内锁定汇率。\n- **便利费与小费**：tag 55/56/57 要正确处理。\n- **静态改动态**：开源库把静态码插入 tag 54 当作\"动态码\"，但这类码没有后台订单号，不能当作真正的动态码对账依据。\n- **动态码（01=12）**：EMVCo MPM 没有有效期 tag，有效期和一次性由收单方后台控制。参考号放在 62-01（Bill No.）和 62-05（Reference Label），必须原样回传给收单方，用于对账和防重。\n- **退款**：Antom 文档摘要提到，用 BNI、BCA、BRI 银行 App 付款的 QRIS 交易不支持退款。跨境退款要按\"原路、IDR 金额、FX 重新计价或按原汇率\"事先定规则；部分撤销（void）只能当日做。\n- **商户名显示**：59 最多 25 字符，60 最多 15 字符。tag 26 和 tag 51 的 criteria 可能不一致，不要用 criteria 计算 MDR。展示和风控以 NMID 为主键。\n- **多收单域**：同一张码可能有多个 tag 26–45。跨境模型下原样转交即可，不要自己选路由。\n- **CRC**：CRC-16/CCITT-FALSE，计算时包括 `6304`。\n- **P2P 码**：拒绝没有 tag 51 NMID 的码。\n- **限额与 KYC**：单笔 Rp10 juta 上限，加上日方钱包自身的限额和 eKYC 要求（PayPay 海外模式需要 eKYC）。\n- **对账**：以 NMID + MPAN + 62-01/05 + 印尼 switch 的 RRN 为键，T+? 的结算周期要和对端 hub 确认。\n",
+ "facts": [
+  {
+   "claim": "QRIS 跨境（出境）在日本上线：印尼用户可用本国 App 扫 JPQR Global 付款；BI 新闻稿日期 2025-08-17；首批 35 家商户、14 家银行加若干钱包；合作方为 BI、ASPI、METI、PJA 与 JPQR Global 运营方 Netstars",
+   "category": "linkage",
+   "source_url": "https://www.bi.go.id/en/publikasi/ruang-media/news-release/Pages/sp_2719325.aspx",
+   "source_date": "2025-08-17",
+   "confidence": "medium",
+   "note": "bi.go.id 无法 WebFetch，内容来自搜索摘要，并与 antaranews、investortrust 交叉一致"
+  },
+  {
+   "claim": "BI 2025-08-25 在大阪世博印尼馆举行 QRIS–JPQR 启动仪式；Netstars 称 JPQR Global 自 2025-08-17 起支持 QRIS",
+   "category": "linkage",
+   "source_url": "https://paymentnavi.com/?p=164513",
+   "source_date": "2025-08",
+   "confidence": "medium"
+  },
+  {
+   "claim": "GoPay 2025-09 起支持在日本扫 JPQR 付款",
+   "category": "linkage",
+   "source_url": "https://www.cnnindonesia.com/teknologi/20250912141119-206-1272982/belanja-di-jepang-kini-bisa-pakai-qris-gopay-china-menyusul/amp",
+   "source_date": "2025-09-12",
+   "confidence": "medium"
+  },
+  {
+   "claim": "日本游客在印尼扫 QRIS（Japan inbound）：BI 副行长 Filianingsih 2026-04 称已取得日本 FSA 许可，'很快会有 Indonesia inbound'；截至 2026-10 未查到正式上线公告",
+   "category": "linkage",
+   "source_url": "https://www.metrotvnews.com/read/N6GCVl8e-turis-jepang-bisa-iscani-qr-saat-belanja-di-ri-qris-segera-berlaku",
+   "source_date": "2026-04（据搜索摘要）",
+   "confidence": "medium",
+   "note": "上线状态未核实"
+  },
+  {
+   "claim": "UC Card（ユーシーカード）为日本商户提供 QRIS 受理导入支持",
+   "category": "partner",
+   "source_url": "https://paymentnavi.com/?p=164557",
+   "source_date": "2025",
+   "confidence": "medium"
+  },
+  {
+   "claim": "印尼–韩国跨境 QR 支付 2026-04-01 上线（BI 与 Bank of Korea、ASPI 与 KFTC），本币直接结算，初期为印尼人在韩国使用（出境）",
+   "category": "linkage",
+   "source_url": "https://www.bi.go.id/en/iru/highlight-news/Pages/Indonesia-and-South-Korea-Officially-Connect-with-QR-Payments,-Enabling-More-Convenient,-Affordable-and-Faster-Cross-Border.aspx",
+   "source_date": "2026-04",
+   "confidence": "medium"
+  },
+  {
+   "claim": "2025 年 QRIS 跨境入境 5,892,621 笔，出境 1,681,112 笔",
+   "category": "market_data",
+   "source_url": "https://www.crowdfundinsider.com/2026/04/271195-indonesia-south-korea-launch-cross-border-qr-payments-in-local-currencies/",
+   "source_date": "2026-04",
+   "confidence": "medium"
+  },
+  {
+   "claim": "截至 2026-08，QRIS 跨境入境累计 1,780 万笔、Rp6.2 万亿，来源国为新加坡、泰国、马来西亚、日本、韩国、中国",
+   "category": "market_data",
+   "source_url": "https://www.idnfinancials.com/news/69514/qris-transactions-by-tourists-reach-idr-6-2-trillion-through-august",
+   "source_date": "2026-09",
+   "confidence": "medium"
+  },
+  {
+   "claim": "中国线：2026-04-30 软启动，经 Ant International 的 Alipay+ 与 UnionPay International 实现；支付宝和云闪付用户可在 4,000 万以上 QRIS 商户付款，商户无需新硬件或集成；印尼用户可扫中国 8,000 万以上支付宝/银联码；在 BI–PBoC 指导下",
+   "category": "linkage",
+   "source_url": "https://ibsintelligence.com/ibsi-news/indonesia-and-china-launch-cross-border-qr-payments-link/",
+   "source_date": "2026-05",
+   "confidence": "medium"
+  },
+  {
+   "claim": "中国线印方有 24 家 PJP 参与（16 家银行、8 家非银行）；沙盒期（2025-08-17 起）入境 164 万笔、Rp5,560 亿；初期限支付宝，微信支付后续加入",
+   "category": "linkage",
+   "source_url": "https://investortrust.id/macro/101858/bi-luncurkan-qris-antarnegara-china-dapat-digunakan-mulai-30-april-2026",
+   "source_date": "2026-04",
+   "confidence": "medium"
+  },
+  {
+   "claim": "Ant International 2026-05-07 发布新闻稿，宣布印尼–中国跨境支付互联经 Alipay+ 连接",
+   "category": "partner",
+   "source_url": "https://www.eagletribune.com/region/indonesia-china-launch-cross-border-payments-connectivity-connecting-millions-of-merchants-via-ant-international-s/article_7025cbdb-284e-5b77-960b-a9847208a0bd.html",
+   "source_date": "2026-05-07",
+   "confidence": "medium"
+  },
+  {
+   "claim": "ASPI 目标：香港、东帝汶、沙特的跨境 QRIS 于 2026 年底试点、2027 年全面运营；印度 QRIS–UPI 原定 2026 年底完成，2026-10 报道称仍受阻",
+   "category": "linkage",
+   "source_url": "https://finansial.bisnis.com/read/20261014/11/2012511/aspi-targetkan-qris-tembus-arab-saudi-hingga-hong-kong-pada-2027",
+   "source_date": "2026-10-14",
+   "confidence": "medium"
+  },
+  {
+   "claim": "QRIS–新加坡（NETS QR）联通 2023-11-17 上线",
+   "category": "linkage",
+   "source_url": "https://www.transfi.com/id/blog/qris-cross-border-explained-how-indonesians-can-pay-with-qris-in-singapore-malaysia-and-thailand",
+   "source_date": "未知",
+   "confidence": "medium",
+   "note": "二手博客"
+  },
+  {
+   "claim": "与泰国合作自 2022-08 起（商业化，此前 2021-08 有 BOT–BI 试点）；与马来西亚自 2023-05 起",
+   "category": "linkage",
+   "source_url": "https://keuangan.kontan.co.id/news/transaksi-qris-antar-negara-semakin-diminati",
+   "source_date": "2025-2026",
+   "confidence": "medium"
+  },
+  {
+   "claim": "QRIS 跨境中商户按账单金额收 IDR；BI 称跨境 QRIS 目前用于泰国、马来西亚、新加坡、日本、韩国、中国",
+   "category": "linkage",
+   "source_url": "https://www.bi.go.id/en/fungsi-utama/sistem-pembayaran/ritel/kanal-layanan/QRIS/QRIS-Antarnegara/default.aspx",
+   "source_date": "2026",
+   "confidence": "medium",
+   "note": "搜索摘要，页面 DNS 失败"
+  },
+  {
+   "claim": "QRIS 跨境在 LCS 框架下由 ACCD 银行提供本币直接汇率",
+   "category": "linkage",
+   "source_url": "https://asianews.network/indonesia-singapore-debut-linked-cross-border-qr-payment-system",
+   "source_date": "2023",
+   "confidence": "medium"
+  },
+  {
+   "claim": "PayPay 海外支付模式 2025-09 在韩国上线，限 Alipay+ 标识商户，须 eKYC，海外手续费 3.85%；印尼不在可用国之列（截至检索时）",
+   "category": "partner",
+   "source_url": "https://www.alipayplus.com/news/detail/paypay-accepted-in-south-korea",
+   "source_date": "2025-09",
+   "confidence": "medium"
+  },
+  {
+   "claim": "QRIS MDR：UMI 单笔 ≤ Rp500,000 为 0%，> Rp500,000 为 0.3%；UKE、UME、UBE 为 0.7%；教育 0.6%；SPBU 0.4%；G2P/P2G 0%",
+   "category": "qr_spec",
+   "source_url": "https://www.bi.go.id/id/fungsi-utama/sistem-pembayaran/ritel/kanal-layanan/QRIS/default.aspx",
+   "source_date": "2025-2026",
+   "confidence": "medium",
+   "note": "与 Bank Mandiri、Sampoerna 页面交叉一致"
+  },
+  {
+   "claim": "UMI 的 0.3% MDR 自 2023-07-01 起恢复收取（BI 函 25/316/DKSP/Srt/B，2023-06-26）",
+   "category": "qr_spec",
+   "source_url": "https://bankmandiri.co.id/en/qris",
+   "source_date": "2023",
+   "confidence": "medium"
+  },
+  {
+   "claim": "Merchant criteria：UMI 为资产 ≤ Rp50 juta、营业额 ≤ Rp300 juta；UKE 为资产 Rp50–500 juta、营业额 Rp300 juta–2.5 miliar；UME、UBE 阈值和 URE 定义未查到",
+   "category": "qr_spec",
+   "source_url": "https://www.banksampoerna.com/uploads/img/upload/files/SMM-id.pdf",
+   "source_date": "未知",
+   "confidence": "medium"
+  },
+  {
+   "claim": "QRIS 单笔交易上限提高到 Rp10 juta（2022-03）",
+   "category": "qr_spec",
+   "source_url": "https://finance.detik.com/moneter/d-5936787/limit-bayar-pakai-qris-naik-jadi-rp-10-juta",
+   "source_date": "2022-02/03",
+   "confidence": "medium",
+   "note": "2026 年是否再调整未查到"
+  },
+  {
+   "claim": "QRIS payload 结构：tag 26 子标签 00=GUID（如 COM.MEMBASUH.WWW）、01=MPAN（如 936000091100004515）、02=商户或终端 ID、03=criteria；tag 51 子标签 00=ID.CO.QRIS.WWW、02=NMID（如 ID2020034073193）、03=criteria；62-07 Terminal Label=A01；完整样例的 CRC F98B 已独立校验通过",
+   "category": "qr_spec",
+   "source_url": "https://pkg.go.dev/github.com/fyvri/go-qris",
+   "source_date": "2026（抓取）",
+   "confidence": "medium",
+   "note": "开源实现样例，非官方"
+  },
+  {
+   "claim": "npm qris 库样例：tag 26 的 GUID 为 COM.NOBUBANK.WWW，MPAN 936005030000080819（NNS 93600503，通过 Luhn 校验），Merchant ID 08040000679159，criteria UME；tag 51 的 NMID 为 ID2021084066657；62 中有 01 Bill No.、05/06 Reference/Customer Label、07 Terminal Label",
+   "category": "qr_spec",
+   "source_url": "https://registry.npmjs.org/qris",
+   "source_date": "npm qris@0.0.1",
+   "confidence": "medium",
+   "note": "开源实现"
+  },
+  {
+   "claim": "开源库把静态 QRIS 转成动态 QRIS 的做法：把 010211 替换为 010212，在 5802ID 之前插入 tag 54 金额，可选 55=02+56（固定费）或 55=03+57（百分比），再重算 CRC16",
+   "category": "qr_spec",
+   "source_url": "https://registry.npmjs.org/@agungjsp/qris-dinamis",
+   "source_date": "npm 1.0.7",
+   "confidence": "medium"
+  },
+  {
+   "claim": "MPAN 前缀 9360 + 4 位机构码构成 8 位 NNS（例如 93600914 为 GoPay，93600503 为 Nobu）",
+   "category": "qr_spec",
+   "source_url": "https://pkg.go.dev/github.com/fyvri/go-qris",
+   "source_date": "2026",
+   "confidence": "low",
+   "note": "由样例推断，官方 NNS 表未核实"
+  },
+  {
+   "claim": "QRIS Tap（NFC）2025-03-14 正式上线，交易约 0.3 秒，首批用于 MRT、TransJakarta、Damri、Trans Sarbagita；BI 页面提到 QRIS CPM（用户出示码）",
+   "category": "qr_spec",
+   "source_url": "https://www.cnbcindonesia.com/tech/20250314131152-37-618650/qris-tap-resmi-berlaku-mulai-hari-ini-begini-kecanggihannya",
+   "source_date": "2025-03-14",
+   "confidence": "medium"
+  },
+  {
+   "claim": "2026 年 1 月 QRIS：商户 4,306 万（+17.76%），用户 5,998 万，交易 18.3 亿笔、Rp164.48 万亿；2025 全年 155.1 亿笔（+148.54%）",
+   "category": "market_data",
+   "source_url": "https://keuangan.kontan.co.id/news/bi-mencatat-nilai-transaksi-qris-capai-rp-16448-triliun-pada-januari-2026",
+   "source_date": "2026-02",
+   "confidence": "medium"
+  },
+  {
+   "claim": "2026 年中 QRIS 用户 6,577 万、商户 4,486 万（96.68% 为 UMKM），交易量同比 +82.42%",
+   "category": "market_data",
+   "source_url": "https://www.fortuneidn.com/finance/transaksi-digital-melesat-qris-tumbuh-82-4-persen-d7w02-00-lflgw-8hs5kx",
+   "source_date": "2026 年中",
+   "confidence": "medium",
+   "note": "另有报道称商户 4,711 万，口径或日期不同"
+  },
+  {
+   "claim": "BI 2026 年目标：QRIS 交易 170 亿笔、约 4,500 万商户、6,932 万用户",
+   "category": "market_data",
+   "source_url": "https://investortrust.id/financial/117342/bi-bidik-69-32-juta-pengguna-qris-pada-2026",
+   "source_date": "2026",
+   "confidence": "medium"
+  },
+  {
+   "claim": "GPN（PBI 19/8/PBI/2017）：境内交易（印尼发行的工具 + 在印尼发生）须经 GPN 处理；switching 机构本国持股 ≥80%、外资 ≤20%；系统、数据中心、灾备须在境内；issuer/acquirer 至少接 2 家 switching；最终结算在 BI",
+   "category": "regulation",
+   "source_url": "https://www.makarim.com/storage/uploads/a0c1fe80-3f4c-4147-9df0-c1adc952bd17/109524_Advisory---Bank-Indonesia’s-National-Payment-Gateway-Introduced-(11-August-2017).pdf",
+   "source_date": "2017-08-11",
+   "confidence": "medium",
+   "note": "律所摘要"
+  },
+  {
+   "claim": "持有 BI 境内借记交易 switching 许可的四家：Artajasa（ATM Bersama）、Rintis Sejahtera（ATM Prima）、Daya Network Lestari（Alto）、Jalin Pembayaran Nusantara",
+   "category": "rail",
+   "source_url": "https://finansial.bisnis.com/read/20190418/90/913143/artajasa-buka-peluang-kerja-sama-dengan-switching-asing",
+   "source_date": "2019-04-18",
+   "confidence": "medium"
+  },
+  {
+   "claim": "Jalin 2019 年取得 QRIS 运营许可，2018 年取得 BI-RTGS 参与许可；2019 年大股东由 Telkom 变为 PT Danareksa (Persero)",
+   "category": "rail",
+   "source_url": "https://www.jalin.co.id/en-en/news/news/5-years-of-jalin-giving-more-meaning-in-every-step-of-your-digital-way",
+   "source_date": "2021",
+   "confidence": "medium"
+  },
+  {
+   "claim": "截至 2024-08，Artajasa 的 ATM Bersama QR 有 59 家成员，自称占全国 off-us QR 交易量的 61%",
+   "category": "rail",
+   "source_url": "https://infobanknews.com/members-meeting-atm-bersama-2024-artajasa-perkuat-kolaborasi-dengan-industri-keuangan/",
+   "source_date": "2024",
+   "confidence": "medium"
+  },
+  {
+   "claim": "BI-FAST：BI 运营，7x24 实时，约 25 秒完成；单笔上限起始 Rp250 juta；BI 向参与者收 Rp19/笔，参与者向客户收费最高 Rp2,500；参与者为银行与非银行机构；法规 PADG 23/25/PADG/2021",
+   "category": "rail",
+   "source_url": "https://www.bi.go.id/id/publikasi/ruang-media/news-release/Pages/sp_2327021.aspx",
+   "source_date": "2021-12",
+   "confidence": "medium",
+   "note": "上线时的数据，2025-2026 年是否调整未查到；ISO 20022 和 proxy 寻址未核实"
+  },
+  {
+   "claim": "PBI 22/23/2020：非银行 PJP 外资最多 85%，本国持股至少 15% 且有表决权股份的 51% 须本国持有；PIP 外资最多 20%；细则见 PBI 23/6/PBI/2021（PJP）与 PBI 23/7/PBI/2021（PIP），外资按直接加间接穿透计算",
+   "category": "regulation",
+   "source_url": "https://www.makarim.com/storage/uploads/4337a0d3-c9a0-430a-bf01-c9c571ceb63f/653871_Feb-2021---Issue-1---The-New-Indonesian-Umbrella-Regulation-on-Payment-Systems.pdf",
+   "source_date": "2021-02",
+   "confidence": "medium"
+  },
+  {
+   "claim": "PBI 7/14/PBI/2005 限制银行对外国方的卢比交易和外币授信（包括向外国人账户转账），例外条款很多；2026 年是否仍有效未查到",
+   "category": "regulation",
+   "source_url": "https://peraturan.bpk.go.id/Download/128257/Peraturan%20BI%20No.%207-14-PBI-2005.pdf",
+   "source_date": "2005",
+   "confidence": "medium"
+  },
+  {
+   "claim": "BI 的 PBI 24/6/2022（卢比在国际活动中的使用）重申禁止卢比离岸使用，非居民只能在印尼境内、有 underlying 时使用卢比",
+   "category": "regulation",
+   "source_url": "https://www.allenandgledhill.com/sg/publication/articles/22150/bank-indonesia-regulates-use-of-rupiah-in-international-transactions",
+   "source_date": "2022",
+   "confidence": "medium",
+   "note": "法规编号来自律所摘要，未核对原文"
+  },
+  {
+   "claim": "加密资产（数字金融资产）的监管职能 2025-01-10 由 Bappebti 移交 OJK 与 BI（PP 49/2024）；POJK 27/2024 同日生效，Bappebti 已发牌照继续有效",
+   "category": "regulation",
+   "source_url": "https://ojk.go.id/en/berita-dan-kegiatan/siaran-pers/Pages/Bappebti-Transfers-Regulation-and-Supervision-Duties-on-Digital-Financial-Assets-Crypto-Assets-and-Derivatives-to-OJK-BI.aspx",
+   "source_date": "2025-01-10",
+   "confidence": "medium",
+   "note": "OJK 官方新闻稿，内容经搜索摘要确认"
+  },
+  {
+   "claim": "BI 禁止 PJP 处理虚拟货币交易；《货币法》UU 7/2011 规定境内支付须用卢比",
+   "category": "stablecoin",
+   "source_url": "https://www.bi.go.id/id/fungsi-utama/sistem-pembayaran/ritel/kanal-layanan/QRIS/default.aspx",
+   "source_date": "N/A",
+   "confidence": "low",
+   "note": "未核实，凭记忆；PBI 18/40/2016、19/12/2017、22/23/2020 一路延续"
+  },
+  {
+   "claim": "OJK 称稳定币不能成为创造'私人卢比'的后门；稳定币 POJK 预计 2027 年 1 月发布",
+   "category": "stablecoin",
+   "source_url": "https://investortrust.id/market/118744/pojk-stablecoin-terbit-januari-2027-begini-kabar-terbaru-dari-ojk-termasuk-soal-rupiah-digital",
+   "source_date": "2026",
+   "confidence": "medium"
+  },
+  {
+   "claim": "卢比稳定币 IDRP 2026-06 从 OJK 沙盒毕业，100% 卢比储备；IDRT 2019 年面世，IDRX、BIDR 2024 年面世（BIDR 已停止）",
+   "category": "stablecoin",
+   "source_url": "https://investasi.kontan.co.id/news/pasar-stablecoin-global-capai-us-308-miliar-rupiah-baru-punya-porsi-0005",
+   "source_date": "2026",
+   "confidence": "medium",
+   "note": "IDDR 一同毕业只见于搜索摘要，单一来源"
+  },
+  {
+   "claim": "DANA 允许外国手机号注册，并绑定 Visa/MC/Amex/JCB 卡付 QRIS",
+   "category": "partner",
+   "source_url": "https://www.dana.id/blog/can-tourist-use-qris-in-indonesia/",
+   "source_date": "2025-2026",
+   "confidence": "medium",
+   "note": "厂商宣传，非监管确认"
+  },
+  {
+   "claim": "USTR 2025 NTE（2025-03-31）把 QRIS 和 GPN 列为贸易壁垒，批评外国支付机构参与不足",
+   "category": "regulation",
+   "source_url": "https://www.cnnindonesia.com/ekonomi/20250421101434-532-1220711/as-kritik-qris-",
+   "source_date": "2025-04-21",
+   "confidence": "medium"
+  },
+  {
+   "claim": "Antom 文档摘要：用 BNI、BCA、BRI 银行 App 付款的 QRIS 交易不支持退款",
+   "category": "architecture",
+   "source_url": "https://docs.antom.com/ac/antomop/qris",
+   "source_date": "未知",
+   "confidence": "medium",
+   "note": "WebFetch DNS 失败，仅搜索摘要"
+  },
+  {
+   "claim": "QRIS 的 CRC 为 CRC-16/CCITT-FALSE（poly 0x1021，init 0xFFFF），计算范围含 '6304'；已用独立脚本校验开源样例",
+   "category": "qr_spec",
+   "source_url": "https://pkg.go.dev/github.com/fyvri/go-qris",
+   "source_date": "2026",
+   "confidence": "medium"
+  }
+ ],
+ "open_questions": [
+  "BI–日本 QRIS 入境方向（日本钱包在印尼扫 QRIS）的确切上线日期、日方 hub 是否就是 Netstars JPQR Global、外国（日方）新参与者（如 INSPAY 这类聚合者）的准入条件和审批流程（BI、ASPI、日本 FSA/METI）",
+  "跨境 QRIS 的 FX 机制：谁报价（ACCD 银行、发卡方、hub），加点上限，结算币种（JPY/IDR 直接，还是经 USD），结算行和结算频率（T+0/T+1、净额或全额）",
+  "入境游客的单笔、日、月限额（是否沿用境内 Rp10 juta），以及跨境交易的 MDR 或交换费分配",
+  "非中国的 Alipay+ 合作钱包（PayPay、Kakao Pay 等）能否走 BI–PBoC 中国线的 Alipay+ 管道扫 QRIS，还是需要 BI 另批",
+  "外国 issuer 经单一印尼收单方受理（C1）是否会被认定为必须经 GPN 的'境内交易'，以及外币付款的定性",
+  "外国人开立印尼 e-money 账户（C2 模式）的 KYC、余额与交易上限，以及跨境充值需要的汇款牌照",
+  "ASPI《QRIS 技术规范》最新版本号、完整 GUID/NNS 注册表、URE 的定义、UME/UBE 阈值、QRIS 退款与撤销报文标准、动态码有效期规则",
+  "QRIS TUNTAS（P2P 转账码）的 payload 格式，以及如何可靠区分 P2P 与 P2M",
+  "PBI 7/14/PBI/2005 是否仍有效，PBI 24/6/2022 的确切条文；INSPAY 能否在印尼境内银行开设 JPY/USD 账户并在当地兑换成 IDR 结算",
+  "OJK 稳定币 POJK（预计 2027-01）是否允许持牌机构之间用 IDR 稳定币做批发结算；IDRP、IDDR 的发行方和用途限制；BI 对 PJP 接触稳定币的最新立场",
+  "PBI 22/23/2020 下数据境内存储和处理的具体要求，对跨境 hub 报文与数据出境的影响",
+  "日资银行（Danamon/MUFG、SMBC Indonesia、Mizuho）是否为 IDR/JPY 的 ACCD 银行、是否参与 QRIS 跨境，可否担任 INSPAY 在印尼的结算行",
+  "阿联酋（AANI）联通的进展，以及印度 QRIS–UPI 的新时间表"
+ ],
+ "searches_used": 30
+}

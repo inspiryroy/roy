@@ -77,6 +77,9 @@ export function createApi(deps: ApiDeps): Server {
         });
         return send(p.status === 'PROCESSING' ? 202 : 200, p);
       }
+      if (req.method === 'POST' && url.pathname === '/v1/payments/cancel') {
+        return send(200, deps.payments.cancel(String(body.mppId), String(body.paymentRequestId)));
+      }
       const pm = /^\/v1\/payments\/([A-Z0-9]+)(\/refunds)?$/.exec(url.pathname);
       if (pm && req.method === 'GET' && !pm[2]) {
         const p = deps.payments.get(pm[1]!);

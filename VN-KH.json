@@ -1,0 +1,379 @@
+{
+ "topic": "越南（VietQR / NAPAS / SBV / Napas 247）与柬埔寨（KHQR / Bakong / NBC）：国家二维码、底层轨道、跨境联通、监管与 INSPAY 接入路径",
+ "report_md": "# 越南 VietQR 与柬埔寨 KHQR 调研报告（INSPAY「稳定币版 Alipay+」）\n\n截至 2026-10-18\n\n## 0. 方法与局限\n\n- **搜索用量**：用了 30 次 WebSearch，已到上限。WebFetch 试了 2 次，都是 DNS 失败（ENOTFOUND）：tilleke.com 上 Decree 52 修订草案的分析、bis.org 上 NBC 行长在 Bakong–Alipay+ 上线仪式的讲话。这两处只能依靠搜索摘要。\n- **开源实现**：通过 npm registry 下载了 4 个包并解压，只读不执行，放在 `/tmp/claude-0/-home-user-roy/bae04deb-36b8-5b47-bbfe-be5b01336a0d/scratchpad/r2/vn_kh/`。\n  - `bakong-khqr@1.0.20`：package.json 里的 repository 是 `git@gitlab.nbc.gov.kh:khqr/sdk-javascript.git`，即 NBC 自家 GitLab，基本可认定为官方 SDK。\n  - `ts-khqr@2.2.3`：第三方 TypeScript 重写版。\n  - `vietnam-qr-pay@1.5.1`：VietQR 和 VNPAY-QR 的编解码库，2026-07 仍在更新。\n  - `napas-qr@1.0.4`。\n  - 我另写了一个 TLV 解析脚本，在包外的独立目录 `.../scratchpad/r2/vn_kh_scripts/tlv.py`。用它逐字段解码了 8 个样例 payload，并用 CRC16-CCITT（多项式 0x1021，初值 0xFFFF）逐一复算，**全部吻合**。\n  - 这类证据统一标 medium。\n- **没查到或未核实的内容**：\n  - NAPAS VietQR 规范 PDF 原文（字段官方命名、P2M 专用规则、规范版本号）。\n  - Napas 247 的报文标准（是否 ISO 20022）及其与 SBV IBPS 的结算细节。\n  - Decree 52/2024 关于境外机构的条文原文。\n  - NBC 2025 年报原文。\n  - 日柬 Phase 2（日本人在柬扫 KHQR）是否已上线。\n  - KHQR 与韩国、印度联通的现状。\n  - 越泰联通的方向与日期。\n  - 各通道的入境游客限额。\n  - 越南是否已发出首张加密资产交易所牌照（截至 2026 年年中的报道仍是“尚未发牌”）。\n- **置信度标注**：凭记忆的内容标“未核实”。\n\n---\n\n## A. 越南\n\n### A1. 国家二维码标准\n\n**名称与运营方**\n- 名称：**VietQR**，由 **NAPAS**（National Payment Corporation of Vietnam，越南国家支付公司，SBV 主导；具体持股未核实）运营。\n- 2021 年 6 月以“统一转账二维码”品牌推出（VTV 2021-06-21 报道）。\n- 截至 2026 年，NAPAS 在对外宣传中把业务分成三块：\n  - **VietQR**：转账。\n  - **VietQRPay**：境内支付。\n  - **VietQRGlobal**：跨境受理品牌（2026-06 NAPAS「Digital Finance Day」报道）。\n\n**技术基础**\n- 基于 EMVCo MPM，并遵循 SBV 的二维码基本标准。搜索摘要提到 NAPAS 规范对应 EMVCo 1.5.2 版本（medium-low）。SBV 标准编号据记忆为 TCCS 03:2018/NHNN（未核实）。\n- 支持静态码（`01=11`）和动态码（`01=12`）。\n- 未查到 VietQR 有 CPM（被扫）标准。\n\n**并行网络：VNPAY-QR**\n- 越南还有一张独立的 **VNPAY-QR** 网络：tag 26，GUID `A000000775`。\n- 2026-03 NAPAS 与 VNPAY 签署了全面合作协议。\n- 很多商户贴的码是 VNPAY-QR，而不是 VietQR。\n\n**规模数据（均为 NAPAS 自报）**\n- 2025 全年，NAPAS 系统整体：笔数 +23.7%，金额 +8.7%，日均 >3,200 万笔。\n- 2025 全年，Napas 247：笔数约 +27%，金额约 +8%。\n- 2025 年 1–10 月，VietQR：笔数同比 +52%，金额同比 +85%。\n- 截至 2025-10，约 **9,000 万**手机银行账户使用 VietQR 扫码。\n- 2024 年，VietQR 笔数为 2023 年的 2.2 倍，金额为 2.6 倍。\n- **商户数：未查到。**\n\n### A2. 码结构（tag 38 / GUID A000000727）\n\n以下基于开源实现，并用真实格式样例的 CRC 复算校验（medium）。\n\n**tag 38：VietQR 的 Merchant Account Information**\n\n| 子标签 | 含义 | 说明 |\n|---|---|---|\n| `00` | GUID | `A000000727`（NAPAS） |\n| `01` | 受益机构模板 | 嵌套两个子字段，见下 |\n| `01.00` | 受益机构 BIN（6 位，NAPAS 成员机构代码） | 开源库命名为 beneficiaryId / BANK_BIN；官方命名未核实 |\n| `01.01` | 收款账号或卡号 | 开源库命名为 receiverNumber / BANK_NUMBER |\n| `02` | service code | `QRIBFTTA` = 转入账户；`QRIBFTTC` = 转入卡 |\n\n- 判断卡还是账户：napas-qr 的规则是，号码以 `9704` 开头、长度为 16 或 19 位即视为卡。\n- BIN 示例（来自 vietnam-qr-pay 内置的 62 家机构表）：\n  - 970436 Vietcombank、970418 BIDV、970415 VietinBank、970405 Agribank\n  - 970407 Techcombank、970422 MB、970432 VPBank、970403 Sacombank\n  - 970416 ACB、970454 BVBank\n  - **971025 MoMo**：电子钱包也有自己的 NAPAS BIN。\n\n**其他字段**\n- `52`、`59`、`60`：**P2P 转账码里通常完全没有**。这不符合 EMVCo 的必填要求，用严格校验器解析会被拒。\n- `53`：`704`（VND，无小数）。\n- `54`：整数金额。\n- `58`：`VN`。\n- `62` 附加数据：\n  - `01` bill number\n  - `05` reference label（MoMo 用 `MOMOW2W…`）\n  - `07` terminal\n  - `08` purpose，即转账附言，如 \"Chuyen tien\"。越南商户普遍靠附言或虚拟账号对账。\n- `63`：CRC。\n- MoMo 的旧版码还用了 unreserved tag `80`（收款人手机号后 3 位）。\n- ZaloPay 的码 = BVBank BIN 970454 + `99ZP…` 账号，tag 26 里还另带一段私有信息。\n\n**样例**（均来自开源库 README，CRC 已复算通过）\n\n```\n00020101021138530010A0000007270123000697041601092576788590208QRIBFTTA53037045802VN6304AE9F\n  → 静态 P2P：ACB(970416) 账户 257678859\n00020101021238530010A0000007270123000697041601092576788590208QRIBFTTA53037045405100005802VN62150811Chuyen tien630453E6\n  → 动态：金额 10000 VND，62.08 附言\n00020101021138620010A000000727013200069710250118PSP1234567890000000208QRIBFTTA53037045802VN62190515MOMOW2W123456786304821F\n  → MoMo(971025)\n00020101021126280010A0000007750110010531314453037045408210900005802VN5910CELLPHONES62600312CPSHN ONLINE0517021908061613127850705ONLHN0810CellphoneS63047685\n  → VNPAY-QR：tag26 GUID A000000775、01=商户ID 0105313144、62.07 终端 ONLHN\n```\n\n**识别与路由**\n1. **识别国家码**：`58=VN` 且出现 tag 38 子标签 `00=A000000727`，就是 VietQR，交给 NAPAS 处理。\n2. **定位收款方**：`38.01.00` 的 BIN 指向收款行或钱包，`38.01.01` 是入账账户。\n3. **VNPAY-QR**：tag 26 `A000000775` 应路由到 VNPAY。经 NAPAS 跨境通道能否支付纯 VNPAY 码，需确认。\n4. **P2P 与 P2M 的区分**：码里**没有官方的显式标志**（P2M 规则未查到）。\n   - 实务上可参考：是否有 `59` 商户名或非默认 MCC、`62.07` 终端、是否为收单行登记的商户或虚拟账户。\n   - 外国钱包的跨境受理是“在 NAPAS 网络商户处扫 VietQRGlobal”。是否拒绝纯 P2P 个人码需要向 NAPAS 确认。\n   - P2P 码没有 `59`，钱包必须先做 NAPAS 账户名查询，才能向用户显示收款人姓名。\n\n**跨境专用字段**：未发现跨境专用 GUID。VietQRGlobal 指的是同一套 VietQR 码在跨境通道中被受理。\n\n### A3. 底层轨道\n\n- **系统**：**Napas 247**，7x24 跨行实时转账（IBFT），按账户号或卡号入账。2025 年笔数约 +27%。\n- **清算与结算**：NAPAS 负责交换和清算，资金经 SBV 的银行间支付系统（IBPS）结算。7x24 场景下的多场次净额结算、担保或预存安排**均未核实**。\n- **报文标准**：未查到是否已迁移 ISO 20022。业内普遍认为卡和 IBFT 走 ISO 8583 衍生报文（未核实）。\n- **参与者**：商业银行、外资银行分行，以及持牌电子钱包和中间支付机构（MoMo 有 BIN 971025 就是证据）。\n- **外国机构接入**：没有直接成员资格。现行模式是“境外网络或聚合方 ↔ NAPAS 跨境网关 ↔ 越南指定结算行”，并须 SBV 批准。\n\n### A4. 跨境 QR 联通现状\n\n| 对手方 | 方向 / 模型 | 上线 | 结算 / 合作方 |\n|---|---|---|---|\n| 泰国 PromptPay | 方向未核实 | 2021（Wikipedia） | 未核实 |\n| 柬埔寨 KHQR | 越南用户在柬扫 KHQR、以 VND 扣款（约 180 万柬商户）；柬用户扫 VietQR（ACLEDA 指南） | 2023-12-03 暹粒 | NAPAS–Bakong |\n| 老挝 LAPNet | 第一阶段仅越南用户扫 LaoQR；反向在计划中 | 2025-01-09 | 越方 7 家银行、老方 14 家银行 |\n| 中国 Alipay（Ant International） | 中国游客用 Alipay 扫全国 NAPAS 网络商户的 VietQRGlobal；反向（越南人扫 Alipay 码）在计划中 | 2026-04-03 | **Vietcombank** 为结算行；CNY/VND |\n| 中国 UnionPay | 银联 App 或伙伴行 App 扫 VietQR Global（试点）；越南人在华扫银联码在计划中 | MoU 2024-10；四方协议（UPI、NAPAS、ICBC、Vietcombank）2025-04 | ICBC、Vietcombank |\n| 中国 Weixin Pay | 扩大入境受理 | 2026-08 | **BIDV** |\n| 韩国（GLN International，隶属 Hana Financial） | 韩国 App（Toss、Hana OneQ、Hana Money、Hana Card）扫 VietQR Global；Naver Pay、KB 随后接入；反向在计划中 | 2026-04-23 | **Hana Bank 与 BIDV**，KRW–VND 实时结算；Hana Bank 是 SBV 批准的唯一韩方结算行 |\n| 新加坡（Liquid Group） | 双向（细节未核实） | 2026-07-02 | **VietinBank** |\n| 印度、台湾 | 计划 2026 | — | — |\n| **日本** | NAPAS 2024-12 宣布“2025 年拓展至中、日、韩” | **截至 2026-10 未查到日本上线** | — |\n\n**模型特征**\n- NAPAS 作为国家交换中心，直连境外网络或聚合方（Ant、UnionPay、Weixin Pay、GLN、Liquid）。这实际上是 hub-to-network 模式，而非只限央行之间。\n- 每个通道指定一家越南结算行，以本币对本币结算（CNY/VND、KRW/VND）。\n- 由谁报汇率、结算频率、单笔或单日限额：**未查到**。\n- 外国钱包是**直接扫越南国家码**（VietQRGlobal），不需要商户另贴品牌码。\n\n**日本钱包要覆盖全越南商户的可行路径**\n\n| 路径 | 做法 | 覆盖面 | 审批难度 / 时间 |\n|---|---|---|---|\n| ① 国家级双边（日本官方 ↔ SBV/NAPAS，类似日柬 METI–NBC MOC + PJA–NETSTARS 模式） | NAPAS 已把日本列为目标；日方很可能沿用 PJA/JPQR + NETSTARS 架构 | 全部 VietQRGlobal 商户 | 政府主导，INSPAY 难以主导；12–24 个月以上；可争取作为日方运营方或清算参与方 |\n| ② **经 NAPAS 跨境平台做“境外合作网络”（GLN 先例）** | INSPAY 或其日本持牌主体与 NAPAS 签约，指定越南结算行（BIDV、Vietcombank、VietinBank），报 SBV 批准；下游接 PayPay 等日本钱包 | 全部 VietQRGlobal 商户 | 中高。GLN、Liquid 都是商业网络而非央行，说明可行。**2026-07 Decree 52 修订草案**拟明确允许境外机构经持牌“国际金融交换服务商”（NAPAS、MobiFone）接入，并取消“最多连 2 家交换商”的限制，这是利好；需跟踪定稿 |\n| ③ 与单一本地银行或钱包合作 | 现行 Decree 52 下，境外机构须与 SBV 认可的商业银行或外资分行签约；覆盖面限于该行或该钱包（MoMo、VNPAY）的商户。银行技术上可经 Napas 247 支付任意 VietQR，但这相当于把跨境收款包装成境内转账，存在外汇和合规风险 | 小（合规方式）或全（灰色方式） | 中；合规风险高 |\n| ④ 借道 Alipay+ | PayPay 已于 2025-09-30 开通 Alipay+ 海外支付（先开韩国，手续费 3.85%）；Ant–NAPAS 目前只开放 Alipay（中国）扫 VietQRGlobal | 若 Ant 把 VietQRGlobal 开放给 Alipay+ 伙伴钱包，可覆盖全部 VietQRGlobal 商户 | 对 PayPay 最简单；对 INSPAY 而言只是渠道竞争者，INSPAY 没有位置 |\n\n### A5. 监管\n\n**外国支付机构**\n- **Decree 52/2024/ND-CP**（非现金支付，2024-07-01 生效）。依 Tilleke 的解读：\n  - 境外机构**只能通过与 SBV 认可的商业银行或外资银行分行签约**进入越南市场。\n  - 现行规则限制交换系统参与者最多接入 2 家交换服务商。\n- 2026-07 SBV 发布修订草案（改动 38 条中的 17 条），拟允许境外机构经持牌国际金融交换服务商（NAPAS、MobiFone）接入，目的是支持区域 QR 联通。**未定稿。**\n- 中间支付或电子钱包牌照要求越南法人。外资上限 49%、注册资本门槛：**未核实**。\n\n**数据**\n- 《个人数据保护法》（Law 91/2025/QH15）2026-01-01 生效。\n- 跨境传输须做 Cross-Border Transfer Impact Assessment，并在 60 天内报公安部 A05。\n- 罚款最高为上年营收的 5%。\n- Cybersecurity Law 及 Decree 53/2022 的本地存储要求：本轮未核实。\n\n**外汇**\n- 依 Ordinance on Foreign Exchange 28/2005（2013 年修订），境内交易、计价、支付原则上只用 VND。\n- 2018 年报道的罚款为 2–2.5 亿 VND（该数额可能已被后续法规调整）。\n- VND 没有离岸市场。\n- 出入境免申报额度：USD 5,000 或 VND 1,500 万（二手来源）。\n- 结论：跨境收单只能由越南结算行完成兑换并以 VND 付款给商户。\n\n**加密资产与稳定币**\n- **《数字技术产业法》**（Law 71/2025/QH15）2026-01-01 生效。\n  - 数字资产分为 virtual assets 和 crypto assets 两类。\n  - 两类都不包括证券、数字形态的法币及其他金融工具。\n- **Resolution 05/2025/NQ-CP**（2025-09-09）：\n  - 5 年试点，最多 5 家 CASP。\n  - 最低实缴资本 10 万亿 VND（约 4 亿美元），外资上限 49%。\n  - 发行限越南企业；**底层资产须为真实资产，不得是证券或法币**，即不允许法币锚定稳定币发行。\n  - 只向外国投资者发行，交易也只在外国投资者之间、经持牌服务商进行。\n  - 首家持牌后满 6 个月，在场外交易的国内投资者将受处罚。\n- **发牌进展**：\n  - 依 Decision 96/QĐ-BTC，2026-01-20 开始受理申请。\n  - 5 份申请被认定有效：VIX、Loc Phat（LPBank 系）、Vietnam Prosperity（VPBank 系）、Techcom（Techcombank 系）、Vietnam Digital Asset JSC。\n  - 年中报道仍是“尚无持牌”。\n  - Decree 284/2026/ND-CP（2026-07-16 发布，09-01 生效）：通过未持牌平台交易者罚款 3,000–5,000 万 VND。\n- **支付用途**：加密资产**不得作为支付手段**（PwC 2025-12）。\n- **岘港沙盒**：\n  - 面向外国人的稳定币支付沙盒，2025-09-01 至 2028-08-31，限 3 个地点。\n  - 2026-01 开始 USDT→VND 兑换试点（Basal Pay）。\n  - 9Pay 在研究 QR 稳定币支付。\n- **越南盾稳定币**：未查到。\n\n### A6. 候选合作方\n\n- **交换中心**：NAPAS（必经）。\n- **结算行（有先例）**：\n  - Vietcombank（Ant、UnionPay/ICBC）\n  - BIDV（GLN/Hana、Weixin Pay）\n  - VietinBank（Liquid Group）\n  - Sacombank（中越 QR）\n- 据记忆（未核实），日资银行持有越南大行股份：Mizuho 持 Vietcombank、MUFG 持 VietinBank、SMBC 持 VPBank。\n- **钱包与网络**：MoMo、ZaloPay、VNPAY（VNPAY-QR 网络，已与 NAPAS 合作）、9Pay。\n- **潜在 VASP**：上述 5 家申请人，牌照未定；岘港沙盒中的 Basal Pay。\n\n### A7. 对 INSPAY 方案的技术含义\n\n**接入建议**\n- 首选路径 ②（NAPAS 境外合作网络 + 越南结算行），同时关注 Decree 52 修订定稿。\n\n**稳定币只能在境外闭环**\n- 越南禁止加密资产用于支付，银行也没有持有稳定币的框架。\n- 稳定币只能在 INSPAY 与境外流动性方（新加坡或日本）之间流转。\n- 越南结算行收到的是 USD 或 JPY 法币头寸，由其兑换成 VND 后结算给 NAPAS。\n\n**技术坑**\n1. P2P 码缺 `59/52/60`，必须调 NAPAS 账户名查询来显示收款人。\n2. 静态码由用户输入金额，VND 没有小数，`54` 只能是整数。\n3. 动态码没有标准有效期字段，一次性参考号放在 `62.01` 或 `62.05`，有效期规则须向 NAPAS 确认。\n4. `62.08` 附言是商户对账的关键字段，跨境通道必须原样透传。\n5. 退款或撤销：Napas 247 推送是终局性的，退款靠反向交易；跨境退款流程需要和 NAPAS 约定。\n6. 有 VietQR 和 VNPAY-QR 两张网，部分商户码不是 VietQR。\n7. 要按 BIN 表维护受益机构名称，并在 BIN 增减时及时更新。\n\n---\n\n## B. 柬埔寨\n\n### B1. 国家二维码标准\n\n**基本情况**\n- 名称：**KHQR**，由 NBC 运营，2022 年 7 月推出（二手来源）。\n- 基于 EMVCo MPM，但有明显偏离（见 B2）。\n- 支持静态和动态码。\n- 支持 **KHR（116）和 USD（840）双币**。\n- 未查到 CPM 标准。\n\n**规模数据**\n- 2024（NBC 年报的转述）：\n  - Bakong 交易额 1,506.1 亿美元（约 GDP 的 330%）。\n  - 约 6.08 亿笔，同比 +95%。\n  - 约 3,000 万个 Bakong 钱包，**450 万+ 受理商户**。\n- 2025（CIR，2026-06）：\n  - 约 13.3 亿笔。\n  - KHR 285.9 万亿 + USD 1,528 亿。\n  - 商户约 450 万。\n  - 手机银行用户 >1,000 万。\n  - 该文同时出现“Bakong 约 75 万用户”的口径，与上面数字冲突。\n- 结论：用户口径不一，需以 NBC 年报为准。\n\n### B2. 码结构\n\n以下来自 NBC 官方 SDK `bakong-khqr@1.0.20` 源码与测试样例（medium-high），样例 CRC 已复算。\n\n**字段表**\n\n| Tag | 内容 |\n|---|---|\n| `00` | `01` |\n| `01` | `11` 静态 / `12` 动态（SDK 规则：金额 >0 即视为动态） |\n| `15` | UnionPay Merchant Account（可选，≤99）。**SDK 规定 USD 码不能带 UPI 字段（只允许 KHR）** |\n| **`29`** | **个人（Individual）**：`00` Bakong Account ID（`name@bankdomain`，≤32）；`01` account information（≤32，如手机号或账号）；`02` acquiring bank（≤32） |\n| **`30`** | **商户（Merchant）**：`00` Bakong Account ID；`01` merchant ID（≤32）；`02` acquiring bank（≤32） |\n| `52` | MCC，默认 5999 |\n| `53` | `116` KHR / `840` USD |\n| `54` | KHR 必须为整数；USD 最多 2 位小数；长度 ≤13 |\n| `58` | `KH` |\n| `59` | 名称 ≤25 |\n| `60` | 城市 ≤15，默认 Phnom Penh |\n| `62` | `01` bill no.、`02` mobile no.、`03` store label、`07` terminal label、`08` purpose（各 ≤25） |\n| `64` | Merchant Information Language Template：`00` 语言、`01` 名称、`02` 城市 |\n| **`99`** | **时间戳模板**：`00` 创建时间、`01` 过期时间，均为 13 位毫秒 epoch。**动态码必须带过期时间**，过期则报 KHQR_EXPIRED |\n| `63` | CRC |\n\n**与 EMVCo 的关键偏离**\n- tag 29/30 的子标签 `00` **不是 GUID/AID**，而是 Bakong 账户 ID。\n- 所以 KHQR 码里**没有 AID 可查**。\n- 识别国家码的方法：`58=KH` + 出现 tag 29 或 30 + 子标签 `00` 含 `@`。\n- `@` 后面的域名标识参与机构，例如 `aclb` = ACLEDA、`abaa` = ABA；`devb`、`nbcq` 是测试域名。\n- 所有这类码都路由到 Bakong。账户是否存在可经 NBC Open API 查询（SDK 里有 checkBakongAccount）。\n\n**P2P 与 P2M**：码里显式区分，**tag 29 = 个人，tag 30 = 商户**。\n\n**SDK 附带的接口与标识**\n- SDK 提供 deeplink 接口，路径 `/v1/generate_deeplink_by_qr`。\n- ts-khqr 生成码时同时输出整串的 **md5**。据记忆，Bakong Open API 用这个 md5 查询交易状态（未核实）。\n\n**样例**（SDK 测试与 README，CRC 已通过）\n\n```\nABA 格式多网络码（静态、USD、商户）：\n000201010211021641277800000000980416518352888000006030470016abaakhppxxx@abaa01153166007701102420204abaa5204224253038405802KH5910USD OUTLET6010PHNOM PENH62250509115B02750070827CE19809924001339CA026411FDA6803mmp63043870\n  → 同一码里并存 tag02(Visa)、04(Mastercard)、30(KHQR商户 abaakhppxxx@abaa, merchantID 316600770110242)\n动态个人码（KHR 10000，含 62/64/99）：\n00020101021229420013ishinvin@devb01090123456780208Dev Bank5204599953031165405100005802KH5909Ishin Vin6010Phnom Penh62680114INV-2022-12-250211855123456780310Ishin Shop07060123450807Payment64180002ZH0102文山0202金边99340013175507623233601131755076292336630416C4\n```\n\n**跨境专用字段**：除 tag 15（UPI）外，没有跨境专用 GUID。外国钱包扫的就是普通 KHQR。\n\n### B3. 底层轨道（Bakong）\n\n- **运营与技术**：NBC 运营，日本 **Soramitsu** 承建，基于 **Hyperledger Iroha**（许可型链）。2019 年试点，2020-10 全面上线。\n- **三层架构**：\n  1. NBC 维护的 Bakong Core。\n  2. NBC 分配给各金融机构的 domain / payment gateway，对应 `@bank` 后缀。\n  3. 机构分配给终端用户的钱包。\n- 7x24 实时运行，支持 KHR 和 USD。\n- 参与者包括银行、MFI 和支付机构。\n- 外国机构只能经 NBC 跨境安排或本地参与行接入。\n- 链上结算与 NBC 结算账户之间的对应关系：未核实。\n\n### B4. 跨境联通现状\n\n| 对手方 | 方向 | 日期 | 备注 |\n|---|---|---|---|\n| 泰国 PromptPay | 至少是柬→泰 | 2020（Wikipedia） | 低置信 |\n| 越南 NAPAS | 双向 | 2023-12-03 | 越南人以 VND 扫 KHQR |\n| 老挝 LAPNet | Phase I：柬→老；Phase II：老挝用户扫 KHQR（约 450 万商户） | Phase I 2023-08；Phase II 2025-12-19 | — |\n| 马来西亚 DuitNow | Phase 1：柬用户扫 DuitNow（Bakong 或 Maybank M2U KH）；Phase 2（马→柬）无时间表 | MoU 2024-02；Phase 1 2024-09 | — |\n| UnionPay | 银联持卡人或 App 扫 KHQR（约 180 万商户） | 日期未核实 | tag 15 |\n| **Alipay+** | 12 个钱包（Alipay、AlipayHK、Touch 'n Go、GCash、Kakao Pay 等）扫 KHQR；全 KYC 的 KHR 账户 Bakong 用户可在 Alipay+ 商户付款 | MoU 2023-11-15；上线 2024-10-17 | — |\n| Weixin Pay | 入境游客扫 KHQR（第一阶段，全国） | 2026-08（单一来源） | — |\n| 韩国 | 2024-09 有协议 | 现状未查到 | — |\n| 印度 | — | 未查到 | — |\n| **日本 JPQR** | **Phase 1（2025-07-04，大阪世博）：柬用户扫 JPQR**；Phase 2：日本用户扫 KHQR，原计划“2025 年底前”，**截至 2026-10 未查到上线** | 2023-12-18 METI–NBC MOC；2025-04-21 NBC–PJA MoU | 日方运营商 **NETSTARS**，日方结算行 **SMBC**；柬方 **ACLEDA**、**Sathapana** |\n\n**补充**\n- **Bakong Tourists App**：2024-08-19 在暹粒软启动。\n  - 游客用邮箱注册，用本国 Visa、Mastercard、UnionPay 卡充值后扫 KHQR，覆盖 330 万+ 商户。\n  - 支持 USD/KHR 兑换，与 Mastercard 合作。\n- 据 ACLEDA 用户指南，**跨境扫码只能从 KHR 账户扣款**。再结合 SDK 中“UPI 只允许 KHR”的规则，可以推断：跨境 KHQR 以 KHR 结算，这是 NBC 去美元化政策的一部分。\n\n**日本游客在柬扫 KHQR 是否可行**\n- 今天可以：通过 Bakong Tourists App 用信用卡充值后支付。\n- 如果是 Alipay+ 伙伴钱包：PayPay 已是 Alipay+ 的 outbound 钱包，但只开通了韩国。Alipay+ 已接 KHQR，所以 **PayPay 开通柬埔寨在技术上只差 Ant 与 PayPay 的商务决定**。\n- JPQR Phase 2 是官方路线，但尚未上线。\n\n**日本钱包覆盖全柬商户的路径**\n\n| 路径 | 覆盖面 | 难度 |\n|---|---|---|\n| ① 加入 JPQR–KHQR Phase 2（PJA / NETSTARS / SMBC ↔ NBC / ACLEDA / Sathapana），INSPAY 作为日方发行侧参与者，或通过 NETSTARS 接入 | 全部 KHQR（约 450 万商户） | 日方已指定 NETSTARS 为运营商，INSPAY 需与之合作或竞争 |\n| ② INSPAY 作为“网络”与 NBC 签跨境 MoU（Ant、UnionPay、Weixin Pay 都有先例），由本地 sponsor 银行结算 | 全部 KHQR | 高；且与 PJA 的“国家对口”定位可能冲突 |\n| ③ 与单一银行合作（ACLEDA、ABA、Sathapana），由银行经 Bakong 推送到任意 KHQR | 技术上可覆盖全部；合规须 NBC 批准跨境入境业务 | 中 |\n| ④ 借道 Alipay+ | 全部 KHQR（Alipay+ 已接） | 对 PayPay 最容易，INSPAY 没有位置 |\n\n### B5. 监管\n\n**支付机构**\n- 依 2017-06-14 的 Prakas on the Management of Payment Service Providers，提供支付服务须向 NBC 申请牌照，申请材料包括三年预测的商业计划、资本证明等。\n- 电子货币只能由银行或持牌支付机构发行。\n- 单用途电子货币上限 KHR 20 万。\n- 是否有 2024 年新版 Prakas：未查到。\n- 外国钱包只能经 NBC 跨境安排或本地持牌机构受理 KHQR。\n\n**数据本地化**：未查到明确要求，柬埔寨尚无综合性数据保护法（未核实）。\n\n**外汇**：经济高度美元化，USD 在境内流通合法；NBC 在推 KHR 使用（跨境 QR 以 KHR 结算）。KHR 离岸流动性很低。\n\n**加密资产与稳定币**：Prakas on Transactions Related to Cryptoassets，2024-12-26（个别报道写成 2025-12-26，以 2024 为准）。\n- **分类**：\n  - Group 1a：代币化传统资产。\n  - Group 1b：有有效稳定机制、锚定传统资产的稳定币（排除算法稳定币）。\n  - Group 2：其余资产，包括无支撑币。\n- **银行**：\n  - 经 NBC 事先批准，可自营或为客户提供 Group 1 服务。\n  - 不得发行加密资产，不得做 Group 2 及其衍生品。\n  - 敞口上限：**1a ≤5% CET1，1b ≤3% CET1**。\n  - 须按季报告。\n- **CASP**：交换、转移、托管须持牌，规则延伸适用于支付服务机构。\n- **罚款**：KHR 2,000 万–5 亿。\n- **沙盒**：SERC 的 FinTech 沙盒内只有 2 家机构，且不得把加密资产兑成法币。\n- 《数字资产法》在起草中（未核实）。\n- **KHR 稳定币**：未查到。\n- **含义**：零售支付层面没有明确放开，但持牌银行**有法定路径持有并处理合格稳定币**，这一点明显优于越南。\n\n### B6. 候选合作方\n\n- **ACLEDA**（`aclb`）：日柬 Phase 1 主力行。\n- **Sathapana Bank**：日柬通道参与行。据记忆为日本 Maruhan 系（未核实）。\n- **ABA**（`abaa`）：最大零售行之一。\n- Maybank Cambodia（M2U KH）、Wing 等支付机构。\n- 日本侧：NETSTARS、SMBC。\n- Bakong 的建设方 Soramitsu 是日本公司，可作为与 NBC 沟通的纽带。\n\n### B7. 技术含义\n\n1. **解析器**：必须专门支持“tag 29/30 中没有 GUID”的 KHQR；遇到同一码里有 Visa/Mastercard/KHQR 多网络并存时，要优先选 KHQR。\n2. **币种**：静态 USD 码在 KHR-only 的跨境通道下能否支付，需要向 NBC 确认。如果只能付 KHR 码，会损失大量美元标价商户。\n3. **动态码**：校验 `99.01` 过期时间（毫秒）。交易状态可用 md5 查询（待核实）。\n4. **商户名**：`59` ≤25 字符，`64` 提供高棉语或中文别名。\n5. **退款**：Bakong 推送是终局的，退款靠反向交易，需要在跨境协议中约定。\n\n---\n\n## C. 总结建议\n\n- **越南**：走 NAPAS「境外合作网络」路线（GLN 先例），在越南指定结算行。稳定币只在境外流转，越南境内全部为 VND 法币结算。时间点上要盯 Decree 52 修订定稿，以及 NAPAS 的日本对口安排（谁来对接日方：PJA、NETSTARS 还是商业机构）。\n- **柬埔寨**：最现实的切入是参与 JPQR–KHQR Phase 2（与 NETSTARS 合作，或作为其发行侧伙伴）。同时可以和 ACLEDA 或 Sathapana 探讨在 NBC 批准下用 Group 1b 稳定币做跨境头寸结算（3% CET1 上限）、再以 KHR 经 Bakong 付给商户的方案。\n- **两国共同风险**：Ant/Alipay+ 一旦把 PayPay 开通到越南、柬埔寨，INSPAY 在 PayPay 这个渠道上的切入空间会被大幅压缩。\n",
+ "facts": [
+  {
+   "claim": "VietQR 码使用 tag 38 作为 Merchant Account Information，子标签 00 = GUID 'A000000727'，01 = 嵌套模板（01.00 = 6 位受益机构 BIN，01.01 = 账号或卡号），02 = service code（QRIBFTTA 转账户 / QRIBFTTC 转卡）",
+   "category": "qr_spec",
+   "source_url": "https://registry.npmjs.org/vietnam-qr-pay/-/vietnam-qr-pay-1.5.1.tgz",
+   "source_date": "2026-07-19",
+   "confidence": "medium",
+   "note": "开源实现 vietnam-qr-pay 与 napas-qr 结论一致；样例 CRC16-CCITT 复算通过；官方规范原文未取得"
+  },
+  {
+   "claim": "napas-qr 判定卡号的规则：以 9704 开头且长度为 16 或 19 位，则 service code 用 QRIBFTTC，否则用 QRIBFTTA",
+   "category": "qr_spec",
+   "source_url": "https://registry.npmjs.org/napas-qr/-/napas-qr-1.0.4.tgz",
+   "source_date": "2023-06-07",
+   "confidence": "medium"
+  },
+  {
+   "claim": "VietQR P2P 样例 00020101021138530010A0000007270123000697041601092576788590208QRIBFTTA53037045802VN6304AE9F 中没有 52/59/60（偏离 EMVCo 必填要求）；53=704，58=VN；62.08 为转账附言",
+   "category": "qr_spec",
+   "source_url": "https://registry.npmjs.org/vietnam-qr-pay/-/vietnam-qr-pay-1.5.1.tgz",
+   "source_date": "2026-07-19",
+   "confidence": "medium",
+   "note": "README 样例，本地复算 CRC=AE9F 吻合"
+  },
+  {
+   "claim": "VNPAY-QR 是越南并行的 QR 网络，使用 tag 26，GUID 'A000000775'，子标签 01 = 商户ID；62.03 store、62.05 reference、62.07 terminal、62.08 purpose",
+   "category": "qr_spec",
+   "source_url": "https://registry.npmjs.org/vietnam-qr-pay/-/vietnam-qr-pay-1.5.1.tgz",
+   "source_date": "2026-07-19",
+   "confidence": "medium"
+  },
+  {
+   "claim": "电子钱包在 NAPAS 有自己的 BIN：MoMo = 971025；ZaloPay 码使用 BVBank BIN 970454 + '99ZP…' 账号；主要银行 BIN：Vietcombank 970436、BIDV 970418、VietinBank 970415、Agribank 970405、Techcombank 970407、MB 970422、VPBank 970432、Sacombank 970403、ACB 970416",
+   "category": "qr_spec",
+   "source_url": "https://registry.npmjs.org/vietnam-qr-pay/-/vietnam-qr-pay-1.5.1.tgz",
+   "source_date": "2026-07-19",
+   "confidence": "medium"
+  },
+  {
+   "claim": "NAPAS 于 2021 年 6 月推出统一转账二维码品牌 VietQR，依据 EMVCo 与 SBV 标准",
+   "category": "qr_spec",
+   "source_url": "https://english.vtv.vn/news/napas-unveils-unified-qr-code-system-for-bank-transfers-2021062123463189.htm",
+   "source_date": "2021-06-21",
+   "confidence": "medium"
+  },
+  {
+   "claim": "NAPAS 现以 VietQRPay 做境内支付、VietQRGlobal 做跨境支付；已接通中、韩游客入境支付，越南人出境方向预计年底前完成；计划 2026 年接通印度、台湾",
+   "category": "linkage",
+   "source_url": "https://vnba.org.vn/vi/napas-gioi-thieu-phuong-thuc-thanh-toan-xuyen-bien-gioi-qua-ma-qr-tai--ngay-tai-chinh-so-2026-22154.htm",
+   "source_date": "2026-07-21",
+   "confidence": "medium"
+  },
+  {
+   "claim": "2025 年 NAPAS 系统笔数 +23.7%、金额 +8.7%，日均 >3,200 万笔；Napas 247 笔数约 +27%；VietQR 2025 年 1–10 月笔数 +52%、金额 +85%；截至 2025-10 约 9,000 万手机银行账户扫 VietQR",
+   "category": "market_data",
+   "source_url": "https://en.napas.com.vn/napas-2025-member-organization-conference-184260317124736875.htm",
+   "source_date": "2026-03-17",
+   "confidence": "medium",
+   "note": "两份 NAPAS 报告口径略有差异（23.7%/8.7% 与约 24%/8%）"
+  },
+  {
+   "claim": "2024 年 VietQR 交易笔数为 2023 年的 2.2 倍，金额为 2.6 倍",
+   "category": "market_data",
+   "source_url": "https://en.vietstock.vn/2025/01/qr-code-payment-transactions-surged-in-2024-37-597236.htm",
+   "source_date": "2025-01",
+   "confidence": "medium"
+  },
+  {
+   "claim": "2026-04-03 起，中国游客可用 Alipay 扫全国 NAPAS 网络商户的 VietQRGlobal 码；由 NAPAS 与 Ant International 基础设施处理，Vietcombank 为结算行；反向（越南人扫 Alipay 码）在计划中",
+   "category": "linkage",
+   "source_url": "https://technode.global/2026/04/07/vietnams-vietcombank-chinas-ant-international-launch-cross-border-qr-payment-service/",
+   "source_date": "2026-04-07",
+   "confidence": "medium"
+  },
+  {
+   "claim": "UnionPay 与 NAPAS 于 2024-10 签 MoU；2025-04 UPI、NAPAS、ICBC、Vietcombank 签四方协议；试点允许中国游客用银联 App 扫 VietQR Global",
+   "category": "linkage",
+   "source_url": "https://www.sacombank.com.vn/en/home/news/sacombank-news/2026/sacombank-pioneers-cross-border-qr-payment-connectivity-between-vietnam-and-china.html",
+   "source_date": "2026",
+   "confidence": "medium"
+  },
+  {
+   "claim": "越韩跨境 QR 于 2026-04-23 上线：GLN International（Hana Financial 子公司）+ NAPAS + BIDV + Hana Bank；韩国 App（Toss、Hana OneQ、Hana Money、Hana Card）扫 VietQR Global；Hana Bank 为 SBV 批准的唯一韩方结算行，KRW–VND 实时结算",
+   "category": "linkage",
+   "source_url": "https://fintech.global/?p=239685",
+   "source_date": "2026-04",
+   "confidence": "medium",
+   "note": "NAPAS 官网也有报道：en.napas.com.vn/new-milestone-in-vietnamkorea-financial-connectivity-launch-of-cross-border-qr-payment-service-184260526100013798.htm"
+  },
+  {
+   "claim": "越新跨境 QR 于 2026-07-02 正式上线，合作方为 NAPAS、Liquid Group（新加坡）、VietinBank",
+   "category": "linkage",
+   "source_url": "https://en.napas.com.vn/vietnam-and-singapore-launch-cross-border-qr-payment-service-accelerating-digital-economic-184260702152948206.htm",
+   "source_date": "2026-07-02",
+   "confidence": "high"
+  },
+  {
+   "claim": "NAPAS、BIDV 与 Weixin Pay 于 2026-08 宣布扩大中越 QR 联通；越南人扫中国码方向仍在研究",
+   "category": "linkage",
+   "source_url": "https://tapchikinhtetaichinh.vn/napas-bidv-va-weixin-pay-mo-rong-dich-vu-thanh-toan-qr-xuyen-bien-gioi-163811.html",
+   "source_date": "2026-08",
+   "confidence": "medium"
+  },
+  {
+   "claim": "越老 QR 于 2025-01-09 上线（NAPAS–LAPNet），第一阶段仅越南用户扫 LaoQR；参与方为越方 7 家银行、老方 14 家银行",
+   "category": "linkage",
+   "source_url": "https://vietnamnews.vn/economy/1690482/seven-banks-allow-customers-to-pay-by-qr-codes-in-laos.html",
+   "source_date": "2025-01",
+   "confidence": "medium"
+  },
+  {
+   "claim": "NAPAS 2024-12 宣布 2025 年拓展与中国、日本、韩国的跨境 QR；截至 2026-10 未查到日本通道上线",
+   "category": "linkage",
+   "source_url": "https://en.vneconomy.vn/vietnams-napas-to-expand-qr-payment-reach-to-china-japan-south-korea.htm",
+   "source_date": "2024-12-02",
+   "confidence": "medium",
+   "note": "“未上线”系基于检索不到，不是官方否认"
+  },
+  {
+   "claim": "越柬跨境 QR 于 12 月 3 日在暹粒上线（Wikipedia 与 Vietcetera 均记为 2023 年）；越南人以 VND 扫 KHQR，覆盖约 180 万柬埔寨商户",
+   "category": "linkage",
+   "source_url": "https://thoibaotaichinhvietnam.vn/vietnam-cambodia-launch-cross-border-qr-payment-link-141406-141406.html",
+   "source_date": "2023-12",
+   "confidence": "medium"
+  },
+  {
+   "claim": "Decree 52/2024/ND-CP（非现金支付）2024-07-01 生效；现行框架下境外机构只能通过与 SBV 认可的商业银行或外资分行签约进入越南；SBV 2026-07 修订草案（改动 38 条中的 17 条）拟允许境外机构经持牌国际金融交换服务商（NAPAS、MobiFone）接入，并取消“最多连 2 家交换商”的限制，以支持区域 QR 联通",
+   "category": "regulation",
+   "source_url": "https://www.tilleke.com/insights/vietnams-draft-decree-on-non-cash-payments-would-relax-requirements-for-ips-providers/",
+   "source_date": "2026-07",
+   "confidence": "medium",
+   "note": "WebFetch DNS 失败，仅有搜索摘要；草案未定稿"
+  },
+  {
+   "claim": "《数字技术产业法》（Law 71/2025/QH15）2026-01-01 生效；数字资产分为 virtual assets 与 crypto assets，均不包括证券、数字法币及其他金融工具",
+   "category": "regulation",
+   "source_url": "https://www.pwc.com/vn/en/publications/2025/vietnam-cryptocurrencies.pdf",
+   "source_date": "2025-12",
+   "confidence": "medium"
+  },
+  {
+   "claim": "越南加密资产被承认为合法的交换与投资工具，但不得作为支付手段",
+   "category": "stablecoin",
+   "source_url": "https://www.pwc.com/vn/en/publications/2025/vietnam-cryptocurrencies.pdf",
+   "source_date": "2025-12",
+   "confidence": "medium"
+  },
+  {
+   "claim": "Resolution 05/2025/NQ-CP（2025-09-09）：5 年试点；发行人须为越南企业，底层须为真实资产，不得是证券或法币；只向外国投资者发行，且只在外国投资者之间经持牌服务商交易",
+   "category": "regulation",
+   "source_url": "https://www.bakermckenzie.com/-/media/files/insight/publications/alerts/09/vietnam-new-resolution-on-pilot-program-for-digital-and-crypto-assets-marke.pdf",
+   "source_date": "2025-09",
+   "confidence": "medium"
+  },
+  {
+   "claim": "试点期最多 5 家 CASP；最低实缴资本 10 万亿 VND（约 4 亿美元）；外资 ≤49%；依 Decision 96/QĐ-BTC 自 2026-01-20 受理申请",
+   "category": "regulation",
+   "source_url": "https://www.theblock.co/post/386543/vietnam-opens-crypto-exchange-licensing",
+   "source_date": "2026-01",
+   "confidence": "medium"
+  },
+  {
+   "claim": "5 份交易所申请被认定有效（VIX、Loc Phat、Vietnam Prosperity、Techcom、Vietnam Digital Asset JSC），报道时尚无持牌；Decree 284/2026/ND-CP（2026-07-16 发布、09-01 生效）对经未持牌平台交易者罚 3,000–5,000 万 VND",
+   "category": "regulation",
+   "source_url": "https://vietnamnet.vn/en/vietnam-tightens-crypto-trading-rules-from-september-1-2539366.html",
+   "source_date": "2026-07/08",
+   "confidence": "medium",
+   "note": "有一篇二手报道（Tangem）称 5 家已获批，与此矛盾；以“未确认发牌”为准"
+  },
+  {
+   "claim": "岘港稳定币支付沙盒面向外国人，2025-09-01 至 2028-08-31，限 3 个地点；2026-01 起 USDT→VND 兑换试点，Basal Pay 已运营",
+   "category": "stablecoin",
+   "source_url": "https://news.tuoitre.vn/foreign-visitor-demand-drives-pilot-for-digital-asset-conversions-in-da-nang-103260115000440801.htm",
+   "source_date": "2026-01-15",
+   "confidence": "medium"
+  },
+  {
+   "claim": "越南《个人数据保护法》（Law 91/2025/QH15）2026-01-01 生效；跨境传输须做影响评估并于 60 天内报公安部（A05）；罚款最高为上年营收的 5%",
+   "category": "regulation",
+   "source_url": "https://www.allenandgledhill.com/vn/publication/articles/31075/upcoming-changes-to-vietnam-s-personal-data-protection-regime",
+   "source_date": "2025-08-21",
+   "confidence": "medium"
+  },
+  {
+   "claim": "Ordinance 28/2005 外汇管理令的政策目标是越南境内只使用 VND；境内以外币计价或支付原则上禁止（2018 年报道的罚款为 2–2.5 亿 VND）",
+   "category": "regulation",
+   "source_url": "https://english.luatvietnam.vn/ordinance-no-28-2005-pl-ubtvqh11-dated-december-21-2005-of-the-standing-committee-of-the-national-assembly-on-foreign-exchange-control-18163-doc1.html",
+   "source_date": "2005-12-21",
+   "confidence": "medium",
+   "note": "罚款额可能已被后续行政处罚法令调整，未核实"
+  },
+  {
+   "claim": "NAPAS 与 VNPAY 于 2026-03 签署全面合作协议",
+   "category": "partner",
+   "source_url": "https://en.napas.com.vn/napas-and-vnpay-sign-comprehensive-cooperation-agreement-to-expand-the-digital-ecosystem-18426031710010799.htm",
+   "source_date": "2026-03-17",
+   "confidence": "medium",
+   "note": "协议是否包含 VNPAY-QR 与 VietQR 互通，未核实"
+  },
+  {
+   "claim": "KHQR 官方 SDK（bakong-khqr，仓库 gitlab.nbc.gov.kh/khqr/sdk-javascript）：tag 29 = 个人、tag 30 = 商户；子标签 00 = Bakong Account ID（name@bank，≤32），01 = 个人 account information 或商户 merchant ID（≤32），02 = acquiring bank（≤32）；子标签 00 不是 GUID/AID",
+   "category": "qr_spec",
+   "source_url": "https://registry.npmjs.org/bakong-khqr/-/bakong-khqr-1.0.20.tgz",
+   "source_date": "2025-04-30",
+   "confidence": "medium",
+   "note": "源码常量与测试一致；未取得 NBC 规范 PDF"
+  },
+  {
+   "claim": "KHQR tag 99 为时间戳模板：00 = 创建时间、01 = 过期时间，均为 13 位毫秒 epoch；动态码（01=12，金额 >0）必须带过期时间，过期时 SDK 报 KHQR_EXPIRED",
+   "category": "qr_spec",
+   "source_url": "https://registry.npmjs.org/bakong-khqr/-/bakong-khqr-1.0.20.tgz",
+   "source_date": "2025-04-30",
+   "confidence": "medium"
+  },
+  {
+   "claim": "KHQR 币种：53 = 116（KHR）或 840（USD）；KHR 金额须为整数，USD 最多 2 位小数；tag 15 为 UnionPay merchant account，SDK 禁止 USD 码带 UPI 字段",
+   "category": "qr_spec",
+   "source_url": "https://registry.npmjs.org/bakong-khqr/-/bakong-khqr-1.0.20.tgz",
+   "source_date": "2025-04-30",
+   "confidence": "medium"
+  },
+  {
+   "claim": "KHQR 62 子标签：01 bill number、02 mobile、03 store label、07 terminal、08 purpose（各 ≤25）；64 = 语言模板（00 语言、01 名称、02 城市）；59 ≤25、60 ≤15；MCC 默认 5999",
+   "category": "qr_spec",
+   "source_url": "https://registry.npmjs.org/bakong-khqr/-/bakong-khqr-1.0.20.tgz",
+   "source_date": "2025-04-30",
+   "confidence": "medium"
+  },
+  {
+   "claim": "SDK 测试中有 ABA 格式的多网络 KHQR：同一码里并存 tag 02（Visa）、04（Mastercard）、30（abaakhppxxx@abaa，merchant ID 316600770110242，acquiring bank abaa），53=840；CRC=3870，复算吻合",
+   "category": "qr_spec",
+   "source_url": "https://registry.npmjs.org/bakong-khqr/-/bakong-khqr-1.0.20.tgz",
+   "source_date": "2025-04-30",
+   "confidence": "medium"
+  },
+  {
+   "claim": "Bakong 由 NBC 与 Soramitsu 基于 Hyperledger Iroha（许可型链）构建；三层结构为 NBC 的 Bakong Core、分配给金融机构的 domain / payment gateway、机构分配给用户的钱包",
+   "category": "architecture",
+   "source_url": "https://www.lfdecentralizedtrust.org/blog/2020/08/17/national-bank-of-cambodias-new-digital-payment-system-how-soramitsu-helped-modernize-retail-payments-using-hyperledger-iroha",
+   "source_date": "2020-08-17",
+   "confidence": "medium",
+   "note": "厂商与合作方材料"
+  },
+  {
+   "claim": "2024 年 Bakong 交易额 1,506.1 亿美元（约 GDP 的 330%），约 6.08 亿笔（同比 +95%）；约 3,000 万钱包；450 万+ 商户受理",
+   "category": "market_data",
+   "source_url": "https://en.vietstock.vn/2025/03/bakong-volume-now-more-than-300-percent-of-cambodias-gdp-114-606221.htm",
+   "source_date": "2025-03",
+   "confidence": "medium"
+  },
+  {
+   "claim": "2025 年 Bakong 约 13.3 亿笔，金额 KHR 285.9 万亿 + USD 1,528 亿；KHQR 商户约 450 万；手机银行用户超 1,000 万",
+   "category": "market_data",
+   "source_url": "https://cambodiainvestmentreview.com/2026/06/08/exclusive-cambodias-digital-economy-reaches-new-milestone-as-mobile-banking-users-surpass-10-million-and-khqr-payments-exceed-105-billion-annually/",
+   "source_date": "2026-06-08",
+   "confidence": "medium",
+   "note": "同文有“约 75 万用户”的冲突口径"
+  },
+  {
+   "claim": "日柬 QR：METI–NBC MOC（2023-12-18）、NBC–PJA MoU（2025-04-21）；Phase 1 于 2025-07-04 在大阪世博上线（柬埔寨 Bakong 或银行 App 扫 JPQR）；Phase 2 为日本用户扫 KHQR；日方运营商 NETSTARS，柬方 ACLEDA、Sathapana",
+   "category": "linkage",
+   "source_url": "https://fintechnews.sg/110676/cambodia/japan-cambodia-qr/",
+   "source_date": "2025-07",
+   "confidence": "medium",
+   "note": "PJA 新闻稿：paymentsjapan.or.jp/wp-content/uploads/2025/04/PressRelease_en_20250421.pdf"
+  },
+  {
+   "claim": "日柬通道中 SMBC 为日方结算行；Phase 2 原计划“2025 年底前”实施，截至 2026-10 未查到上线报道",
+   "category": "linkage",
+   "source_url": "https://www.theasset.com/article/54401/theasset.com",
+   "source_date": "2025-07",
+   "confidence": "low",
+   "note": "“2025 年底”目标只见于单一来源"
+  },
+  {
+   "claim": "柬老 Phase II 于 2025-12-19 上线，老挝用户可扫 KHQR（约 450 万商户）；Phase I（2023-08）为柬→老",
+   "category": "linkage",
+   "source_url": "https://b2b-cambodia.com/news/cambodia-and-laos-launch-phase-ii-cross-border-qr-code-payments",
+   "source_date": "2025-12",
+   "confidence": "medium"
+  },
+  {
+   "claim": "柬马：MoU 2024-02，Phase 1 2024-09 上线（柬用户经 Bakong 或 Maybank M2U KH 扫 DuitNow）；Phase 2（马来西亚人扫 KHQR）无时间表",
+   "category": "linkage",
+   "source_url": "https://www.bnm.gov.my/-/khqr-pr",
+   "source_date": "2024-09",
+   "confidence": "high"
+  },
+  {
+   "claim": "Bakong–Alipay+ 跨境 QR 于 2024-10-17 正式上线（NBC 与 Ant International 于 2023-11-15 签 MoU）；12 个国际钱包（Alipay、AlipayHK、Touch 'n Go、GCash、Kakao Pay 等）可扫 KHQR；全 KYC 的 KHR 账户 Bakong 用户可在 Alipay+ 商户付款",
+   "category": "linkage",
+   "source_url": "https://www.bis.org/speeches/20241017-remarks-official-launching-ceremony-cross-border-qr-code-payment-between-bakong-and-alipay-plus",
+   "source_date": "2024-10-17",
+   "confidence": "medium",
+   "note": "bis.org WebFetch 失败；钱包清单来自 thepaypers 等二手报道"
+  },
+  {
+   "claim": "NBC 与 Weixin Pay 推出跨境 QR，第一阶段入境游客可用 WeChat Pay 扫全国 KHQR",
+   "category": "linkage",
+   "source_url": "https://www.theasset.com/article/57000/theasset.com",
+   "source_date": "2026-08-21",
+   "confidence": "low",
+   "note": "单一来源，日期未交叉核实"
+  },
+  {
+   "claim": "银联持卡人或 App 用户可在约 180 万柬埔寨商户扫 KHQR",
+   "category": "linkage",
+   "source_url": "https://www.b2b-cambodia.com/news/overview-of-cambodias-cross-border-qr-payments-with-vietnam-thailand-laos-china/",
+   "source_date": "未查到",
+   "confidence": "medium"
+  },
+  {
+   "claim": "Bakong Tourists App 于 2024-08-19 在暹粒软启动；游客用邮箱注册，用本国 Visa、Mastercard、UnionPay 卡充值后扫 KHQR（330 万+ 商户），支持 USD/KHR 兑换；后与 Mastercard 在金边正式发布",
+   "category": "other",
+   "source_url": "https://fintechnews.sg/100446/cambodia/cambodia-launch-bakong-tourists-app/",
+   "source_date": "2024-08",
+   "confidence": "medium"
+  },
+  {
+   "claim": "ACLEDA 指南：经 Bakong 在泰、越、老跨境扫码，只能从 KHR 账户扣款",
+   "category": "rail",
+   "source_url": "https://www.acledasecurities.com.kh/qr/toanchet-manual/qrpayment-cross-border?h=0&l=eng",
+   "source_date": "未查到",
+   "confidence": "medium"
+  },
+  {
+   "claim": "NBC《加密资产相关交易 Prakas》（2024-12-26）：Group 1a 代币化传统资产、Group 1b 有有效稳定机制的稳定币（排除算法币）、Group 2 其他；银行须经 NBC 批准，不得发行、不得做 Group 2；敞口上限 1a ≤5% CET1、1b ≤3% CET1；须按季报告；CASP（交换、转移、托管）须持牌，规则延伸至支付服务机构；罚款 KHR 2,000 万–5 亿",
+   "category": "stablecoin",
+   "source_url": "https://www.dfdl.com/insights/legal-and-tax-updates/cryptoassets-regulation-introduced-by-the-national-bank-of-cambodia-nbc/",
+   "source_date": "2024-12/2025-01",
+   "confidence": "medium",
+   "note": "Rajah & Tann 说法一致；NBC 原文未核"
+  },
+  {
+   "claim": "柬埔寨 SERC 的 FinTech 沙盒只有 2 家持牌机构，且不得将加密资产兑成法币；《数字资产法》在起草中",
+   "category": "regulation",
+   "source_url": "https://cryptoforinnovation.org/cambodias-crypto-interest-reflects-wider-policy-changes-to-financial-system/",
+   "source_date": "2025",
+   "confidence": "low"
+  },
+  {
+   "claim": "柬埔寨 Prakas on the Management of Payment Service Providers（2017-06-14）：提供支付服务须获 NBC 牌照；电子货币只能由银行与持牌支付机构发行",
+   "category": "regulation",
+   "source_url": "https://cambodiantr.gov.kh/?p=2042",
+   "source_date": "2017-06-14",
+   "confidence": "medium",
+   "note": "非官方英译；是否有 2024 年新版未查到"
+  },
+  {
+   "claim": "PayPay 于 2025-09-30 正式推出“海外支付模式”，首站韩国，在 Alipay+ 与 ZeroPay 标识的店铺使用；须出国前完成 eKYC；海外事务手续费 3.85%（含税）",
+   "category": "partner",
+   "source_url": "https://appllio.com/news/2025-09-30-67941-paypay-overseas-payment",
+   "source_date": "2025-09-30",
+   "confidence": "medium",
+   "note": "Business Wire 同步报道 PayPay accepted in Korea via Alipay+"
+  }
+ ],
+ "open_questions": [
+  "NAPAS：VietQRGlobal 跨境通道是否只受理已登记商户的 P2M 码？外国钱包扫个人 VietQR（P2P）是否被拒？P2M 的官方识别规则（service code、MCC、59 等）是什么？",
+  "NAPAS：境外合作网络（GLN、Liquid 模式）的接入条件、技术报文（ISO 8583 还是 ISO 20022）、账户名查询接口、汇率由谁报、结算频率与币种、单笔和单日限额、退款与撤销流程分别如何？",
+  "NAPAS 与 SBV：日本对口安排目前由谁推进（PJA、NETSTARS、日本官方，还是商业机构）？INSPAY 能否作为日方网络或聚合方单独与 NAPAS 签约？",
+  "SBV：Decree 52/2024 修订草案（2026-07）何时定稿？“境外机构经国际金融交换服务商接入”的具体条件、外资持股与注册资本门槛是什么？",
+  "越南：结算行（Vietcombank、BIDV、VietinBank）能否接受以境外 USD 或 JPY 头寸（由稳定币在境外兑换而来）结算？是否需要 SBV 外汇专项批准或报备？",
+  "越南：VNPAY-QR（tag 26，A000000775）商户能否经 NAPAS 跨境通道受理？NAPAS 与 VNPAY 2026-03 协议是否包含互通？",
+  "越南：首张加密资产交易所牌照是否已于 2026 年下半年发出？持牌 CASP 能否为境外机构提供稳定币与 VND 之间的兑换或托管？",
+  "越南：Decree 53/2022 对跨境支付服务商的数据境内存储要求是否适用于 INSPAY？",
+  "NBC：日柬 Phase 2（日本人扫 KHQR）的上线时间与技术方案，以及日方发行侧是否只限 NETSTARS 接入？",
+  "NBC：入境跨境 KHQR 是否只能以 KHR 结算？美元标价的 KHQR 商户码能否被外国钱包支付？",
+  "NBC：本地合作银行（ACLEDA、Sathapana、ABA）能否在 Prakas 下经批准接受 Group 1b 稳定币（如 USDC）作为跨境结算头寸？3% CET1 上限的实际额度是多少？银行是否还需单独申请 CASP 牌照？",
+  "NBC：外国网络（非央行）直接与 NBC 签跨境 MoU 的条件（Ant、UnionPay、Weixin Pay 的先例），以及与日本 PJA“国家对口”角色是否冲突？",
+  "Bakong Open API：交易状态查询（md5）、deeplink、账户查询的正式接口文档与跨境商户可用的权限范围？",
+  "Ant 与 PayPay：Alipay+ 是否计划把 PayPay 海外支付扩展到越南（VietQRGlobal）和柬埔寨（KHQR）？时间表如何？",
+  "两国各跨境通道的入境游客单笔和单日限额、FX 加点与费率结构，本轮均未查到"
+ ],
+ "searches_used": 30
+}

@@ -153,7 +153,7 @@ LSP 以本地轨道报文（ISO 20022 `pacs.008` / ISO 8583 / 本地 API）发�
 | 7.2.2 quotes | `POST /v1/quotes` → `PaymentService.quote` | 已实现 |
 | 7.2.3 payments | `POST /v1/payments` → `PaymentService.pay` | 已实现（幂等、风控、U 状态） |
 | 7.2.4 inquiry | `GET /v1/payments/{id}`；`resolvePending()` | 部分 |
-| 7.2.5 cancel | — | 未实现 |
+| 7.2.5 cancel | `POST /v1/payments/cancel` → `PaymentService.cancel` | 已实现（未知请求打墓碑、拒绝迟到的 pay；处理中/已成功不可取消） |
 | 7.3 回调 | `MppNotifier` 接口 + `RecordingNotifier` | 接口 |
 | 7.4 LSP | `SettlementPartner` 接口 + `MockPartner` | 接口 + mock |
 | 7.5 结算 | `POST /v1/settlement/cycles` → `SettlementEngine.closeCycle` | 已实现（净额、链上付款、短缺检测） |

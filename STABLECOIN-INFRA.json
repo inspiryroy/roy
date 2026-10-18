@@ -1,0 +1,514 @@
+{
+ "topic": "STABLECOIN-INFRA（第二轮复核）：稳定币清结算基础设施与东南亚/日本出入金能力",
+ "searches_used": 28,
+ "report_md": "# 稳定币清结算基础设施与东南亚/日本出入金能力（第二轮复核版）\n\n> 调研日期：2026-10-18｜对象：INSPAY “稳定币版 Alipay+”网络的跨境清结算层\n> 本轮在上一轮 STABLECOIN-INFRA.json 的基础上工作。上一轮 61 条事实里有 36 条是 low（检索额度耗尽，靠记忆）。本轮把检索主要用在复核这些条目和补 2026 年的新进展。\n\n---\n\n## 0. 方法与局限（请先读）\n\n**方法**\n- 先读三份种子文件（JP-PAYPAY / TH-LA / SG-MY）和上一轮的 STABLECOIN-INFRA.json，列出 low/medium 条目和空白项，再按优先级检索。\n- 种子中已经是 high 的事实没有重复检索。例如 MAS 2026-09-01 稳定币立法征求意见、MAS BLOOM、TouristDigiPay、BOT NRQC、BNM 林吉特立场等，报告里直接引用。\n- 共用 **28 次 WebSearch**（已达上限）。WebFetch 试了 2 次（fsa.go.jp 登记名单 PDF、fatf-gafi.org R.16 页面），都返回 `getaddrinfo ENOTFOUND`，没有再试。\n\n**局限**\n- 所有一手页面都没能直接打开，“high”的含义是：搜索结果直接指向官方或一手 URL（央行、监管机构、发行方新闻稿或 PDF），而且摘要内容具体、与其他来源一致。条文级细节（如内阁府令具体条号）仍需律师查原文。\n- 以下几项**没有检索**，沿用上一轮或种子结论：Partior 官方新闻、Visa 亚太参与方、马来西亚林吉特稳定币新进展、各国交易所的 payout API 文档、Tempo 与 Bridge 在亚洲的进展。\n- 凭记忆的内容都标为 low，note 写“未核实”。\n\n---\n\n## 1. 结论摘要（TL;DR）\n\n1. **日本侧可合法处理的稳定币，2026-10 时点有三种已确认**，全部经 SBI VC Trade（電子決済手段等取引業者，关东财务局长第 00001 号，2025-03-04 登记）：\n   - **USDC**：外国電子決済手段，2025-03-26 全面开始；\n   - **RLUSD**：Ripple 2026-06-24 宣布经 JFSA 批准在日本上线；\n   - **JPYSC**：SBI 新生信托银行发行的信托型日元稳定币，2026-06-24 发行。目前只能在 SBI VC Trade 账户内使用，不能出库到外部钱包；2026-09-07 发行余额约 201 亿日元。\n\n   外国稳定币（USDC、RLUSD）在日本仍有**每笔约 100 万日元**的转账上限（USDC 上线时的公告和 2026-06 关于 RLUSD 的报道都提到）。这意味着**大额 B2B 净额结算不宜放在日本境内用 USDC 完成**。\n2. **日元稳定币格局在 2026 年变了**：\n   - JPYC 累计发行额 2026-09-18 超过 100 亿日元，但链上流通量约 28 亿日元（2026-08-18）；\n   - SBI 的 JPYSC 余额约 201 亿日元，后来居上；\n   - 三大行 2026-06-10 宣布 **2026 财年内**以信托型共同稳定币开始实际交易，初期用于证券结算。受托信托银行和基础平台尚未选定，**上一轮“经 Progmat 发行”的说法要修正为“未定”**。\n3. **东南亚出金侧，CPN 已有官方确认的东南亚本币出金点：菲律宾（Coins.ph 作为 BFI，覆盖 120 多家银行和电子钱包）和新加坡**（伙伴名称未查到）。泰国、印尼、马来西亚、越南、日本**没有查到** CPN 出金伙伴。\n4. **卡组织把稳定币接成结算资产已经成熟**：\n   - Mastercard 2026-06-03 让发卡方和收单方可以选择用 USDC、PYUSD、USDG、USDP、RLUSD、SoFiUSD 结算，支持日间、周末和节假日结算；\n   - Visa 已在美国用 USDC（Solana）结算，年化运行率超过 35 亿美元。\n\n   两者的共同点是：**稳定币只用于机构间结算义务，持卡人和商户两端都是法币**，与 INSPAY 的设想同构。不过两家都**没有查到亚太的收单方名单**。\n5. **区域本币稳定币大多还不能用作结算主资产**：\n   - XSGD 市值约 1,300 万美元（2025-12）；\n   - HKD 稳定币只有 Anchorpoint 的 HKDAP 在第一阶段面向机构；\n   - 泰铢稳定币要等 BOT 2026 年内的征求意见，而且第一阶段只用于金融机构间结算；\n   - 印尼稳定币不能作为支付工具；\n   - 越南试点明确排除法币稳定币，而且截至 2026-03 还没有发出任何交易所牌照。\n6. **FATF R.16 于 2025-06-18 修订**，改名为 “Payment transparency”，2030 年底前落实，FATF 计划 2026 年发布实施指引。卡类购物交易的豁免保留并作了澄清，但**扫码钱包支付是否适用这项豁免，原文未能核实**。设计上应假设**每笔底层交易都要带结构化的付款人和商户信息**。\n7. **推荐组合**：\n   - **结算资产**：USDC 为主，RLUSD 作备用。\n   - **日元腿**：短期用法币日元，在境外换成 USDC；中期再评估 JPYSC 或三大行共同稳定币。\n   - **结算地点**：USDC 净额结算放在**新加坡枢纽**，用 MPI 牌照，可对接 BLOOM、StraitsX、CPN。\n   - **当地出金**：菲律宾、新加坡、香港直接用稳定币出金；泰国、印尼、马来西亚、越南、老挝、柬埔寨走**法币腿**，经持牌银行或支付机构。\n   - **链**：第一阶段选 SBI VC Trade 与出金伙伴都支持的链（大概率是 Ethereum，需确认），第二阶段评估 Arc。不用第三方跨链桥。\n\n---\n\n## 2. 可用于网络清结算的稳定币\n\n### 2.1 美元稳定币\n\n| 稳定币 | 发行方 / 监管 | 主要链 | 规模（最新可得） | 日本能否合法处理 | 对 INSPAY 的意义 |\n|---|---|---|---|---|---|\n| **USDC** | Circle（美国，GENIUS Act 框架下（未核实）；法国 EMI 发行，MiCA 下为 EMT（未核实）） | Ethereum、Solana 等多链；自有 L1 **Arc** 于 2026-09-16 主网上线 | 约 730 亿美元（2026-10-08，二手数据，沿用上轮） | **可以**：SBI VC Trade 作为外国電子決済手段处理，上线时每笔上限 100 万日元 | 主结算资产：流动性最深；CPN、Visa、Mastercard、MAS BLOOM 都接受 |\n| **RLUSD** | Ripple（NYDFS 批准，记忆未核实） | 日本只上了 **Ethereum**（报道），不含 XRPL | Ripple 称市值约 17 亿美元（2026-06） | **可以**：2026-06-24 经 SBI VC Trade 上线；报道称每笔约 100 万日元上限，并称是日本首个“4 号電子決済手段” | 第二个可在日本合法处理的美元币，可作发行方冗余；Mastercard 已接受 RLUSD 结算 |\n| **USDT** | Tether | 多链 | 约 1,831 亿美元（2026-08-13，聚合站数据） | **没有查到**日本登记业者处理 | 不适合日本侧；东南亚交易所流动性大，但对监管叙事不利 |\n| PYUSD / USDG / USDP | Paxos 系 | Ethereum、Solana 等 | 未查 | 未查到日本处理路径 | Mastercard 接受；对 INSPAY 不优先 |\n\n### 2.2 日元稳定币（2025–2026 进展）\n\n| 项目 | 类型（資金決済法） | 发行与流通 | 状态与规模 | 要点 |\n|---|---|---|---|---|\n| **JPYC** | 1 号電子決済手段（资金移动业者发行型，记忆） | JPYC 株式会社；经 JPYC EX 发行和赎回 | 累计发行额：2026-02 约 10 亿、2026-04-15 21 亿、**2026-09-18 超过 100 亿日元**；链上流通：2026-06-26 超 10 亿、**2026-08-18 约 28.3 亿日元**（JPYC info） | 公链流通、可出库，是目前唯一能自由上链的合规日元币。发行方是资金移动业者，单笔额度受资金移动业类别限制（记忆：第二种每笔 100 万日元以下，未核实） |\n| **JPYSC** | 信托型（3 号，特定信託受益権） | 发行：SBI 新生信托银行；流通：SBI VC Trade | 2026-06-24 发行，目前**只能在 SBI VC Trade 账户内**使用，不能出库；**2026-09-07 余额约 201 亿日元**（另有 JPYSC 借贷约 69 亿，合计约 270 亿）；已把 10 亿日元储备投到短期国债 | 法律和税务理顺后才转到公链流通，报道称目标是 Ethereum。是日本最大的日元稳定币，但还不能用于跨机构链上结算 |\n| **三大行共同稳定币** | 信托型 | 三菱 UFJ 银行、三井住友银行、瑞穗银行 | 2026-06-10 共同发布：**2026 财年内开始实际交易**，并设协议会；受托信托银行和基础平台**今后选定**；共同社报道初期由野村、大和等 5 家金融机构用于股票和投信买卖 | 2025-11-07 曾在金融厅“FinTech 実証実験ハブ”支持下做实证（三菱 UFJ 信托发行、Progmat 提供技术支持）。初期是证券结算场景，跨境支付不在第一阶段 |\n| 三菱 UFJ 信托 XJPY / XUSD | 信托型 | 三菱 UFJ 信托 | bitbank 报道：面向企业国际结算研究发行 | 与 Project Pax 方向一致，进度未查到 |\n| DCJPY | 代币化存款（不属于電子決済手段，记忆） | DeCurret DCP / GMO あおぞらネット銀行 | 未查 | 银行存款负债，属于跨行或日本境内基础设施 |\n\n### 2.3 东南亚及香港本币稳定币\n\n| 币种 / 项目 | 发行方与监管 | 链 | 规模与状态 | 能否在日本处理 |\n|---|---|---|---|---|\n| **XSGD / XUSD**（StraitsX） | StraitsX：MAS MPI；取得发行 SCS 的 in-principle approval。MAS 2026-09-01 才就立法化 SCS 征求意见（截止 2026-10-16），**正式的“MAS-regulated stablecoin”牌照尚未落地** | XSGD：Ethereum、Polygon、XRPL 等，Alipay+/Grab 案例用 Avalanche；XUSD：Ethereum、BSC；原计划 2026 年初上 Solana，**是否已上线未查到** | 2025-12：XSGD 约 1,300 万美元，XUSD 约 5,000 万美元；两者累计链上交易额超过 180 亿美元 | 未查到 |\n| **林吉特稳定币** | BNM Digital Asset Innovation Hub 2026-02-11 选定渣打（马）与 Capital A 的林吉特稳定币 B2B 结算试点；另有私营 RMJDT（Bullish Aim，Zetrix 链，2025-12-09） | Zetrix 等 | BNM 计划 2026 年底前给出政策澄清（种子 medium，本轮未重查） | 未查到 |\n| **印尼盾稳定币**（IDRX、IDRT、XIDR、IDRQ） | 稳定币归入 OJK 监管的 “Digital Financial Assets”，**不能作支付工具**（BI 限制），没有储备和面值赎回的专门框架（Chambers Fintech 2026）；IDRQ 在 OJK 沙盒；BI 在 Project Garuda 下研究以数字卢比和国债支撑的“国家版稳定币”，试点持续到 2026 年 | IDRX：多链，2026-09-15 上 Celo | 规模未查到 | 未查到 |\n| **PHPC**（Coins.ph） | Coins.ph 持 BSP 的 VASP 与 EMI 资格；PHPC 已**从 BSP 沙盒毕业**（具体日期未查到）；储备为境内银行现金及现金等价物 | 未查到 | 规模未查到 | 未查到 |\n| **泰铢稳定币** | BOT 行长 2026-06-26：建立泰铢 1:1 稳定币监管框架，储备存放在持牌金融机构；**第一阶段只允许金融机构用于结算**，由持牌私营机构发行；2026 年内公开征求意见，正式规则在 2026 年或 2027 年初；BOT 沙盒第二阶段 2026-04 启动（代币化、托管支付、PBM） | — | 尚未发行 | — |\n| **港元稳定币** | HKMA 2026-04-10 向 Anchorpoint（渣打、HKT、Animoca 合资）和 HSBC 发出首批牌照，申请者共 36 家；**Anchorpoint 的 HKDAP 已开始第一阶段**，只面向机构分销商和专业投资者，零售预计稍后；HSBC 计划 2026 年下半年推出，**尚未查到上线** | 未查到 | — | 未查到 |\n\n### 2.4 日本法下的处理要点（对架构的直接约束）\n\n- **電子決済手段等取引業者**：SBI VC Trade 于 2025-03-04 登记，编号关东财务局长第 00001 号（FSA 登记名单，经搜索摘要）。Circle 2025-03-24 的新闻稿称 Binance Japan、bitbank、bitFlyer 也计划上 USDC，2026 年的实际状态未查到。\n- **外国稳定币每笔约 100 万日元的上限**：USDC 上线时有报道，2026-06 关于 RLUSD 的报道也写了“capped at approximately one million yen per transaction”。**这项上限是否也约束法人或 B2B 转账，没有查到**，是本报告最关键的法律待确认项。\n- **2025 年资金结算法修正**：\n  - 2025-06-06 成立，06-13 公布，**2026-06-01 施行**；\n  - 信托型稳定币的储备，最多 50% 可投到剩余期限不超过 3 个月的短期国债或定期存款（SBI 新生信托已有实际运用）；\n  - 同时新设中介业，把跨境收纳代行纳入监管，扩大资产国内保有命令的范围。\n  - **其中“跨境收纳代行规制”直接关系 INSPAY 在日本境内替海外商户收款的结构**，必须律师确认。\n- **Travel Rule（犯收法）**：\n  - 2023-06-01 起，暗号資産交換業者和電子決済手段等取引業者都负有通知义务；\n  - 通知只对“有同等规制的国家或地区”的外国业者进行，FSA 以告示列明，2025-06 曾有追加法域的告示案；\n  - 对未列明法域的业者，须收集并保存相关信息（施行规则第 24、32 条）；\n  - **金额门槛未查到**（记忆中没有门槛，未核实）。\n\n---\n\n## 3. 各国稳定币与本币出入金及做市伙伴\n\n> payout API 和 T+0 能力大多没能找到一手文档。下表的“T+0”指当地即时支付清算系统（RTGS 或快速支付）能否当日到账，不代表该伙伴已对外承诺 API SLA。\n\n| 国家或地区 | 代表伙伴（持牌） | 能力 | 置信度与备注 |\n|---|---|---|---|\n| **日本** | ① **SBI VC Trade**（電子決済手段等取引業 No.00001；USDC、RLUSD、JPYSC）② **JPYC EX**（JPYC 发行和赎回，日元银行转账）③ 计划上 USDC 的 Binance Japan、bitbank、bitFlyer（状态未确认） | USDC 和 RLUSD 每笔约 100 万日元；JPYSC 还不能出库 | SBI 一项 high；法人额度、RFQ、支持的链都未查到 |\n| **新加坡（推荐枢纽）** | ① **StraitsX**（MPI；XSGD、XUSD 发行和赎回；储备在 DBS、渣打）② **CPN 新加坡出金伙伴**（2026-02 上线，名称未查到）③ dtcpay（MPI，DPT；SGQR 扫码付）、OKX SG（USDC/USDT 先换 XSGD，再付 GrabPay 商户） | FAST、PayNow 即时（FAST 单笔上限凭记忆，未核实） | 种子与本轮综合 medium；MAS BLOOM（2025-10-16）参与方包括 Circle、StraitsX、Partior、Ant International、Stripe，适合做结算枢纽 |\n| **菲律宾** | ① **Coins.ph**（BSP VASP + EMI；**CPN BFI**，覆盖 120 多家银行和电子钱包，以 PHP 出金；PHPC 发行方）② Munify（2026-06-10 接入 CPN，USDC 换 PHP）③ PDAX（记忆，未核实） | InstaPay 实时、PESONet 批量（凭记忆） | Coins.ph 作为 CPN BFI 为 medium-high，是东南亚唯一查到具体名称的 CPN 本币出金方 |\n| **香港（第二枢纽候选）** | ① Anchorpoint（HKDAP，机构阶段）② HSBC（2026 下半年计划）③ CPN 早期已有香港本币出金通道 | FPS 实时（记忆） | HKD 稳定币刚起步，链未查到 |\n| **泰国** | ① SEC 持牌交易所（Bitkub、Gulf Binance、Orbix、InnovestX 等，记忆）：USDT 和 USDC 自 2025-03-16 起可作交易对；交易所只能把 THB 出金到用户本人账户（推断）② TouristDigiPay 沙盒运营商（游客 → 泰铢，有月度额度）③ Lightnet（Stellar 系；2024-10 与 SCB 宣布“泰国首个稳定币”跨境转账；2026-04 与 KuCoin 探讨合作） | PromptPay 实时 | **泰国禁止用数字资产支付商品服务**（SEC 2022），BOT 2026 Q4 起管控稳定币资金流（种子 medium）。机构以稳定币结算再兑换给 PromptPay 收单方，需律师和 BOT 确认；**稳妥做法是走法币 THB（NRBA/NRQC）** |\n| **印尼** | 法币腿：BI 持牌 PJP 或银行；稳定币只能作为 OJK 监管的交易资产（Indodax、Tokocrypto 等，未核实），不能作支付工具；IDRX、IDRQ、XIDR 都是早期项目 | BI-FAST 实时（记忆） | **不建议以稳定币直接出金给 QRIS 收单方** |\n| **马来西亚** | 法币腿：BNM 持牌收单方或电子货币机构；SC 注册的 DAX（Luno、Sinegy 等，记忆）；林吉特稳定币仍在试点 | DuitNow 实时 | BNM 立场：林吉特非国际化货币，数字资产不是支付工具（种子 high） |\n| **越南** | **没有合法的稳定币出金渠道**：Resolution 05/2025 试点排除法币稳定币；2026-03 只确定了 5 家候选（VIXEX、LPEX、CAEX、TCEX、Vietnam Digital Assets JSC），没有发牌记录；最低实缴资本 10 万亿越南盾，外资持股不超过 49% | NAPAS 247（记忆） | 只能走法币 |\n| **柬埔寨、老挝** | 只能走法币；老挝 BOL 禁止金融机构从事加密业务（种子 medium） | — | — |\n\n---\n\n## 4. 稳定币 B2B 跨境结算网络先例与架构要点\n\n| 网络 | 2025–2026 进展（本轮核实） | 对 INSPAY 有用的架构要点 |\n|---|---|---|\n| **Circle Payments Network（CPN）** | 2026-02-17 新增本币出金：印度（Saber）、**新加坡、菲律宾**、阿联酋、欧盟、美国；此前有巴西、中国、哥伦比亚、香港、尼日利亚等。菲律宾 BFI 为 Coins.ph（120 多家银行和钱包），Munify 2026-06-10 接入。Circle Technology Services 只是技术服务方，**不持有资金**；参与受 CPN Rules 与 Participation Agreement 约束 | ① 规则手册（rulebook）加参与协议，分 OFI 和 BFI 两种角色，网络运营方不碰资金。INSPAY 可以照搬这种“技术与规则提供方 + 持牌参与方”的定位，降低自己持牌的负担。② 菲律宾、新加坡可以先用 CPN 现成的 BFI，不必逐国自己谈出金方 |\n| **Arc（Circle L1）** | 2026-09-16 主网上线；USDC 付 gas，亚秒级确定性终局，兼容 EVM。创始验证者包括 SBI Group、住友商事、Visa、Mastercard、渣打等（上轮 medium） | ① 用美元计价的稳定 gas 和确定性终局，适合机构净额结算。② 有日本验证者（SBI、住友），未来 SBI 在 Arc 上支持 USDC 出入库的可能性较高（推断） |\n| **Stripe / Bridge 与 Tempo** | Tempo 主网 2026-03-18 上线，并推出 Machine Payments Protocol；Mastercard、UBS 等参与测试网（上轮 medium）。本轮未查到亚洲进展 | 支付专用链，稳定币付费；更面向商户收单和 agent 支付，对亚洲持牌机构间结算短期价值有限 |\n| **Visa 稳定币结算** | 美国：Cross River、Lead Bank 经 Solana 用 USDC 结算；年化运行率超过 35 亿美元（2025-11-30），据 The Block 后升至约 70 亿美元、9 条链。亚太只有 Crypto.com（澳大利亚）先例，**东南亚收单方未查到** | ① 稳定币只用于“网络与发卡方/收单方之间的结算义务”，两端都是法币，与 INSPAY 同构，是向监管解释的最好范本。② 多链并行，参与方自选链 |\n| **Mastercard 稳定币结算** | **2026-06-03**：发卡方和收单方可选法币或链上稳定币结算，支持 USDC、PYUSD、USDG、USDP、RLUSD、SoFiUSD；链有 Ethereum、Solana、XRPL；**支持日间、周末、节假日结算**；首批参与方在美国和拉美（ARQ、CBW、Cross River、Lead Bank、Nuvei），其他市场视当地审批推进。2026-03 同意以最高 18 亿美元收购 BVNK（交易被描述为待完成）；2025-08 EEMEA 与 Circle 推出收单方 USDC/EURC 结算 | ① **周末和节假日结算窗口**正好对应 INSPAY 最大的资金占用来源（东南亚周末、节假日的预付资金）。② 结算资产按参与方选择（法币或稳定币，多发行方），不绑定单一币种 |\n| **Ripple Payments / RLUSD** | RLUSD 2026-06-24 经 SBI 在日本上线（JFSA 批准）；Ripple Payments 在东南亚的进展本轮未查到 | 日本有了第二个合规美元币，可以按“多发行方、单网络”设计，降低单一发行方风险 |\n| **Partior** | 只有单一 wiki 来源（low）：已上线 USD、EUR、SGD，计划包括 JPY、MYR；Deutsche Bank 2025-09-25 与 DBS 完成首笔 EUR；Emirates NBD 2026-07-14 起 USD 投产；2025-06 起接入 OSTTRA 与 Baton 的 FX PvP | ① 商业银行存款代币 + PvP，适合 FX 腿做“同时交割”。② 只有银行能参与，INSPAY 只能经结算银行间接使用 |\n| **Project Agorá（BIS）** | **2026-05-27** BIS 报告：原型证明可以用代币化央行准备金和代币化商业银行存款，完成批发跨境交易的原子结算；两层结构，每家央行运行自己的账本，保持各币种主权与法律属性；参与方为 7 家央行（含**日本银行**）和 40 多家私营机构；下一步做真实价值交易，加拿大央行加入 | ① “每种货币的法律债权留在本国账本，跨账本靠编排做原子交换”。INSPAY 的设计可以照此，把本币腿留在当地持牌伙伴的账本，只把跨境净额放在稳定币上。② 远期（2028 年以后）日元和东南亚货币的代币化存款可能成为稳定币的替代或补充 |\n| **mBridge** | Atlantic Council（2026-01）：累计 4,000 多笔，约 555 亿美元，e-CNY 约占 95%；PBOC 官员（2026-06）：2024-06 至 2025 年底结算约 5,000 亿元（约 690 亿美元），49 家商业银行（21 家外资）参与；BIS 于 2024 年底退出 | ① 多边 CBDC 平台的治理容易被单一大国主导，网络中立性和多发行方很重要。② 泰国（BOT）是成员，但对 INSPAY 这类私营网络无法接入 |\n| **Project Pax（Datachain、Progmat、TOKI）** | 2024-09 启动：银行通过 **SWIFT 现有 API 框架**发指令，后台用 Progmat 发行的稳定币（JPY、USD、EUR）结算，TOKI 用流动性池做跨链和换币；三大行支持，10 多家银行参与试验；原定 2025 年商用，**2026 年状态未查到** | ① 前端兼容 SWIFT 或 ISO 20022，后端用稳定币，参与方几乎不用改流程。INSPAY 对收单方和钱包提供的 API 也应采用 ISO 20022 风格字段。② 跨链桥和流动性池是额外的风险点，INSPAY 应尽量单链结算，或只用发行方原生的跨链方案（如 Circle CCTP） |\n\n---\n\n## 5. FATF R.16（2025-06 修订）与稳定币 Travel Rule\n\n### 5.1 R.16 修订要点（2025-06-18 发布）\n\n- 标题改为 **“Payment transparency”**，目的从恐怖融资扩展到洗钱及欺诈等上游犯罪，同时提高付款信息中付款人（originator）和收款人（beneficiary）基本信息的内容和质量（high）。\n- **卡类购物交易的豁免保留并作了澄清**（A&O Shearman）（medium）：\n  - 卡类取现：境内取现只需随附卡号或账号；跨境取现需随附卡号，并在收单方请求时 3 个工作日内提供持卡人姓名（Dudkowiak 律所摘要）。\n- 各国须在 **2030 年底前**落实；FATF 计划 2026 年发布实施指引；2025-10 全会后发布评估方法论 Annex IV（high/medium）。\n- 凭记忆、未核实（low）：\n  - 跨境支付超过 USD/EUR 1,000 时，须随附付款人姓名、账号或唯一交易参考号，以及地址（至少国家和城市）或出生日期等信息；\n  - 收款人须随附姓名和账号；\n  - 鼓励做收款人姓名核验（payee confirmation）；\n  - 鼓励使用结构化地址和 ISO 20022 字段。\n\n### 5.2 对“海外钱包扫当地 QR 付款”的适用性（分析）\n\n- 豁免的原文针对 **“使用信用卡、借记卡或预付卡购买商品或服务”**。PayPay 余额支付在日本法下属于资金移动业或前払式支払手段，海外钱包扫 MPM 码付款是否算“卡或类似工具”，**原文未能核实**，属于各国落实时的解释空间。\n- 保守设计：\n  - **每笔底层交易都带结构化的付款人信息**：钱包运营方、用户内部 ID、姓名（或“可按请求提供”）、国家；\n  - 同时带**收款人信息**：商户名、商户 ID、MCC、收单方、国家；\n  - 机构间净额结算报文引用批次号，监管或伙伴需要时可以追溯到底层交易。\n- 如果最终适用卡类豁免，也只需降低字段强制性，架构不用改。\n\n### 5.3 稳定币 Travel Rule（VASP 间转账）\n\n| 法域 | 门槛 | 依据与备注 | 置信度 |\n|---|---|---|---|\n| 日本 | **未查到门槛**（记忆中没有门槛） | 犯收法，2023-06-01 起；通知只对告示列明的同等规制法域，其余须收集并保存 | 框架 high，门槛 low |\n| 新加坡 | **S$1,500**（低于门槛只需姓名和账号，高于门槛需完整信息） | MAS Notice PSN02，2020-01-28 起执行 | medium |\n| 泰国 | **THB 0**（所有 VASP 转账） | 只有一份比较表 | low |\n| 菲律宾 | **PHP 50,000** | BSP Circular 1108（2021）；Circular 1206 并入 MORNBFI-M；另有来源称没有最低门槛，只是超过 5 万比索后要求更多信息 | medium |\n| FATF 基准 | USD/EUR 1,000 | — | medium |\n\n**对 INSPAY 的含义**：\n- 机构间稳定币净额转账本身就是 VASP 间转账，日本、泰国按“零门槛”处理，所以每次结算转账都要交换 Travel Rule 信息（付款方是 INSPAY 或日本侧机构，收款方是当地伙伴）。\n- 底层零售交易的信息走 §5.2 的支付报文，不必放到链上。\n- Travel Rule 协议的互通性（日本交易所常用的 TRUST、Sygna，与东南亚各国使用的协议）未查到，属于待确认项。\n\n---\n\n## 6. 推荐组合与理由\n\n### 6.1 结算资产\n\n1. **主结算资产：USDC**，理由：\n   - 日本有已登记的合法处理路径（SBI VC Trade）；\n   - 新加坡、菲律宾、香港有 CPN 本币出金；\n   - Visa 与 Mastercard 都接受；\n   - MAS BLOOM 有 Circle；\n   - 流动性约 730 亿美元；\n   - Arc 有 SBI、住友商事作为验证者。\n2. **备用：RLUSD**，日本可处理，Mastercard 接受，作发行方冗余；同一网络支持多币，结算时按参与方选择（参照 Mastercard 模式）。\n3. **日元腿**：\n   - **近期（2026–2027）**：日本境内用**法币日元**（钱包运营方 → INSPAY 或合作资金移动业者，通过银行转账），由 INSPAY 新加坡实体在境外向持牌 OTC 或 Circle Mint 买入 USDC。这样可以绕开日本境内外国稳定币每笔约 100 万日元的上限。\n   - **中期**：JPYSC 转到公链流通后，或三大行共同稳定币进入支付场景后，评估用信托型日元稳定币做 JPY → USD 的原子交换（参照 Agorá 和 Partior 的 PvP 思路）。\n   - **JPYC**：适合小额 PoC 和开发者生态；单笔额度受资金移动业类别限制（未核实），不适合做大额净额结算。\n4. **本币稳定币**：XSGD（新加坡）、PHPC（菲律宾）、HKDAP（香港）可作为当地伙伴的“最后一跳”选项；XSGD 有 Alipay+/Grab 的先例。IDR、MYR、THB 稳定币等监管落地后再评估。**不使用 USDT。**\n\n### 6.2 链\n\n- **第一阶段**：选 SBI VC Trade、Circle Mint 和出金伙伴（StraitsX、Coins.ph）都支持的链。RLUSD 在日本只上了 Ethereum，JPYSC 的公链目标也是 Ethereum（报道），**所以 Ethereum 大概率是公约数**，但 SBI 的 USDC 支持哪些链需要确认。每日 1–2 次净额结算，gas 成本可以忽略，链的选择主要看**伙伴支持度和终局性**。\n- **第二阶段**：Arc。它有确定性终局和 USDC gas，有日本验证者，也有 Visa、Mastercard 作为验证者。上线时间短（2026-09），需观察稳定性。\n- **跨链**：只用发行方原生方案（如 CCTP），不用第三方流动性池桥（Pax/TOKI 式桥是额外的风险点）。\n\n### 6.3 出入金伙伴组合（第一阶段）\n\n| 角色 | 伙伴 |\n|---|---|\n| 日本入金 | 钱包运营方（如 PayPay）以法币日元结算；INSPAY 日本实体是否需要资金移动业牌照或受跨境收纳代行规制，需律师意见 |\n| 日元换美元 | 新加坡或香港持牌 OTC、Circle Mint；日本侧作补充：SBI VC Trade（每笔约 100 万日元） |\n| 结算枢纽 | INSPAY 新加坡实体（MPI：cross-border money transfer + DPT）；StraitsX 和 DBS 作结算银行；观察 BLOOM |\n| 菲律宾出金 | Coins.ph，经 CPN 或直连 |\n| 新加坡出金 | StraitsX，或 CPN 新加坡伙伴 |\n| 香港出金 | CPN 香港通道 / Anchorpoint |\n| 泰国、印尼、马来西亚、越南、老挝、柬埔寨出金 | 新加坡枢纽把 USDC 换成 USD 或 SGD 后，经代理行或当地持牌汇款、收单伙伴付本币。泰国可以评估 BOT NRQC 机制（种子 high）；BOT 稳定币框架落地后再评估链上出金 |\n\n### 6.4 结构建议（沿用上轮推论，medium）\n\n- **多边净额结算**：每日 1–2 次链上 USDC 净额结算，当地伙伴先用本币垫付商户，INSPAY 不按笔上链。\n- **FX 两段 RFQ**：JPY/USD 一段、USD/本币一段，支付时锁价并设 TTL；不使用 AMM。\n- **流动性**：资金占用主要靠提高结算频率、争取周末和节假日窗口（参照 Mastercard）以及当地伙伴授信来压低。\n\n---\n\n## 7. 主要风险\n\n1. **日本外国稳定币每笔约 100 万日元的上限**：会直接限制日本境内的 USDC 结算规模（法律待确认）。\n2. **泰国**：BOT 2026 Q4 起管控稳定币资金流，加上 SEC 的支付禁令，稳定币出金可能被认定为违规支付便利。\n3. **印尼、越南**：稳定币不能作支付工具，或被明确排除。\n4. **CPN 在东南亚只覆盖菲律宾和新加坡**：泰国、印尼、马来西亚必须自建法币出金。\n5. **Arc 和 Tempo 都是新链**：还没有长期运行记录。\n6. **FATF R.16**：落实后扫码支付是否适用卡类豁免存在不确定性；Travel Rule 协议之间未必互通。\n",
+ "facts": [
+  {
+   "claim": "SBI VC Trade 于 2025-03-04 登记为日本首家電子決済手段等取引業者（关东财务局长第 00001 号），可处理的電子決済手段为 USDC",
+   "category": "regulation",
+   "source_url": "https://www.fsa.go.jp/menkyo/menkyoj/denshikessaisyudan.pdf",
+   "source_date": "2025-03-04",
+   "confidence": "high",
+   "note": "核实：原 low→high（日期由“2025-03”精确到 2025-03-04）。依据是搜索摘要中引用的 FSA 登记名单；WebFetch 打开该 PDF 返回 DNS 失败"
+  },
+  {
+   "claim": "SBI VC Trade 原定 2025-03-12 系统维护后以限定用户的 beta 版开始处理 USDC，2025-03-26 全面开始；Circle 新闻稿（2025-03-24）称 Binance Japan、bitbank、bitFlyer 也计划上线并分销 USDC，Circle 在日本设有子公司 Circle Japan KK",
+   "category": "partner",
+   "source_url": "https://www.businesswire.com/news/home/20250324944828/en",
+   "source_date": "2025-03-24",
+   "confidence": "high",
+   "note": "Circle 官方新闻稿，经搜索摘要核实。上述三家交易所在 2026 年是否已实际上线 USDC 未查到"
+  },
+  {
+   "claim": "日本外国稳定币（USDC，以及 2026 年上线的 RLUSD）经 SBI VC Trade 转账时，每笔上限约 100 万日元",
+   "category": "regulation",
+   "source_url": "https://stablecoininsider.org/ripples-rlusd-goes-live-in-japan-after-jfsa-approval-as-first-type-4-electronic-payment-instrument/",
+   "source_date": "2025-03 / 2026-06",
+   "confidence": "medium",
+   "note": "核实：原 low→medium。USDC 上线时的报道（coinpost、icobench）与 2026 年 RLUSD 报道都提到这一上限；是否约束法人或 B2B 转账、是否已放宽，均未查到"
+  },
+  {
+   "claim": "Ripple 与 SBI Group 于 2026-06-24 宣布，RLUSD 经 JFSA 批准在日本上线，通过 SBI VC Trade 向机构和个人提供；这是 2025-08 MOU（原目标 2026 Q1）的落地",
+   "category": "stablecoin",
+   "source_url": "https://ripple.com/ripple-press/ripple-and-sbi-group-partner-to-launch-ripple-usd-in-japan/",
+   "source_date": "2026-06-24",
+   "confidence": "high",
+   "note": "核实：原 low（“SBI 将分销 RLUSD”）→high，已上线"
+  },
+  {
+   "claim": "有报道称 RLUSD 在日本只上了 Ethereum（不含 XRPL），是日本首个“4 号電子決済手段”，每笔约 100 万日元上限；Ripple 称 RLUSD 市值约 17 亿美元",
+   "category": "stablecoin",
+   "source_url": "https://stablecoininsider.org/ripples-rlusd-goes-live-in-japan-after-jfsa-approval-as-first-type-4-electronic-payment-instrument/",
+   "source_date": "2026-06",
+   "confidence": "medium",
+   "note": "单一二手来源。同一报道称分销从 2026-03-31 开始，与 06-24 的新闻稿日期冲突；“4 号”的法律定性需律师确认"
+  },
+  {
+   "claim": "2025 年资金结算法修正案于 2025-06-06 成立、06-13 公布，2026-06-01 施行",
+   "category": "regulation",
+   "source_url": "https://www.fsa.go.jp/common/diet/217/02/setsumei.pdf",
+   "source_date": "2025-06 / 2026-06-01",
+   "confidence": "high",
+   "note": "核实：原 low→high。coinpost 报道与 SBI 新生信托的 JPYSC 资料都写明 2026-06-01 施行"
+  },
+  {
+   "claim": "修正后，信托型稳定币储备最多 50% 可投到剩余期限不超过 3 个月的短期国债或定期存款；SBI 新生信托银行已把 JPYSC 储备中的 10 亿日元投到短期国债",
+   "category": "regulation",
+   "source_url": "https://paymentnavi.com/?p=182200",
+   "source_date": "2026",
+   "confidence": "high",
+   "note": "核实：原 low（“约 50%”）→high。条文和内阁府令原文未读"
+  },
+  {
+   "claim": "2025 年修正还新设暗号資産・電子決済手段等的中介业，把跨境收纳代行纳入监管，并扩大资产国内保有命令的范围",
+   "category": "regulation",
+   "source_url": "https://coinpost.jp/?p=684383",
+   "source_date": "2025-06",
+   "confidence": "medium",
+   "note": "核实：原 low→medium。跨境收纳代行规制直接关系 INSPAY 在日本的收款结构，必须律师确认"
+  },
+  {
+   "claim": "JPYSC：SBI 新生信托银行发行、SBI VC Trade 负责流通的信托型日元稳定币，2026-06-24 发行；先行阶段只能在 SBI VC Trade 账户内使用，不能出库到外部钱包，法律和税务理顺后转到公链",
+   "category": "stablecoin",
+   "source_url": "https://corp.sbishinseibank.co.jp/ja/news/news/20260624b/main/01/link/20260624_JPYSC.pdf",
+   "source_date": "2026-06-24",
+   "confidence": "high",
+   "note": "新事实（上一轮和种子都没有）。报道称公链目标为 Ethereum（bitbank），一手资料未写明"
+  },
+  {
+   "claim": "截至 2026-09-07，JPYSC 发行余额约 201 亿日元；另有 JPYSC 借贷申请约 69 亿日元，合计约 270 亿日元",
+   "category": "market_data",
+   "source_url": "https://www.sbigroup.co.jp/news/pdf/group/2026/0907_a.pdf",
+   "source_date": "2026-09-07",
+   "confidence": "high",
+   "note": "SBI 集团 PDF，经搜索摘要核实"
+  },
+  {
+   "claim": "JPYC EX 累计发行额在 2026-09-18 超过 100 亿日元（2026-02-02 约 10 亿、2026-04-15 为 21 亿）",
+   "category": "market_data",
+   "source_url": "https://paymentnavi.com/?p=182688",
+   "source_date": "2026-09-18",
+   "confidence": "high",
+   "note": "更新上一轮 medium 的 2026-05 数据。依据是 JPYC 公司公告经 dime.jp、paymentnavi 转载；累计发行额不等于流通余额"
+  },
+  {
+   "claim": "据 JPYC info 链上数据，JPYC 流通量 2026-06-26 超过 10 亿日元，2026-08-18 约 28.3 亿日元",
+   "category": "market_data",
+   "source_url": "https://jp.bloomingbit.io/feed/news/118550",
+   "source_date": "2026-08-18",
+   "confidence": "medium",
+   "note": "二手报道链上数据；2026-10 的数值未查到"
+  },
+  {
+   "claim": "JPYC 株式会社于 2025-08 登记为资金移动业者，2025-10-27 开始发行 JPYC（1 号電子決済手段），链为 Ethereum、Avalanche、Polygon",
+   "category": "stablecoin",
+   "source_url": "N/A（凭记忆）",
+   "source_date": "2025-10-27",
+   "confidence": "low",
+   "note": "未核实（本轮没有检索这一条）。2026 年多篇报道提到 JPYC EX 在运营、发行额持续增长，间接说明已在发行，但日期和链清单未核实"
+  },
+  {
+   "claim": "三菱 UFJ 银行、瑞穗银行、三井住友银行于 2026-06-10 共同宣布：在 2026 财年内以三行共同发行的信托型稳定币开始实际交易，并设协议会研究发行基础、制度设计和治理；受托信托银行和系统基础提供方今后选定",
+   "category": "stablecoin",
+   "source_url": "https://www.bk.mufg.jp/news/news2026/pdf/news0610.pdf",
+   "source_date": "2026-06-10",
+   "confidence": "high",
+   "note": "推翻/修正：原 low“经 Progmat 联合发行”→ 官方称基础平台未定，部分海外网站写“基于 Progmat”与此不符"
+  },
+  {
+   "claim": "共同社报道，三大行共同稳定币初期由野村证券、大和证券等 5 家金融机构用于股票和投资信托买卖结算",
+   "category": "stablecoin",
+   "source_url": "https://www.oanda.jp/lab-education/market_news/kn_2026061001000720/",
+   "source_date": "2026-06-10",
+   "confidence": "medium",
+   "note": "媒体报道。初期是证券结算场景，不是跨境支付"
+  },
+  {
+   "claim": "三大行于 2025-11-07 宣布，在金融厅“FinTech 実証実験ハブ”支持下开展稳定币实证：由三菱 UFJ 信托银行发行，Progmat 提供技术支持",
+   "category": "stablecoin",
+   "source_url": "https://www.mizuhobank.co.jp/release/pdf/20251107release_jp.pdf",
+   "source_date": "2025-11-07",
+   "confidence": "high",
+   "note": "修正：原 low 称“FSA Payment Innovation Project 支持”，搜索摘要显示官方表述为 FinTech 実証実験ハブ；“Payment Innovation Project”是否为其下的项目名未核实"
+  },
+  {
+   "claim": "三菱 UFJ 信托银行另行研究面向企业国际结算的日元稳定币（XJPY）和美元稳定币（XUSD）",
+   "category": "stablecoin",
+   "source_url": "https://bitbank.cc/knowledge/breaking/article/8no7c7ctkzuw",
+   "source_date": "2025-2026",
+   "confidence": "medium",
+   "note": "媒体报道；进度未查到；与 StraitsX 的 XUSD 同名，需注意区分"
+  },
+  {
+   "claim": "Project Pax 于 2024-09 启动，由 Progmat 与 Datachain 开发、TOKI 参与：银行通过 SWIFT 现有 API 框架发指令，后台用 Progmat 发行的 JPY/USD/EUR 稳定币结算，TOKI 用流动性池做跨链和换币；三大行支持，10 多家银行参与试验；原目标 2025 年商用",
+   "category": "architecture",
+   "source_url": "https://www.theblock.co/post/315058/japans-three-major-banks-to-test-cross-border-stablecoin-transfer-platform",
+   "source_date": "2024-09",
+   "confidence": "medium",
+   "note": "核实：原 low→medium（The Block、Cointelegraph、fintechnews.hk 一致）。2026 年是否已商用未查到"
+  },
+  {
+   "claim": "日本犯收法 Travel Rule：2023-06-01 起，暗号資産交換業者和電子決済手段等取引業者负有通知义务；只对 FSA 告示列明的同等规制法域的外国业者通知，对其他法域须收集并保存信息（施行规则第 24、32 条）；2025-06 FSA 曾提出追加法域的告示案",
+   "category": "regulation",
+   "source_url": "https://www.fsa.go.jp/news/r4/sonota/20230526-2/20230526-2.html",
+   "source_date": "2023-05-26 / 2025-06-25",
+   "confidence": "high",
+   "note": "核实：原 low→high（制度框架部分）"
+  },
+  {
+   "claim": "日本 Travel Rule 不设金额门槛；日本交易所主要用 TRUST 与 Sygna 方案",
+   "category": "regulation",
+   "source_url": "N/A（凭记忆）",
+   "source_date": "未核实",
+   "confidence": "low",
+   "note": "未核实。本轮检索没有找到写明门槛的资料"
+  },
+  {
+   "claim": "USDT 市值约 1,831 亿美元，流通量约 1,832 亿枚（2026-08-13）；2025-10-10 约 1,784 亿美元",
+   "category": "market_data",
+   "source_url": "https://delta.app/en/crypto/tether/",
+   "source_date": "2026-08-13",
+   "confidence": "medium",
+   "note": "更新：原 low“2025 年底约 1,800 亿美元以上”→medium（聚合站数据）。2026-10 的数值未查到"
+  },
+  {
+   "claim": "本轮检索只见 SBI VC Trade 处理 USDC、RLUSD、JPYSC，没有查到日本登记业者以電子決済手段身份处理 USDT",
+   "category": "regulation",
+   "source_url": "https://www.fsa.go.jp/menkyo/menkyoj/denshikessaisyudan.pdf",
+   "source_date": "2026-10-18 检索",
+   "confidence": "low",
+   "note": "属于“未查到”型结论，不能证明不存在；登记名单 PDF 未能打开"
+  },
+  {
+   "claim": "USDC 流通量约 730 亿美元（截至 2026-10-08 的一周）",
+   "category": "market_data",
+   "source_url": "https://www.kucoin.com/news/flash/usdc-circulation-drops-by-800m-in-7-days-as-redemptions-exceed-issuance",
+   "source_date": "2026-10-08",
+   "confidence": "medium",
+   "note": "沿用上一轮，本轮未重查"
+  },
+  {
+   "claim": "HKMA 于 2026-04-10 向 Anchorpoint Financial（渣打、HKT、Animoca 合资）和 HSBC 发出首批稳定币发行人牌照，申请者共 36 家",
+   "category": "regulation",
+   "source_url": "https://www.theblock.co/post/396990/hsbc-and-anchorpoint-financial-gain-first-hong-kong-stablecoin-issuer-licenses",
+   "source_date": "2026-04-10",
+   "confidence": "high",
+   "note": "核实：原 medium→high（The Block、fintechnews.hk、Charltons 等多源一致）；hkma.gov.hk 原文未打开"
+  },
+  {
+   "claim": "Anchorpoint 的港元稳定币 HKDAP 已开始第一阶段，只面向机构分销商和专业投资者，零售预计稍后（有报道称 2026 年底前）",
+   "category": "stablecoin",
+   "source_url": "https://www.kucoin.com/news/flash/hong-kong-s-first-regulated-stablecoin-launched-excludes-retail-investors",
+   "source_date": "2026（具体日期未查到）",
+   "confidence": "medium",
+   "note": "转述 Reuters；所用链未查到"
+  },
+  {
+   "claim": "HSBC 计划 2026 年下半年推出港元稳定币，截至检索没有查到上线报道",
+   "category": "stablecoin",
+   "source_url": "https://fintechnews.hk/38270/blockchain/hong-kong-stablecoin-licence-hsbc-anchorpoint-hkma/",
+   "source_date": "2026-04",
+   "confidence": "medium",
+   "note": "“未上线”是未查到型结论"
+  },
+  {
+   "claim": "2025-12 时 XSGD 市值约 1,300 万美元，XUSD 约 5,000–5,200 万美元；两者累计链上交易额超过 180 亿美元；XSGD 在 Ethereum、Polygon、XRPL 等链上，XUSD 在 Ethereum、BSC 上；原计划 2026 年初上 Solana",
+   "category": "stablecoin",
+   "source_url": "https://cointelegraph.com/news/straitsx-xsgd-xusd-solana-stablecoin-launch-2026",
+   "source_date": "2025-12",
+   "confidence": "medium",
+   "note": "Solana 是否已上线、2026 年的规模都未查到"
+  },
+  {
+   "claim": "MAS 于 2026-09-01 就修改 PS Act、落地稳定币框架征求意见（截止 2026-10-16），新设稳定币发行牌照，只有持牌者可用“MAS-regulated stablecoin”标签",
+   "category": "regulation",
+   "source_url": "https://www.mas.gov.sg/news/media-releases/2026/mas-consults-on-legislative-amendments-to-implement-stablecoin-regulatory-framework",
+   "source_date": "2026-09-01",
+   "confidence": "high",
+   "note": "来自种子 SG-MY（high），未重查；说明 StraitsX 目前只有 in-principle approval，正式 SCS 牌照尚未立法"
+  },
+  {
+   "claim": "MAS 于 2025-10-16 启动 BLOOM，用代币化银行负债和受监管稳定币做结算，参与者包括 Circle、DBS、OCBC、Partior、Stripe、UOB、Ant International、StraitsX、Coinbase",
+   "category": "architecture",
+   "source_url": "https://www.mas.gov.sg/news/media-releases/2025/mas-launches-bloom-initiative-to-extend-settlement-capabilities",
+   "source_date": "2025-10-16",
+   "confidence": "high",
+   "note": "来自种子 SG-MY（high），未重查"
+  },
+  {
+   "claim": "IDRX 是 1:1 卢比储备的印尼盾稳定币，2026-07 在新加坡 MASA 2026 展示跨境汇款和 IP 代币化用例，2026-09-15 上线 Celo",
+   "category": "stablecoin",
+   "source_url": "https://www.idnfinancials.com/ar/news/65586",
+   "source_date": "2026-07 / 2026-09-15",
+   "confidence": "medium",
+   "note": "媒体报道；规模和持牌状态未查到"
+  },
+  {
+   "claim": "印尼的稳定币可归入 OJK 监管的“Digital Financial Assets”，可作交易资产，但受 BI 支付系统限制，不能作支付工具；目前没有储备和面值赎回的专门框架",
+   "category": "regulation",
+   "source_url": "https://gpg-pdf.chambers.com/fintech-2026/401/",
+   "source_date": "2026",
+   "confidence": "medium",
+   "note": "部分核实原 low。搜索摘要称监管于“2026-01”从 Bappebti 移交 OJK，与记忆中的 2025-01（POJK 27/2024）不符，疑为摘要错误，移交日期按 low 处理"
+  },
+  {
+   "claim": "BI 在 Project Garuda 下研究以数字卢比和国债支撑的“国家版稳定币”，试点持续到 2026 年；IDRQ 正参加 OJK 沙盒",
+   "category": "stablecoin",
+   "source_url": "https://www.regulationasia.com/articles/indonesia-to-launch-bond-backed-stablecoin-via-digital-rupiah-cbdc",
+   "source_date": "2025-2026",
+   "confidence": "medium",
+   "note": "IDRQ 部分来自项目方页面，偏 low"
+  },
+  {
+   "claim": "Coins.ph 的比索稳定币 PHPC 已从 BSP 监管沙盒毕业（2024-04 进入沙盒，原计划同年 6 月退出）；储备为境内银行账户中的现金及现金等价物；Coins.ph 持 BSP 的 VASP 与 EMI 资格",
+   "category": "stablecoin",
+   "source_url": "https://www.ledgerinsights.com/coins-ph-launches-first-philippines-regulated-stablecoin/",
+   "source_date": "2024-2025",
+   "confidence": "medium",
+   "note": "核实：原 low→medium。毕业的具体日期和当前规模未查到"
+  },
+  {
+   "claim": "Coins.ph 是 CPN 在菲律宾的 beneficiary financial institution，可向 120 多家银行和电子钱包以 PHP 出金；新银行 Munify 于 2026-06-10 宣布接入 CPN，让用户把 USDC 换成比索出金",
+   "category": "partner",
+   "source_url": "https://www.rutlandherald.com/news/business/munify-integrates-with-circle-payments-network-to-enable-usdc-powered-local-payout-in-the-philippines/article_745cfcad-d318-55f2-83a2-683fa542441a.html",
+   "source_date": "2026-06-10",
+   "confidence": "medium",
+   "note": "转载的 BusinessWire 新闻稿；T+0 SLA 与费用未查到"
+  },
+  {
+   "claim": "Circle 于 2026-02-17 宣布 CPN 新的本币出金伙伴已在印度（Saber）、新加坡、菲律宾、阿联酋、欧盟、美国上线；此前已有巴西、中国、哥伦比亚、香港、尼日利亚及拉美部分国家",
+   "category": "partner",
+   "source_url": "https://www.circle.com/blog/circle-payments-network-expands-local-currency-payout-corridors-across-asia-the-middle-east-europe-and-the-us",
+   "source_date": "2026-02-17",
+   "confidence": "high",
+   "note": "核实：原 medium→high（补充了国家清单）。新加坡伙伴名称未查到"
+  },
+  {
+   "claim": "本轮没有查到 CPN 在印尼、泰国、日本、马来西亚、越南的本币出金伙伴",
+   "category": "partner",
+   "source_url": "https://www.circle.com/blog/cpn-momentum-and-upcoming-roadmap",
+   "source_date": "2026-10-18 检索",
+   "confidence": "medium",
+   "note": "未查到型结论"
+  },
+  {
+   "claim": "CPN 中 Circle Technology Services 只是技术服务提供方，不持有资金；使用 CPN 受 CPN Rules 和 Participation Agreement 约束",
+   "category": "architecture",
+   "source_url": "https://www.circle.com/blog/circle-payments-network-partners-grow-with-circle",
+   "source_date": "2025-2026",
+   "confidence": "medium",
+   "note": "沿用上一轮"
+  },
+  {
+   "claim": "Mastercard 于 2026-06-03 允许发卡方和收单方在法币结算与链上稳定币结算之间选择，首批支持 USDC、PYUSD、USDG、USDP、RLUSD、SoFiUSD，链包括 Ethereum、Solana、XRPL，并支持日间、周末和节假日结算；首批参与方为 ARQ、CBW Bank、Cross River、Lead Bank、Nuvei（美国、拉美），其他市场视当地审批逐步推进",
+   "category": "architecture",
+   "source_url": "https://www.theblock.co/post/403474/mastercard-expands-stablecoin-settlement-options-with-usdc-pyusd-and-rlusd",
+   "source_date": "2026-06-03",
+   "confidence": "high",
+   "note": "核实并更新原 low（Mastercard MTN、Crypto Credential 等）。The Block 与 CoinMarketCap 一致；亚太参与方未查到"
+  },
+  {
+   "claim": "Mastercard 于 2026-03 同意以最高 18 亿美元（15 亿基础价 + 最多 3 亿业绩对价）收购 BVNK；另有报道称在洽谈以 15–20 亿美元收购 Zero Hash",
+   "category": "partner",
+   "source_url": "https://coinmarketcap.com/academy/article/mastercard-adds-usdc-pyusd-rlusd-settlement",
+   "source_date": "2026-03",
+   "confidence": "medium",
+   "note": "BVNK 交易被描述为待完成；Zero Hash 只是报道，日期未核实"
+  },
+  {
+   "claim": "Mastercard EEMEA 于 2025-08 与 Circle 推出计划，允许收单方用 USDC 或 EURC 结算并从这些余额直接付款给商户",
+   "category": "architecture",
+   "source_url": "https://www.theblock.co/post/403474/mastercard-expands-stablecoin-settlement-options-with-usdc-pyusd-and-rlusd",
+   "source_date": "2025-08",
+   "confidence": "medium",
+   "note": "经搜索摘要转述"
+  },
+  {
+   "claim": "Visa 在美国上线 USDC 结算，首批银行 Cross River 与 Lead Bank 经 Solana 结算；截至 2025-11-30，月度稳定币结算量的年化运行率超过 35 亿美元；此前在拉美、欧洲、亚太、CEMEA 有试点，亚太先例是 Crypto.com 在澳大利亚用 USDC 履行 Visa 结算义务",
+   "category": "architecture",
+   "source_url": "https://www.theasianbanker.com/press-releases/visa-brings-usdc-settlement-to-the-us-expanding-stablecoins-into-core-institutional-payments",
+   "source_date": "2025-12",
+   "confidence": "medium",
+   "note": "本轮复查没有找到 2026 年新加坡、日本或东南亚的收单方或发卡方参与信息"
+  },
+  {
+   "claim": "BIS 于 2026-05-27 发布 Project Agorá 报告：原型证明可用代币化央行准备金和代币化商业银行存款，完成批发跨境交易的原子结算；两层结构，每家央行运行自己的账本，保持对本币的控制；参与方为英格兰银行、纽约联储、法兰西银行（代表欧元体系）、日本银行、韩国银行、墨西哥银行、瑞士央行，以及 40 多家私营金融机构",
+   "category": "architecture",
+   "source_url": "https://www.bis.org/press/p260527.htm",
+   "source_date": "2026-05-27",
+   "confidence": "high",
+   "note": "核实：原 low→high（成员名单与记忆一致）"
+  },
+  {
+   "claim": "Project Agorá 下一步计划做涉及部分货币和参与方的真实价值交易，加拿大央行将加入",
+   "category": "architecture",
+   "source_url": "https://www.bis.org/press/p260527.htm",
+   "source_date": "2026-05-27",
+   "confidence": "high",
+   "note": "BIS 新闻稿，经搜索摘要核实"
+  },
+  {
+   "claim": "据 Atlantic Council（2026-01），mBridge 累计处理 4,000 多笔跨境交易，金额约 555 亿美元，其中 e-CNY 约占 95%",
+   "category": "architecture",
+   "source_url": "https://www.theblock.co/post/386057/china-led-cross-border-cbdc-platform-mbridge-surges-past-55-billion-in-transaction-volume-reuters",
+   "source_date": "2026-01",
+   "confidence": "medium",
+   "note": "The Block 转述 Reuters 与 Atlantic Council"
+  },
+  {
+   "claim": "PBOC 官员（2026-06）称，mBridge 在 2024-06 至 2025 年底结算约 5,000 亿元（约 690 亿美元），49 家商业银行参与（其中 21 家外资）；BIS 于 2024 年底退出该项目",
+   "category": "architecture",
+   "source_url": "https://san-1510.aid.brainsum.com/news/top-news/chinas-mbridge-cbdc-platform-settled-69bn-18-months-pboc-official-says",
+   "source_date": "2026-06",
+   "confidence": "medium",
+   "note": "核实：BIS 退出部分由原 low→medium；来源为二手聚合站"
+  },
+  {
+   "claim": "Partior 已上线 USD、EUR、SGD，计划增加 JPY、MYR、AUD、CNH 等；Deutsche Bank 于 2025-09-25 与 DBS 完成首笔 EUR 交易，成为 EUR 结算行；Emirates NBD 自 2026-07-14 起把 USD 区块链支付投入生产；2025-06 起接入 OSTTRA 与 Baton 的 FX PvP 网络；2024 年 Series B 融资 6,000 万美元（Peak XV 领投）",
+   "category": "architecture",
+   "source_url": "https://wiki.private.law/en/partior",
+   "source_date": "2024-2026",
+   "confidence": "low",
+   "note": "主要依据单一 wiki 来源，没有找到 Partior 官方新闻稿；上一轮“2021 年由 JPM、DBS、渣打、Temasek 成立”仍未核实"
+  },
+  {
+   "claim": "越南：财政部 2026-01-20 发布 Decision 96/QD-BTC，公布加密资产交易所试点的许可程序并开始受理申请；2026-03 从 7 家申请者中选出 5 家基本合格的（VIXEX、LPEX、CAEX、TCEX、Vietnam Digital Assets JSC）；最低实缴资本 10 万亿越南盾，外资持股不超过 49%；试点排除以法币为底层的资产（稳定币）；截至检索未见发牌",
+   "category": "regulation",
+   "source_url": "https://theinvestor.vn/vietnam-considers-pilot-licenses-for-5-digital-asset-exchanges-d18648.html",
+   "source_date": "2026-01 / 2026-03",
+   "confidence": "medium",
+   "note": "核实：原 low→medium（Tuoi Tre、Cointelegraph、The Investor 一致）。“未发牌”是未查到型结论"
+  },
+  {
+   "claim": "BOT 行长 Vitai 于 2026-06-26 确认推进泰铢稳定币监管框架：1:1 泰铢储备存放在持牌金融机构；第一阶段只允许金融机构用于结算，由持牌私营机构发行；2026 年内公开征求意见，正式规则在 2026 年或 2027 年初；BOT 沙盒第二阶段于 2026-04 启动",
+   "category": "stablecoin",
+   "source_url": "https://www.thestar.com.my/aseanplus/aseanplus-news/2026/06/27/bank-of-thailand-to-unveil-thai-baht-stablecoin-rules",
+   "source_date": "2026-06-27",
+   "confidence": "medium",
+   "note": "与种子 TH-LA（medium）一致并补充细节；第一阶段是否包括跨境结算未查到"
+  },
+  {
+   "claim": "Lightnet（曼谷，Stellar 系）与 SCB 于 2024-10 宣布推出“泰国首个稳定币”跨境转账服务；2026-04 KuCoin 宣布与 Lightnet 探讨在东南亚的合作",
+   "category": "partner",
+   "source_url": "https://www.asiaasset.com/digital-assets/thai-fintech-lightnet-and-siam-commercial-bank-launch-countrys-first-stablecoin/",
+   "source_date": "2024-10 / 2026-04",
+   "confidence": "medium",
+   "note": "所用代币、THB 本币出金能力、牌照范围都未查到"
+  },
+  {
+   "claim": "FATF 于 2025-06-18 发布修订后的 Recommendation 16，改名为“Payment transparency”，目的扩展到洗钱及欺诈等上游犯罪，并提高付款报文中付款人和收款人基本信息的内容和质量",
+   "category": "regulation",
+   "source_url": "https://www.fatf-gafi.org/en/publications/Fatfrecommendations/update-Recommendation-16-payment-transparency-june-2025.html",
+   "source_date": "2025-06-18",
+   "confidence": "high",
+   "note": "FATF 官方页面出现在搜索结果中；WebFetch 打开时 DNS 失败"
+  },
+  {
+   "claim": "修订后的 R.16 保留卡类购物交易的豁免并澄清其范围；卡类取现：境内只需随附卡号或账号，跨境需随附卡号，并在收单方请求时 3 个工作日内提供持卡人姓名",
+   "category": "regulation",
+   "source_url": "https://finreg.aoshearman.com/fatf-updates-standards-on-payment-transparency",
+   "source_date": "2025-06",
+   "confidence": "medium",
+   "note": "律所摘要（A&O Shearman、Dudkowiak）；扫码钱包支付是否适用卡类豁免未核实"
+  },
+  {
+   "claim": "R.16 修订须在 2030 年底前落实，FATF 计划 2026 年发布实施指引，并在 2025-10 全会后发布评估方法论 Annex IV",
+   "category": "regulation",
+   "source_url": "https://bankingjournal.aba.com/2025/06/fatf-releases-revisions-to-international-standard-for-payments-transparency/",
+   "source_date": "2025-06 / 2025-10",
+   "confidence": "medium",
+   "note": "2026 年实施指引是否已发布未查到"
+  },
+  {
+   "claim": "修订后的 R.16 要求跨境支付超过 USD/EUR 1,000 时随附付款人姓名、账号或唯一参考号，以及地址或出生日期等信息，并鼓励收款人姓名核验和结构化地址",
+   "category": "regulation",
+   "source_url": "N/A（凭记忆）",
+   "source_date": "未核实",
+   "confidence": "low",
+   "note": "未核实，需对照 R.16 及 INR.16 原文"
+  },
+  {
+   "claim": "新加坡 Travel Rule 门槛为 S$1,500：低于门槛只需姓名和账号，高于门槛需完整信息；依据 MAS Notice PSN02，2020-01-28 起执行",
+   "category": "regulation",
+   "source_url": "https://wiki.private.law/en/travel-rule.md",
+   "source_date": "2020-01-28",
+   "confidence": "medium",
+   "note": "二手汇编；MAS 原文未打开"
+  },
+  {
+   "claim": "泰国 SEC 要求所有 VASP 转账都提供 Travel Rule 数据（门槛 THB 0）",
+   "category": "regulation",
+   "source_url": "https://www.spark.money/tools/travel-rule-lookup",
+   "source_date": "未查到",
+   "confidence": "low",
+   "note": "只有一份比较表，没有第二来源"
+  },
+  {
+   "claim": "菲律宾 BSP Circular 1108（2021）规定，PHP 50,000 及以上的虚拟资产转账，VASP 须取得并传递付款人和收款人信息，且所有 VA 转账都视为跨境电汇；之后的 Circular 1206 把相关条文并入 MORNBFI-M",
+   "category": "regulation",
+   "source_url": "https://lpr.adb.org/resource/guidelines-virtual-asset-providers-bangko-sentral-ng-pilipinas-circular-no-1108",
+   "source_date": "2021-01-26",
+   "confidence": "medium",
+   "note": "新事实。Shyft 称没有最低门槛、超过 5 万比索后要求更多信息，属于少数说法；CryptoSlate 称 2025-09-01 起暂停发放新 VASP 牌照，未核实"
+  },
+  {
+   "claim": "Circle 的 L1 区块链 Arc 于 2026-09-16 主网上线（USDC 付 gas，亚秒级终局，兼容 EVM）；创始验证者包括 SBI Group、住友商事、Visa、Mastercard、渣打、BlackRock 等",
+   "category": "stablecoin",
+   "source_url": "https://www.theblock.co/news/ecosystems/2026-09-16-circle-launches-arc-mainnet-with-blackrock-and-visa-among-validators-mints-10-billion-arc-tokens-415250",
+   "source_date": "2026-09-16",
+   "confidence": "medium",
+   "note": "沿用上一轮，本轮未重查"
+  },
+  {
+   "claim": "Stripe 与 Paradigm 的支付专用 L1 Tempo 于 2026-03-18 主网上线，同时推出 Machine Payments Protocol",
+   "category": "stablecoin",
+   "source_url": "https://www.bankless.com/es/read/news/stripe-deploys-tempo-blockchain-to-mainnet-introduces-machine-payments-protocol.md",
+   "source_date": "2026-03-18",
+   "confidence": "medium",
+   "note": "沿用上一轮；本轮没有查到在亚洲的进展"
+  },
+  {
+   "claim": "StraitsX × Ant International（Alipay+）× Grab 案例（2024-11-05）：后台用 XSGD 加 Purpose Bound Money 在 Avalanche 上清结算，商户实时收 SGD",
+   "category": "architecture",
+   "source_url": "https://www.straitsx.com/case-study/alipay-grab",
+   "source_date": "2024-11-05",
+   "confidence": "medium",
+   "note": "来自种子 SG-MY，未重查；是“稳定币后台、两端法币”的东南亚直接先例"
+  },
+  {
+   "claim": "设计结论：日本侧大额净额结算不在日本境内用外国稳定币完成，改为法币日元在日本结算，由 INSPAY 新加坡或香港实体在境外换成 USDC；中期评估把 JPYSC 或三大行共同稳定币作为日元腿",
+   "category": "architecture",
+   "source_url": "N/A（本报告分析推论）",
+   "source_date": "2026-10-18",
+   "confidence": "medium",
+   "note": "分析推论，以外国稳定币每笔约 100 万日元上限（medium）和 JPYSC 不能出库（high）为前提"
+  },
+  {
+   "claim": "设计结论：东南亚出金按国家分两类。菲律宾、新加坡、香港可以用稳定币或 CPN 出金；泰国、印尼、马来西亚、越南、老挝、柬埔寨走法币腿",
+   "category": "architecture",
+   "source_url": "N/A（本报告分析推论）",
+   "source_date": "2026-10-18",
+   "confidence": "medium",
+   "note": "分析推论，依据各国稳定币和支付禁令的事实"
+  }
+ ],
+ "open_questions": [
+  "【日本，最关键】外国電子決済手段（USDC、RLUSD）每笔约 100 万日元的上限，是否也约束法人对法人的转账？2026-06-01 修正法施行后是否有放宽？信托型（3 号，如 JPYSC、三大行共同币）跨境转账有没有同类上限？",
+  "INSPAY 日本实体（或合作资金移动业者）从钱包运营方收日元、再在境外换成 USDC 的结构，是否落入 2026-06-01 起的“跨境收纳代行规制”或为替取引？需要第一种还是第二种资金移动业牌照？",
+  "SBI VC Trade 处理 USDC、RLUSD 支持哪些链（Ethereum、Solana 等）？法人 RFQ、出库额度、费用、处理速度如何？JPYSC 什么时候转到公链、在哪条链？",
+  "三大行共同稳定币选哪家受托信托银行和哪个基础平台（Progmat 或其他）？何时开放给支付或跨境场景？Project Pax 2026 年是否已商用、有没有东南亚通道？",
+  "JPYC EX 对法人的单笔和单日发行赎回上限是多少？JPYC 发行方的资金移动业类别（第一种还是第二种）如何？有没有持牌的 JPYC↔USDC 兑换对手方？",
+  "CPN 新加坡出金伙伴是谁？非银机构以 OFI 身份接入 CPN 的条件和费用是什么？CPN 是否计划开通泰国、印尼、马来西亚、越南、日本的通道？",
+  "Coins.ph 作为 CPN BFI 向第三方商户收单方出金：是否支持 InstaPay 实时到账、单笔上限和费用多少？PHPC 何时毕业、规模多大、在哪些链上？",
+  "FATF R.16 修订版的卡类豁免能否适用于钱包扫 MPM 码的商户支付？FATF 2026 实施指引有没有对 QR 或钱包支付作说明？日本、泰国、新加坡、菲律宾的国内落实时间表是什么？",
+  "日本 Travel Rule 是否确实没有门槛？日本（TRUST、Sygna）与新加坡、菲律宾、泰国交易所使用的 Travel Rule 协议能否互通？机构间净额结算是否要附带底层零售交易明细？",
+  "泰国：BOT 泰铢稳定币征求意见稿是否已发布？第一阶段是否允许外国机构以稳定币结算后在泰国兑换泰铢？2026 Q4 起的稳定币资金流管控具体义务是什么？Lightnet/SCB 稳定币服务能否给 PromptPay 收单方出金？",
+  "印尼：OJK 是否发布稳定币（储备、赎回）专门规则？Bappebti→OJK 移交的准确日期（2025-01 还是 2026-01）是哪个？IDRX 的持牌状态如何？",
+  "香港：HKDAP 发行在哪条链、何时开放零售？HSBC 港元稳定币何时上线？香港能否作为美元、港元的第二结算枢纽？",
+  "Visa 和 Mastercard 的稳定币结算何时扩展到亚太、东南亚收单方？INSPAY 能否借卡组织的稳定币结算窗口（周末、节假日）补充流动性？",
+  "Arc 主网的实际稳定性、费用、隐私功能如何？SBI 是否会在 Arc 上支持 USDC 出入库？",
+  "Partior 2026 年是否上线 JPY 或 MYR？非银机构能否经结算银行间接使用其 PvP？",
+  "USDC 和 USDT 2026-10 的最新流通量，需在 Circle 透明度页、CoinGecko 上核对",
+  "MAS SCS 立法完成后，StraitsX 是否取得正式牌照？INSPAY 新加坡实体做结算枢纽，需要 MPI（跨境汇款 + DPT）还是要额外许可？"
+ ]
+}

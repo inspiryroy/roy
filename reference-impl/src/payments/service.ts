@@ -103,6 +103,7 @@ export class PaymentService {
   private readonly quotes = new Map<string, QuoteSession>();
   private readonly payments = new Map<string, Payment>();
   private readonly byRequest = new Map<string, string>();
+  private readonly cancelled = new Set<string>();
   private readonly partnerByKey = new Map<string, SettlementPartner>();
   private n = 0;
 
@@ -190,6 +191,7 @@ export class PaymentService {
 
   async pay(input: { mppId: string; paymentRequestId: string; quoteId: string; payerRef: string }): Promise<Payment> {
     const reqKey = `${input.mppId}|${input.paymentRequestId}`;
+    if (this.cancelled.has(reqKey)) throw new PaymentError('PAYMENT_CANCELLED', 'paymentRequestId was cancelled by the MPP');
     const existing = this.byRequest.get(reqKey);
     if (existing) return this.payments.get(existing)!;
 
@@ -331,6 +333,27 @@ export class PaymentService {
     p.refundedMinor += amountMinor;
     p.updatedAt = this.now();
     return { refundId, payerRefundMinor };
+  }
+
+  /**
+   * MPP-side cancel (e.g. the wallet timed out waiting for pay()). Succeeds only when
+   * nothing reached the local rail: an unknown request is tombstoned so a late pay()
+   * with the same paymentRequestId is refused; a FAILED payment is already final.
+   * PROCESSING cannot be cancelled (the credit may have landed) and SUCCEEDED needs a refund.
+   */
+  cancel(mppId: string, paymentRequestId: string): { cancelled: boolean; status?: PaymentStatus } {
+    const reqKey = `${mppId}|${paymentRequestId}`;
+    const id = this.byRequest.get(reqKey);
+    if (!id) {
+      this.cancelled.add(reqKey);
+      return { cancelled: true };
+    }
+    const p = this.payments.get(id)!;
+    if (p.status === 'FAILED') return { cancelled: true, status: p.status };
+    throw new PaymentError(
+      p.status === 'SUCCEEDED' ? 'CANCEL_NOT_ALLOWED_REFUND' : 'CANCEL_NOT_ALLOWED_PROCESSING',
+      p.status === 'SUCCEEDED' ? 'payment already credited to the merchant: request a refund' : 'payment is in flight: wait for the final status',
+    );
   }
 
   get(paymentId: string): Payment | undefined {
