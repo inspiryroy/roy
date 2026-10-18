@@ -106,3 +106,65 @@ test('registry refuses duplicate GUID registration', () => {
   assert.throws(() => new SchemeRegistry().register(ALL_SCHEMES[0]!).register(ALL_SCHEMES[0]!));
 });
 
+
+// ---------------------------------------------------------------------------
+// Indonesia, Vietnam, Cambodia
+
+import { sampleQris } from '../src/schemes/id.ts';
+import { khqr, sampleKhqrMerchant } from '../src/schemes/kh.ts';
+import { sampleVietQrMerchant } from '../src/schemes/vn.ts';
+import { encodeTlv } from '../src/emvco/tlv.ts';
+
+// Test vector shipped with the NBC KHQR JavaScript SDK (dev bank domain "devb"):
+// dynamic individual KHQR, KHR 10,000, Chinese language template, ID 99 timestamps.
+const KHQR_SDK_DYNAMIC =
+  '00020101021229420013ishinvin@devb01090123456780208Dev Bank5204599953031165405100005802KH5909Ishin Vin6010Phnom Penh62680114INV-2022-12-250211855123456780310Ishin Shop07060123450807Payment64180002ZH0102文山0202金边99340013175507623233601131755076292336630416C4';
+
+test('Indonesia: QRIS national domain (ID 51) with acquirer NNS from the PJSP template', () => {
+  const [m] = identify(sampleQris({ amount: '85000' }));
+  assert.equal(m!.schemeId, 'ID.QRIS');
+  assert.equal(m!.paymentType, 'P2M');
+  assert.equal(m!.routing.merchantId, 'ID2026000000001');
+  assert.equal(m!.routing.acquirerId, '93609999');
+  assert.deepEqual(m!.altRoutingKeys, ['ID:NNS:93609999']);
+  assert.equal(m!.routing.references.acquirerGuid, 'COM.EXAMPLEBANK.WWW');
+});
+
+test('Vietnam: VietQR nested beneficiary template; P2P when no merchant identity', () => {
+  const [m] = identify(sampleVietQrMerchant({ amount: '85000' }));
+  assert.equal(m!.schemeId, 'VN.VIETQR');
+  assert.equal(m!.paymentType, 'P2M');
+  assert.equal(m!.routing.acquirerId, '970436');
+  assert.equal(m!.routing.account, '1234567890');
+  const p2p = buildMpm({
+    initiation: 'static',
+    accounts: [{ tag: '38', fields: [['00', 'A000000727'], ['01', encodeTlv([{ id: '00', value: '970436' }, { id: '01', value: '0000000000' }])], ['02', 'QRIBFTTA']] }],
+    mcc: '0000', currencyNumeric: '704', countryCode: 'VN', merchantName: 'NA', merchantCity: 'HCM',
+  });
+  assert.equal(identify(p2p)[0]!.paymentType, 'P2P');
+});
+
+test('Cambodia: KHQR matched structurally (Bakong ID, no GUID), tag 29 = individual', () => {
+  const reg = new SchemeRegistry().register(khqr(() => Date.parse('2025-08-13T09:05:00Z')));
+  const p = decodeMpm(KHQR_SDK_DYNAMIC);
+  assert.deepEqual(p.errors, []);
+  assert.equal(p.language?.city, '金边');
+  const [m] = reg.identify(p);
+  assert.equal(m!.schemeId, 'KH.KHQR');
+  assert.equal(m!.paymentType, 'P2P');
+  assert.equal(m!.routing.account, 'ishinvin@devb');
+  assert.deepEqual(m!.altRoutingKeys, ['KH:BANK:devb']);
+});
+
+test('Cambodia: expired dynamic KHQR is not routable', () => {
+  const reg = new SchemeRegistry().register(khqr(() => Date.parse('2025-08-13T10:00:00Z')));
+  assert.deepEqual(reg.identify(decodeMpm(KHQR_SDK_DYNAMIC)), []);
+});
+
+test('Cambodia: merchant KHQR in USD keeps confidence but flags the KHR-only channel', () => {
+  const reg = new SchemeRegistry().register(khqr(() => Date.parse('2026-10-18T09:01:00Z')));
+  const [m] = reg.identify(decodeMpm(sampleKhqrMerchant({ amount: '4.50', currency: 'USD' })));
+  assert.equal(m!.paymentType, 'P2M');
+  assert.equal(m!.confidence, 0.9);
+  assert.match(m!.notes.join(), /KHR only/);
+});

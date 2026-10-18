@@ -34,15 +34,16 @@ export class SchemeRegistry {
   identify(p: MpmPayload): SchemeMatch[] {
     const out: SchemeMatch[] = [];
     for (const acct of p.merchantAccounts) {
-      if (!acct.guid) continue;
-      const def = this.byGuid.get(acct.guid.toUpperCase());
+      const def =
+        (acct.guid && this.byGuid.get(acct.guid.toUpperCase())) ||
+        this.defs.find(d => d.templateTags?.includes(acct.tag) && d.matchTemplate?.(acct, p));
       if (!def) continue;
       const r = def.interpret(acct, p);
       if (!r) continue;
       const notes = [...r.notes, ...(def.validate?.(p) ?? [])];
       let confidence = r.confidence;
       const cur = p.currencyNumeric ? currencyByNumeric(p.currencyNumeric)?.alpha : undefined;
-      if (cur && cur !== def.currency) {
+      if (cur && cur !== def.currency && !def.otherCurrencies?.includes(cur)) {
         notes.push(`currency ${cur} differs from scheme currency ${def.currency}`);
         confidence *= 0.5;
       }
@@ -61,7 +62,7 @@ export class SchemeRegistry {
         rail: def.rail,
         currency: def.currency,
         template: acct.tag,
-        guid: acct.guid,
+        guid: acct.guid ?? '',
       });
     }
     return out.sort((a, b) => b.confidence - a.confidence || Number(a.template) - Number(b.template));

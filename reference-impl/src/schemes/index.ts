@@ -1,12 +1,15 @@
 // National scheme profiles. Each profile documents the evidence level of its
 // identifiers; see docs/02-qr-interoperability.md for sources.
+import { qris, sampleQris } from './id.ts';
+import { khqr, sampleKhqrMerchant } from './kh.ts';
 import { laoQr, sampleLaoQr } from './la.ts';
 import { duitNow, sampleDuitNowQr } from './my.ts';
 import { grabPaySg, netsQr, payNow, sampleSgqr } from './sg.ts';
 import { samplePromptPayQr, sampleThaiMerchantQr, thaiQr } from './th.ts';
 import type { SchemeDefinition } from './types.ts';
+import { sampleVietQrMerchant, vietQr, vnpayQr } from './vn.ts';
 
-export const ALL_SCHEMES: SchemeDefinition[] = [thaiQr, duitNow, payNow(), netsQr, grabPaySg, laoQr];
+export const ALL_SCHEMES: SchemeDefinition[] = [thaiQr, duitNow, payNow(), netsQr, grabPaySg, laoQr, qris, vietQr, vnpayQr, khqr()];
 
 export interface Sample {
   schemeId: string;
@@ -22,6 +25,9 @@ export const SAMPLES: Sample[] = [
   { schemeId: 'MY.DUITNOW', qr: sampleDuitNowQr({ amount: '18.50' }) },
   { schemeId: 'SG.NETS', qr: sampleSgqr(), enterAmountMinor: 650n },
   { schemeId: 'LA.LAOQR', qr: sampleLaoQr({ amount: '150000' }) },
+  { schemeId: 'ID.QRIS', qr: sampleQris(), enterAmountMinor: 8500000n },
+  { schemeId: 'VN.VIETQR', qr: sampleVietQrMerchant({ amount: '85000' }) },
+  { schemeId: 'KH.KHQR', qr: sampleKhqrMerchant(), enterAmountMinor: 1600000n },
 ];
 
 export { samplePromptPayQr };

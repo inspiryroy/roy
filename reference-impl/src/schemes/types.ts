@@ -51,12 +51,25 @@ export interface SchemeDefinition {
   name: string;
   rail: string;
   currency: string;
+  /** Additional currencies the scheme legitimately carries (e.g. KHQR: KHR and USD). */
+  otherCurrencies?: readonly string[];
   /** GUIDs / AIDs (case-insensitive) recognised in templates 26..51. */
   guids: readonly string[];
+  /**
+   * For profiles whose templates carry no GUID (Cambodia's KHQR puts a Bakong account
+   * ID in sub-00): template IDs to inspect and a predicate run when no GUID matched.
+   */
+  templateTags?: readonly string[];
+  matchTemplate?(acct: MerchantAccount, payload: MpmPayload): boolean;
   /** Default routing key (one settlement partner connection per rail / switch). */
   routingKey: string;
   /** Converts a matching template into routing data; may return null to decline. */
   interpret(acct: MerchantAccount, payload: MpmPayload): SchemeInterpretation | null;
   /** Spec-level checks beyond EMVCo (e.g. mandatory national-ID template). */
   validate?(payload: MpmPayload): string[];
+}
+
+/** Drops undefined/empty values so optional QR fields can be listed inline. */
+export function refs(o: Record<string, string | undefined>): Record<string, string> {
+  return Object.fromEntries(Object.entries(o).filter((e): e is [string, string] => typeof e[1] === 'string' && e[1] !== ''));
 }
