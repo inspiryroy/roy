@@ -4,7 +4,7 @@
 >
 > 两条全局约定：
 > * **伙伴结算方式因国而异**：新加坡、菲律宾的伙伴链上收 USDC，可 7×24、日内多次结算；泰国、马来西亚、印尼、越南、柬埔寨、老挝的伙伴收工作日 USD 电汇 + 境内换汇（T+0–T+1 工作日），稳定币只在离岸枢纽，带来的是枢纽侧多国共享流动性与链上批次存证，不是伙伴侧 7×24，还多出 JPY→USDC→USD 两次兑换（10 章假设约 15 bps）。这些国家是否经 USDC 中转，由 [10 章](10-economics.md) 10.6 的法币基准对照决定。
-> * **流程结构**：新加坡、马来西亚、越南、菲律宾、老挝与泰国（[03 章](03-payment-flows.md)）结构相同，只有本地轨道和码字段不同；印尼、柬埔寨的推荐路径经日方 Netstars/JPQR Global 枢纽（METI–BI、METI–NBC 框架）：印尼由 LCS 框架下的 ACCD 银行按本币直接汇率报价；柬埔寨的汇率安排未查到（推断由当地银行按本币报价，与印尼类似）。路由、FX 和结算都与泰国不同（见 5.5、5.7）。
+> * **流程结构**：新加坡、马来西亚、越南、菲律宾、老挝与泰国（[03 章](03-payment-flows.md)）结构相同，只有本地轨道和码字段不同；印尼、柬埔寨可经日方 Netstars/JPQR Global 交换（METI–BI、METI–NBC 框架；出境方向尚无日本钱包，由本网络补上发行侧）：印尼由 LCS 框架下的 ACCD 银行按本币直接汇率报价；柬埔寨的汇率安排未查到（推断由当地银行按本币报价，与印尼类似）。路由、FX 和结算都与泰国不同（见 5.5、5.7）。
 
 ## 5.1 优先级总览
 
@@ -14,7 +14,7 @@
 |---|---|---|---|---|---|---|
 | 泰国 | 已知数据中最多：1–5 月 44.4 万（全年推算约 100–110 万；他国同口径数据未查到，排序未核实） | 极高（PromptPay 全部交易月 20 亿笔以上，含转账；Thai QR 商户数及各行份额未查到，Phase 0 向候选行索取） | 有：Ant（仅中国走廊，Krungthai）、GLN × KB 国民 × SCB（B2，2023-12，现状未核实） | 国家码线只见中国 Alipay 用户（未检出对其他钱包开放的公告，非官方否定）；其他 Alipay+ 钱包只能扫 KTC/2C2P/Antom 等收单方的码 | 低（只在离岸；USD 电汇） | **Phase 1 试点首选**：已知量最大、差异化最强；先 B2（SCB，GLN 先例）或 B1，再 A；工作日日结 |
 | 越南 | 已知数据中次之：1–5 月 34.2 万（全年推算约 80 万；排序未核实） | 高 | 有：Ant（Vietcombank）、GLN（BIDV/Hana）、Liquid（VietinBank）；Decree 52 修订利好；加密钱包 Bitget、RedotPay 已可扫 VietQR（竞品） | Alipay 线只见中国 Alipay 用户（未检出对其他钱包开放的公告，非官方否定） | 低（USD 电汇） | **Phase 1–2**：复制 GLN 的 NAPAS 境外网络模式（需对端结算行，见 5.6） |
-| 印尼 | 未查到 | 极高（商户约 4,500 万） | 以与东盟各国的双边联通为主；中国线经 Alipay+ 技术层；日本方向经 METI–BI 框架下的 Netstars | Alipay 线只见中国 Alipay 用户（未检出对其他钱包开放的公告，非官方否定；中国线另有银联） | 低（法币；LCS 本币直接汇率） | **Phase 2**：经 Netstars/JPQR Global 枢纽；日本→印尼方向 BI 称已获 FSA 许可、待上线，上线后须与 Netstars 合作，否则不做独立通道 |
+| 印尼 | 未查到 | 极高（商户约 4,500 万） | 以与东盟各国的双边联通为主；中国线经 Alipay+ 技术层；日本方向经 METI–BI 框架下的 Netstars | Alipay 线只见中国 Alipay 用户（未检出对其他钱包开放的公告，非官方否定；中国线另有银联） | 低（法币；LCS 本币直接汇率） | **Phase 2**：本网络作为日方发行侧聚合者，经 Netstars/JPQR Global 交换接 QRIS（BI 称日本→印尼方向已获 FSA 许可，但未见日本钱包接入）；谈不成时改走 B1/A |
 | 柬埔寨 | 未查到（量小） | 高（约 450 万商户） | 有：Alipay+、UPI（ACLEDA）、微信（单一报道，未核实） | 已对 12 个 Alipay+ 钱包开放（2024-10） | **中**（银行经 NBC 批准可持 Group 1b 稳定币；获批前 USD 电汇） | **Phase 2**：经 Netstars 参与 JPQR–KHQR 二期，同时试点银行层稳定币结算 |
 | 马来西亚 | 未查到 | 高 | 成熟：Alipay+、Wise 直连（2026-07）、BC Card（一期已上线）；NPCI 2026-02 签约、未确认上线 | 已对 8 个以上 Alipay+ 钱包开放（2023-10，占入境 > 80%） | 低（USD 电汇） | Phase 2：A 路径成熟，但与 Alipay+ 正面竞争（价格、锁定报价） |
 | 新加坡 | 未查到 | 中（多方案标签） | 有：NETS 入境方案 | 经 NETS 对首批 6 个钱包开放（2023-04） | **高**（MAS 框架、StraitsX、CPN；链上 USDC） | **网络主体与稳定币枢纽所在地**（须持牌，见 5.4）；商户侧与 Alipay+ 竞争 |
@@ -73,10 +73,10 @@
 | 码 / 轨道 | QRIS（BI / ASPI）；GPN 交换机（Artajasa、Rintis、Jalin、Alto）；BI-FAST；BI-RTGS 最终结算 |
 | 规模 | 2026 年中用户约 6,577 万、商户约 4,486 万（96.68% 为 UMKM） |
 | 跨境现状 | 泰、马、新、中（2026-04-30，Alipay+/银联）、韩（2026-04-01）；入境累计 1,780 万笔（截至 2026-08）；商户按 IDR 入账、MDR 与境内相同；LCS 框架下 ACCD 银行报价 |
-| 日本 | **印尼→日本（扫 JPQR Global）2025-08-17 上线**（日方 Netstars；METI 2022-12 与 BI 签 JPQR 互操作 MoC，日本央行未参与）；**日本→印尼**：BI 2026-04 称已获日本 FSA 许可、"很快"，未见正式上线 |
+| 日本 | **印尼→日本（扫 JPQR Global）2025-08-17 上线**（日方 Netstars；METI 2022-12 与 BI 签 JPQR 互操作 MoC，日本央行未参与）；**日本→印尼**：BI 2026-04 称已获日本 FSA 许可、"很快"，未见正式上线，也未见任何日本钱包宣布接入（Netstars 是交换运营方，不是钱包）；入境方向只覆盖张贴 JPQR Global 码的商户（首批 35 家） |
 | 监管红线 | 加密资产不是支付工具；稳定币专门规则预计 2027-01；GPN 境内处理与数据境内化；卢比禁止离岸；非银 PJP 外资 ≤ 85%、基础设施类 ≤ 20%；USTR 对 QRIS/GPN 的批评使"外资直连"政治敏感 |
 | 候选伙伴 | **Netstars / JPQR Global（日方 hub）**、日资背景银行（Bank Danamon（MUFG）、SMBC Indonesia、Mizuho Indonesia）、大型收单行（BRI、Mandiri、BNI、BCA）、聚合商（Xendit、DOKU）、钱包（GoPay、DANA） |
-| 推荐路径 | **经 METI–BI 框架下的 Netstars/JPQR Global 枢纽**：与 Netstars 合作，作为日方发行侧聚合者 / FX 与结算服务方，把 PayPay 等钱包接进来；日本→印尼方向上线后，日本钱包将经这一官方通道覆盖印尼 QRIS 商户，若不能与 Netstars 合作，就不在印尼另建独立通道。流程与泰国不同：路由经 Netstars 枢纽，由 ACCD 银行按本币直接汇率（LCS）报价，FX 与结算要另行设计。过渡期 **B1**（旅游区大商户、单一收单方） |
+| 推荐路径 | **经 METI–BI 框架下的 Netstars/JPQR Global 交换**：Netstars 只是交换运营方，日本→印尼方向缺的是日本钱包一端；本网络与 Netstars 合作，作为日方发行侧聚合者 / FX 与结算服务方，把 PayPay 等钱包接进来。若 Netstars 自己引入日本钱包或拒绝合作，就改走 B1 或 A。流程与泰国不同：路由经 Netstars 枢纽，由 ACCD 银行按本币直接汇率（LCS）报价，FX 与结算要另行设计。过渡期 **B1**（旅游区大商户、单一收单方） |
 | 稳定币位置 | 只在日本侧或离岸；进入印尼的必须是 JPY/USD 法币，在 ACCD 银行兑换 IDR |
 | 技术要点 | 以 `51` NMID 为商户主键（NMID 不合法的码不承接）；多收单域原样转交；TUNTAS 个人码结构未查到，P2P 判别未实现；静态码"插入 54 当动态码"的做法不能当对账依据；部分银行 App 付款的 QRIS 不支持退款 |
 
@@ -101,10 +101,10 @@
 | 码 / 轨道 | KHQR（NBC）；Bakong（Hyperledger Iroha，日本 Soramitsu 承建），KHR/USD 双币 |
 | 规模 | 约 450 万受理商户；2025 年约 13.3 亿笔 |
 | 跨境现状 | 越、老、马、泰、UnionPay、**Alipay+（2024-10，12 个钱包）**、微信（据单一报道 2026-08，未核实）、印度 UPI（2026-06，ACLEDA）；Bakong Tourists App（游客用国际卡充值扫码） |
-| 日本 | **柬→日（扫 JPQR）2025-07-04 上线**（METI–NBC MoC 2023-12、NBC–PJA MoU 2025-04，日本央行未参与）；日→柬（二期）计划中：日方 NETSTARS（日方结算行据单一报道为 SMBC，未核实），柬方 ACLEDA、Sathapana |
+| 日本 | **柬→日（扫 JPQR）2025-07-04 上线**（METI–NBC MoC 2023-12、NBC–PJA MoU 2025-04，日本央行未参与）；日→柬（二期）计划中，未见日本钱包宣布参与：日方 NETSTARS（日方结算行据单一报道为 SMBC，未核实），柬方 ACLEDA、Sathapana |
 | 监管 | 2024-12 加密资产 Prakas：持牌银行经 NBC 事前批准可持有 Group 1b 稳定币（≤ 3% CET1，NBC 原文未核）；**推断**：跨境 QR 可能以 KHR 结算（依据 ACLEDA 指南：柬方用户出境扫码只能从 KHR 账户扣款）；入境方向是否只能 KHR、USD 标价 KHQR 能否被外国钱包支付，待 NBC 确认 |
 | 候选伙伴 | **ACLEDA**、Sathapana（日资背景，待核实）、ABA；日方 NETSTARS、SMBC（单一报道）；Soramitsu 作为与 NBC 沟通的纽带 |
-| 推荐路径 | **经 Netstars 参与 JPQR–KHQR 二期**（METI–NBC 框架；与 NETSTARS 合作或作为其发行侧伙伴）——二期上线后日本钱包获官方覆盖，INSPAY 须与 Netstars 合作，否则不做独立通道；流程与泰国不同，要经 Netstars 枢纽（柬方汇率安排未查到，推断由当地银行按本币报价，与印尼类似）；并行与 ACLEDA/Sathapana 探讨 **NBC 批准下以 Group 1b 稳定币做跨境头寸结算**——东南亚少数可能让稳定币直接到 LSP 的国家 |
+| 推荐路径 | **经 Netstars 参与 JPQR–KHQR 二期**（METI–NBC 框架）：二期同样缺日本钱包一端，本网络作为发行侧伙伴把 PayPay 等接入；谈不成时改与 ACLEDA/Sathapana 走 B1/B2；流程与泰国不同，要经 Netstars 枢纽（柬方汇率安排未查到，推断由当地银行按本币报价，与印尼类似）；并行与 ACLEDA/Sathapana 探讨 **NBC 批准下以 Group 1b 稳定币做跨境头寸结算**——东南亚少数可能让稳定币直接到 LSP 的国家 |
 | 稳定币位置 | 可能可以到银行层（需 NBC 批准），获批前按法币（USD 电汇）；商户侧 KHR |
 | 技术要点 | 无 GUID 的结构化识别；`99-01` 过期校验（动态码或带金额却无过期时间的码不承接）；KHR 金额须为整数；USD 码的跨境可付性待确认 |
 
