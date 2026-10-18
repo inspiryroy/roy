@@ -1,0 +1,453 @@
+{
+ "summary": "技术结论（2026-10-18）：在 INSCREEN 上收稳定币，技术上不难，难在钱包兼容、确认速度、离线风险和监管边界。(1) 支付请求格式没有通用标准：EVM 用 EIP-681（没有发票号字段，要靠合约调用、EIP-3009 nonce、每单地址或唯一金额来匹配订单），Solana 用 Solana Pay（自带 reference 键），此外还有交易所的封闭格式；终端必须同时提供多种格式，并以 WalletConnect 作兼容层。Ingenico 与 WalletConnect 已于 2026-01 宣布在 Android POS 上用纯软件受理稳定币（先在欧洲），说明这条路线本身没有硬件护城河。(2) 链的选择：新 JPYC（0xE7C3…3c29）官方只在 Ethereum、Avalanche、Polygon、Kaia 四条链上（已核实）；第三方开发者实测它支持 EIP-3009 和 EIP-2612、18 位小数（medium，不是发行方文档）。USDC 在 EVM 链上支持 EIP-3009，Circle Paymaster 可以让用户用 USDC 付 gas。SBI VC Trade 的 USDC 支持哪些链没有查到，这是持牌伙伴方案的硬约束。柜台和无人设备只应使用终局在约 5 秒以内的链（Polygon 在 Heimdall v2 后约 5 秒，Avalanche、Kaia 约 1–2 秒）；Ethereum L1 太慢太贵，Tron 上 USDT 的转账成本也不低。(3) 推荐主路径：付款人签 EIP-3009 授权，签名里锁定收款人为商户地址，INSPAY 的 relayer 只代付 gas、提交前先筛查 from 地址。这样同时解决三件事：付款人不需要持有原生币；能在资金进来前筛查；INSPAY 自始不经手资金，符合非托管设计。(4) 离线：只有「付款人离线、终端在线」的 EIP-3009 签名模式可行。双方都离线时，预签授权可能因余额被先花掉、授权被撤销或地址被冻结而落空，只能小额、限定用户、由商户事先接受风险；托管或预存额度方案如果由 INSPAY 控制放行，可能构成管理、为替或前払式。离线签名没有跨钱包标准，要靠 INSPAY 自己的钱包或 SDK。(5) 三种监管设计共用同一套组件，区别只在「收款地址由谁控制、兑换由谁做」：(a) 非托管，商户自托管加 INSPAY relayer，首发推荐；(c) 持牌伙伴，以 SBI VC Trade×アプラス 实证为模板，USDC 自动换日元，JPYC 经 JPYC EX 赎回，第二阶段推荐；(b) INSPAY 自己托管，要電子決済手段等取引業登録，首发不建议。(6) USDT 和 PYUSD 在日本没有境内出金通道，不宜原生受理；持 USDT 的交易所用户已经能经 PayPay×HIVEX（Binance Pay，2026-09-30 起）付款，所以 INSCREEN 应做成「原生链上通道 + QR 网关通道」的多通道终端。(7) 自建：终端 App、订单匹配、确认策略、relayer、离线签名协议和钱包 SDK、对账和会计导出、POS/MDB 接口、伙伴适配层。采购：RPC 和索引、制裁和 KYT 筛查、WalletConnect、KMS/HSM、换汇和出金伙伴。「0% 手续费」在设计(a) 下技术上成立，但 gas 代付、筛查、RPC 和换汇的成本仍然存在；月费 2,000 日元是假设，能否覆盖要看付费筛查单价和每个商户的笔数。",
+ "facts": [
+  {
+   "id": "TECH-01",
+   "claim": "【标准】EIP-681 支付请求 URI：ERC-20 转账写作 ethereum:<代币合约>@<chainId>/transfer?address=<收款地址>&uint256=<最小单位金额>。规范里没有发票号或备注字段，ERC-20 的 Transfer 事件也只有 from、to、value，终端不能只靠 URI 把到账和订单对上。",
+   "confidence": "medium",
+   "source": "https://eips.ethereum.org/EIPS/eip-681",
+   "date": "2017（规范）",
+   "notes": "凭对公开标准的记忆，本轮未抓取原文；规范稳定，出错风险低。实例：GitHub 上第三方 JPYC 支付 demo（windymelt/permit-jpyc-payment）用 ethereum:0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29@0xA86A/transfer?address=windymelt.eth&uint256=100000000000000000000，即 Avalanche 上 100 JPYC，按 18 位小数写最小单位。钱包对 EIP-681 的支持参差：有的忽略 chainId 或金额，交易所 App 大多不解析（见 TECH-42、TECH-43）。"
+  },
+  {
+   "id": "TECH-02",
+   "claim": "【推论·设计】EVM 链上把到账和订单对上，有三种做法：(1) 每单唯一收款地址（CREATE2 预先算好的转发合约，或 HD 派生地址）：匹配最准，但每个地址归集都要额外 gas，非托管时归集还要商户签名；(2) 唯一金额：JPYC 有 18 位小数、USDC 有 6 位，可以在日元价后加不显眼的尾数（如 1,000.000137 JPYC），不用合约，但钱包可能四舍五入显示、付款人可能改金额，会计上会出现尾差；(3) 合约调用：付款走支付路由合约（发出带 invoiceId 的事件），或用 EIP-3009 并令 nonce = keccak256(invoiceId)，最可靠，但要钱包支持签名或合约调用。建议柜台以 (3) 为主、(2) 兜底。",
+   "confidence": "low",
+   "source": "推论，依据 EIP-681、EIP-3009（https://eips.ethereum.org/EIPS/eip-3009）",
+   "date": "2026-10-18",
+   "notes": "推论。(1) 在设计(a) 下有风险：如果归集合约由 INSPAY 控制，可能被认定为「管理」（见 law.json LAW-40）。"
+  },
+  {
+   "id": "TECH-03",
+   "claim": "【标准】Solana Pay transfer request 写作 solana:<收款地址>?amount=<十进制金额>&spl-token=<mint>&reference=<公钥>&label=&message=&memo=。reference 是每单一次性生成的公钥，以只读、非签名账户写进交易；商户用 getSignaturesForAddress(reference) 找到交易，再用 validateTransfer 校验收款人和金额。amount 按用户单位填写，不是最小单位。另有 transaction request（solana:https://…）：钱包向商户服务器取一笔已构造好的交易，商户可以当 fee payer 代付手续费，也可以在交易里加换币指令。",
+   "confidence": "medium",
+   "source": "https://docs.solanapay.com/spec",
+   "date": "2022（规范）",
+   "notes": "凭记忆，本轮未抓取原文。Solana 自带每单唯一键（reference），订单匹配比 EVM 简单。但 Solana 上只有 USDC、USDT、PYUSD 等，JPYC 官方不在 Solana 上（见 TECH-06）。transaction request 要求付款人手机在线。"
+  },
+  {
+   "id": "TECH-04",
+   "claim": "【推论】链专属 QR 和纯地址 QR：只放地址的 QR 兼容性最好，几乎所有钱包和交易所 App 都能扫，但付款人要自己选链、填金额，柜台上容易出错：同一种币选错网络，转账不会成立，资产还可能丢失。TON 有 ton://transfer/<地址>?amount=&jetton=&text= 一类可带备注的 deeplink；Tron 没有被普遍支持的金额 URI 标准。Binance Pay、PayPay 等是封闭格式，只能接入它们的网络（例如经 HIVEX）。",
+   "confidence": "low",
+   "source": "推论；网络不一致导致转账不成立的提示见 https://myforex.com/ja/news/myf25121201.html",
+   "date": "2026-10-18",
+   "notes": "TON 和 Tron 的格式凭记忆，未核实。纯地址 QR 只适合做兜底，不宜作为无人设备的主路径。"
+  },
+  {
+   "id": "TECH-05",
+   "claim": "【公司说法·已核实来源】Ingenico 与 WalletConnect 于 2026-01-13 宣布：经 WalletConnect Pay，在 Ingenico 的 Android POS 终端上受理稳定币，只需部署软件、不改硬件。报道称支持 USDC、EURC、USDT，付款人用 MetaMask、Trust Wallet 等兼容 WalletConnect 的钱包付款，结算链为 Ethereum、Base、Polygon、Arbitrum；商户可收加密资产或法币；首批商户预计 2026 年 Q1–Q2 在欧洲启用。",
+   "confidence": "high",
+   "source": "https://www.pymnts.com/cryptocurrency/2026/ingenico-walletconnect-launch-stablecoin-payments-partnership/ ; https://cointelegraph.com/news/ingenico-walletconnect-in-store-stablecoin-payments ; https://walletconnect.com/blog/how-psps-can-enable-stablecoin-payments-for-merchants",
+   "date": "2026-01-13",
+   "notes": "【公司说法】终端数说法不一（4,000 万台 vs「数千万台」），覆盖国家数也矛盾（32 vs 120）。实际上线商户数和交易量未查到，日本是否可用未查到，WalletConnect Pay 是否经 PSP 托管资金也未查到（这决定它在日本法下属于设计 a 还是 b）。【推论】INSCREEN 可以把 WalletConnect 当钱包兼容层，不必自定协议；这也说明大厂终端已在走「Android POS 上装稳定币 App」的路线，INSCREEN 的硬件本身不构成护城河。"
+  },
+  {
+   "id": "TECH-06",
+   "claim": "【已核实事实】新 JPYC（資金移動業型）的合约地址是 0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29，四条链用同一地址：Ethereum（chainId 1）、Avalanche C-Chain（43114）、Polygon（137）、Kaia（8217）；这个地址与前払式 JPYC 的合约不同。Kaia 是在 2026-05-15 JPYC EX 大更新时加入的。",
+   "confidence": "high",
+   "source": "https://github.com/jpycoin（JPYC 官方 GitHub 组织 README，页面最后更新 2026-08-14，本轮 WebFetch 成功）; https://prtimes.jp/main/html/rd/p/000000315.000054018.html",
+   "date": "2026-08-14 / 2026-05-15",
+   "notes": "官方列表只有这四条链：没看到 Solana、Base、Arbitrum、Tron（未查到≠不存在）。终端白名单必须按（chainId，合约地址）识别 JPYC，并拒收前払式旧 JPYC，两者不是同一种资产。各链 JPYC 流通量分布未查到。"
+  },
+  {
+   "id": "TECH-07",
+   "claim": "【第三方开发者实测，不是发行方文档】新 JPYC 合约实现了 EIP-3009（transferWithAuthorization、receiveWithAuthorization、cancelAuthorization、authorizationState）和 EIP-2612 permit，代币为 18 位小数，EIP-712 domain 为 {name:\"JPY Coin\", version:\"1\"}。在 Sepolia 和 Kaia 上调用 DOMAIN_SEPARATOR() 或 eip712Domain() 会 revert，集成方只能自己硬编码 domain。旧的 JPYC Prepaid v2 也同时支持 EIP-2612 和 EIP-3009（JPYC 官方 Zenn 文章）。",
+   "confidence": "medium",
+   "source": "GitHub 代码检索片段：reeldeal-xyz/reeldeal packages/shared/src/abi/JPYC.ts（注明 2026-09-26 对 Sepolia 实测）、cipherwebllc/openpay docs/DEPLOY_CHECKLIST.md（2026-05-22 Kaia 主网实测 permit selector）与 lib/x402/types.ts、br-to/jpyc-x402-facilitator、jnmarti/jpyc-x402；https://zenn.dev/jpyc/articles/ff5922abf2046c（Prepaid v2）",
+   "date": "2026-05-22 / 2026-09-26",
+   "notes": "只看到 GitHub 代码检索的片段（get_file_contents 被拒绝），zenn.dev 的 WebFetch 也失败（ENOTFOUND）。没有找到 JPYC 社关于新合约 EIP-3009 和冻结、黑名单函数的正式技术文档。社区已有多个 x402 facilitator 用 EIP-3009 替 JPYC 付款人代付 gas，说明「付款人只签名、第三方提交并付 gas」的模式对 JPYC 可行。上线前须在四条链上自测 transferWithAuthorization、cancelAuthorization 以及黑名单行为。18 位小数和 USDC 的 6 位不同，金额编码、显示和四舍五入都要分开处理。"
+  },
+  {
+   "id": "TECH-08",
+   "claim": "【已核实事实】JPYC EX 的发行和赎回每次上限 100 万日元（2026-05-15 起，由每日上限改为每次上限，并禁止短时间连续申请），取引時確認统一用マイナンバーカード JPKI；用户之间的链上转移不设金额上限。",
+   "confidence": "high",
+   "source": "https://prtimes.jp/main/html/rd/p/000000315.000054018.html ；law.json LAW-05/LAW-26",
+   "date": "2026-05-15",
+   "notes": "【推论】这个上限只影响商户把 JPYC 赎回成日元的节奏，不影响柜台收款。大额商户要多次赎回，或另开法人账户（法人条件未查到）。"
+  },
+  {
+   "id": "TECH-09",
+   "claim": "【标准·已核实】USDC（FiatToken v2 及以后）在 EVM 链上支持 EIP-3009 和 EIP-2612。EIP-3009 用随机 32 字节 nonce，带 validAfter/validBefore 有效期，签名人可调用 cancelAuthorization 撤销未用的授权；receiveWithAuthorization 要求调用者就是收款人，用来防止抢跑。和 permit 不同，EIP-3009 一次调用就完成整笔转账，可以同时存在多个未用授权，gas 可由第三方支付。",
+   "confidence": "high",
+   "source": "https://eips.ethereum.org/EIPS/eip-3009 ; https://www.circle.com/blog/four-ways-to-authorize-usdc-smart-contract-interactions-with-circle-sdk",
+   "date": "2020（EIP）；Circle 博客日期未见",
+   "notes": "一手规范页出现在检索结果中。非 EVM 链（Solana、Stellar 等）上的 USDC 没有 EIP-3009，要用各链自己的代付机制（如 Solana 的 fee payer）。"
+  },
+  {
+   "id": "TECH-10",
+   "claim": "【记忆，待核】截至记忆，Circle 在约 30 条链上原生发行 USDC，包括 Ethereum、Solana、Base、Arbitrum、OP Mainnet、Polygon PoS、Avalanche C-Chain、Stellar、Algorand、Aptos、Sui、NEAR、Noble、Hedera、Unichain、Linea、World Chain、Sonic、Sei、ZKsync、Celo、Ink、XDC、HyperEVM 等；Circle 的 L1 Arc 于 2026-09-16 主网上线；Circle 已于 2024 年停止 Tron 上的 USDC。Polygon 和 Arbitrum 上同时有原生 USDC 和桥接的 USDC.e，合约不同。",
+   "confidence": "low",
+   "source": "https://developers.circle.com/stablecoins/usdc-contract-addresses（WebFetch ENOTFOUND，未能核对）；Arc 见 STABLECOIN-INFRA",
+   "date": "记忆截至 2026 年",
+   "notes": "终端必须按（链，合约地址）白名单识别 USDC，不能按代币符号。USDC.e 能否被出金伙伴接收要单独确认。上线前须在 Circle 官方页核对链清单和合约地址。"
+  },
+  {
+   "id": "TECH-11",
+   "claim": "【已核实事实·间接】SBI VC Trade 支持从 MetaMask 等外部钱包入库 USDC；外部入库 100 万日元以上的 USDC 要更长时间才能反映，SBI 也可能为合规暂停外部 USDC 入库。两次检索都没有找到它的 USDC 支持哪些链；官方 FAQ 有「暗号資産の入出庫時のネットワークについて」「USDC の入庫について」两项，但正文未能取得。",
+   "confidence": "medium",
+   "source": "https://coinpost.jp/?p=600000 ; https://dime.jp/genre/2096364/ ; https://www.sbivc.co.jp/faqs/category/o2s71dam5m（WebFetch ENOTFOUND）",
+   "date": "2025-03 / 2026",
+   "notes": "【推论】在持牌伙伴设计(c) 下，链清单是硬约束：终端只能在伙伴支持的链上为 USDC 生成支付请求。SBI×アプラス 实证也没有公开用的是哪条链。这是首要待办（见 open_questions）。"
+  },
+  {
+   "id": "TECH-12",
+   "claim": "【已核实事实】SBI VC Trade 与アプラス于 2026-05-25 至 05-29 在大阪「名代 宇奈とと」本町店和「ビックカメラ」なんば店做了 USDC 店铺支付实证：用户扫店铺出示的 QR，从 MetaMask 等自托管钱包转出 USDC；SBI VC Trade 把 USDC 换成日元汇给アプラス，アプラス 再以日元入账给店铺，店铺不直接收 USDC。",
+   "confidence": "high",
+   "source": "https://corp.sbishinseibank.co.jp/ja/news/news/20260430a/main/01/link/260430_AP_VC_USDC.pdf ; https://prtimes.jp/main/html/rd/p/000000198.000059421.html ; demand.json DEMAND-11",
+   "date": "2026-04-30（发布）/ 2026-05-25～29（实施）",
+   "notes": "【推论】这就是持牌伙伴设计(c) 的现成模板：QR → 自托管钱包 → 持牌业者收币并兑换 → 支付业者以日元入账。所用链、确认等待时间、手续费、实证结果都未公布。INSCREEN 若走(c)，最直接的做法是成为这类结构里的终端和软件供应商。"
+  },
+  {
+   "id": "TECH-13",
+   "claim": "【已核实事实·媒体】Tether 于 2023-08 停止在 Omni、Kusama、Bitcoin Cash SLP 上铸造 USDT，2024-06 停止在 EOS、Algorand 上铸造；2025-07 宣布结束这五条链上的发行和赎回，后来放弃了冻结合约的计划，代币仍可转移，但不再发行或赎回。",
+   "confidence": "medium",
+   "source": "https://www.theblock.co/post/362269/tether-to-sunset-usdt-on-five-legacy-blockchains-including-algorand-and-omni ; https://cointelegraph.com/news/tether-drops-plan-to-end-usdt-on-five-chains ; https://www.theblock.co/post/245976/tether-discontinues-usdt-bitcoin-kusama-bitcoin-cash",
+   "date": "2023-08 / 2024-06 / 2025-07",
+   "notes": "【记忆，low】USDT 的主流链是 Tron 和 Ethereum，此外还有 Solana、TON、Avalanche 等；2026 年的链清单本轮未核实。【推论】日本境内没有查到合法的 USDT 出金通道（law.json LAW-08），日本商户原生收 USDT 会变成「收得到、换不了」。"
+  },
+  {
+   "id": "TECH-14",
+   "claim": "【记忆/推论】PYUSD 主要发行在 Ethereum 和 Solana；日本没有处理它的登记业者，访日游客的持有量也很小。不建议首发支持。",
+   "confidence": "low",
+   "source": "未核实-记忆；日本取扱情况见 law.json LAW-08/LAW-43",
+   "date": "2026-10-18",
+   "notes": "未查到≠不存在。等出现持牌出金伙伴后再评估。"
+  },
+  {
+   "id": "TECH-15",
+   "claim": "【已核实事实】JPYSC（SBI 新生信托银行发行的 3 号信托型日元稳定币）于 2026-06-24 发行，先行阶段只能在 SBI VC Trade 账户内使用，不能出库到外部钱包。",
+   "confidence": "high",
+   "source": "https://corp.sbishinseibank.co.jp/ja/news/news/20260624b/main/01/link/20260624_JPYSC.pdf ；law.json LAW-06",
+   "date": "2026-06-24",
+   "notes": "【推论】INSCREEN 现在无法用链上 QR 收 JPYSC，只能做「账户型」对接：由 SBI VC Trade 提供账户间转账 API，终端显示订单码，顾客在 SBI App 内确认。这需要 SBI 配合，属于设计(c)。"
+  },
+  {
+   "id": "TECH-16",
+   "claim": "【公司说法·已核实来源】Polygon PoS 的 Heimdall v2 升级（2025-07）把终局时间从约 1–2 分钟缩短到约 5 秒，并降低了 reorg 的概率和深度。2025-09 发生过一次 checkpoint 和终局延迟，后来以硬分叉修复。",
+   "confidence": "high",
+   "source": "https://www.polygon.technology/blog/polygon-5-second-fast-finality-upgrade ; https://cryptoapis.io/blog/350-polygon-heimdall-v2-hard-fork-advancing-performance-and-finality-on-the-pos-network",
+   "date": "2025-07 / 2025-09",
+   "notes": "5 秒终局是 Polygon 官方说法（high）；2025-09 事故的细节只来自二手报道（medium）；「reorg 深度上限 2 块」只见于单一来源，未采用。【推论】终端应把「终局延迟」当作可能发生的故障来处理：超时后提示换链或换支付方式，不能无限等待。"
+  },
+  {
+   "id": "TECH-17",
+   "claim": "【协议参数·记忆】各链与柜台相关的时间参数：Ethereum L1 每 12 秒一个 slot，经济终局约 2 个 epoch（约 12.8 分钟）；Polygon PoS 出块约 2 秒，终局约 5 秒（TECH-16）；Avalanche C-Chain 约 1–2 秒终局；Kaia 1 秒出块、BFT 即时终局；Solana slot 约 0.4 秒，confirmed 约 1 秒内，finalized 约 13 秒；Base、Arbitrum、OP 的排序器软确认 0.25–2 秒，批次写入 L1 并终局约需 15–30 分钟；Tron 3 秒出块，经 19/27 超级代表确认（solidified）约 1 分钟；Arc 宣称亚秒级确定性终局。",
+   "confidence": "medium",
+   "source": "协议常识（凭记忆）；Polygon 见 TECH-16；Arc 见 STABLECOIN-INFRA",
+   "date": "2026-10-18",
+   "notes": "本轮只核实了 Polygon 一项；其余为稳定的协议参数，但具体秒数随升级变化，上线前应实测。"
+  },
+  {
+   "id": "TECH-18",
+   "claim": "【估算，low】每笔转账的链上成本（随币价和拥堵变化）：Ethereum L1 上 ERC-20 转账约 4.5–6.5 万 gas，日元成本从几日元到数百日元不等；Polygon、Avalanche、Kaia、Base、Arbitrum、OP 通常不到 1 日元到数日元；Solana 基础费 5,000 lamports，若收款方还没有对应的代币账户，要另付约 0.002 SOL 的租金（商户应预先建好）；Tron 上 USDT 转账消耗能量，没有质押时要燃烧 TRX，每笔约 1–4 美元。",
+   "confidence": "low",
+   "source": "推论/记忆；本轮未检索实时 gas 数据",
+   "date": "2026-10-18",
+   "notes": "【假设】这些数字只用来判断量级。结论（推论）：Ethereum L1 不适合由 INSPAY 代付 gas，也不适合小额柜台支付；Tron 上的 USDT 对付款人也不便宜。"
+  },
+  {
+   "id": "TECH-19",
+   "claim": "【推论·设计】柜台确认策略（按链和金额分层）：(1) 不接受只在 mempool 里的交易（可被替换或丢弃）；(2) 有确定性终局的链（Polygon、Avalanche、Kaia、Arc）等到终局再放行，正常约 1–5 秒；(3) Solana：约 3 万日元以下以 confirmed 为准，以上等 finalized；(4) L2：以排序器收录为准，并设单笔上限（如 5 万日元，假设）；(5) Ethereum L1：小额收录 1–2 个块即可，大额等终局，不用于无人设备；(6) Tron：小额 1 块，大额等 solidified。所有阈值都在服务端可调，并按商户的风险偏好配置。",
+   "confidence": "low",
+   "source": "推论，依据 TECH-16/17/18",
+   "date": "2026-10-18",
+   "notes": "阈值数字都是假设，需要结合 reorg 历史数据和商户的损失承受度定。无人设备只用(2)类链。"
+  },
+  {
+   "id": "TECH-20",
+   "claim": "【已核实事实·公司页】Circle Paymaster 让用户用 USDC 付 gas，已在 Arbitrum、Avalanche、Base、Ethereum、OP Mainnet、Polygon PoS、Unichain 七条链上线；支持 ERC-4337 v0.7/v0.8 智能账户和经 EIP-7702 的 EOA；只支持 USDC，付款人须在该链上持有 USDC。产品页称自 2025-07-01 起向终端用户加收 gas 成本的 10%，开发者文档却说只在 Arbitrum 和 Base 收取，两者矛盾。",
+   "confidence": "high",
+   "source": "https://www.circle.com/paymaster ; https://developers.circle.com/paymaster ; https://www.circle.com/blog/circle-paymaster-expands-now-supporting-eoas-and-7-blockchains",
+   "date": "2025-05-08（扩展到 7 条链的博客）",
+   "notes": "一手页面出现在检索结果中，但 2026 年的链清单和费用未确认。不支持 JPYC：JPYC 要做免 gas，只能用 EIP-3009 或 permit 加自建 relayer，或通用的 4337 paymaster（如 Pimlico，未核实）。"
+  },
+  {
+   "id": "TECH-21",
+   "claim": "【标准·记忆】EIP-7702 随以太坊 Pectra 升级（2025-05-07）上线，允许 EOA 把执行委托给合约代码，从而支持批量交易和代付 gas；ERC-4337 用 bundler 加 paymaster 实现智能账户代付。Kaia 链原生有「手续费代付」交易类型（fee delegation），由代付方另行签名支付 gas。",
+   "confidence": "medium",
+   "source": "https://eips.ethereum.org/EIPS/eip-7702 ; https://eips.ethereum.org/EIPS/eip-4337 ; Kaia 文档（未抓取）",
+   "date": "2025-05-07（Pectra）",
+   "notes": "凭记忆，本轮未抓取。各钱包对 7702 的支持程度不一。Kaia 的 fee delegation 要钱包配合构造交易，Unifi 等钱包是否支持未查到。"
+  },
+  {
+   "id": "TECH-22",
+   "claim": "【推论·设计】谁付 gas：(a) 付款人自付：最简单，但付款人必须持有该链的原生币（ETH、POL、AVAX、KAIA、SOL、TRX），这对只在交易所持有 USDT 的游客是很大的门槛；(b) 商户或 INSPAY 代付：付款人签 EIP-3009 授权（JPYC 和 EVM 上的 USDC 都支持），relayer 提交并付 gas，在 Polygon、Avalanche、Kaia、Base 上每笔通常不到 1 日元到数日元（假设）；Solana 上由 transaction request 指定商户为 fee payer；(c) 用代币付 gas：Circle Paymaster（只限 USDC），或 4337 paymaster。建议：INSPAY 只在低费链上代付，成本计入月费；Ethereum L1 不代付。",
+   "confidence": "low",
+   "source": "推论，依据 TECH-07/09/18/20/21",
+   "date": "2026-10-18",
+   "notes": "代付 gas 让付款人不必持有原生币，是相对「直接转账」最大的 UX 改善，也是做到「0% 手续费」又不让付款人吃亏的前提。"
+  },
+  {
+   "id": "TECH-23",
+   "claim": "【推论·关键合规性质】EIP-3009 授权由付款人签名，签名里锁定了 to = 商户地址和 value。INSPAY 作为 relayer 只能选择提交或不提交，改不了收款人，也挪用不了资金；资金从付款人地址直接到商户地址，INSPAY 自始不经手。这个性质符合设计(a)「不持有、不管理」的要求。反过来，如果把 to 设为 INSPAY 的地址再转付给商户，就落入设计(b)。",
+   "confidence": "low",
+   "source": "推论，依据 EIP-3009 与 law.json LAW-40/LAW-41",
+   "date": "2026-10-18",
+   "notes": "须律师确认：只代付 gas、提交别人签好的授权，是否可能被视为媒介或為替取引（推论认为不会，但没有金融庁明文）。relayer 的 gas 钱包只放少量原生币，用云 KMS/HSM 管理。"
+  },
+  {
+   "id": "TECH-24",
+   "claim": "【推论】碰一碰（NFC）的三种做法：(1) 终端当 NFC 标签，用 NDEF URI 记录发出与 QR 相同的支付链接（solana:、ethereum:，或 https 通用链接）。Android 可以直接拉起钱包；iOS 后台读标签主要处理 https 通用链接，自定义 scheme 受限，所以要用 https 通用链接或 App Clip 中转。(2) 付款人刷稳定币 Visa/Mastercard 卡（Slash Card、RedotPay、Bitget 卡等），这走的是 EMV 收单，商户费率 2–3%，不是 0%。(3) 钱包用 HCE 模拟卡：加密钱包之间没有收单标准，INSCREEN 没法通用受理。",
+   "confidence": "low",
+   "source": "推论；稳定币卡见 demand.json DEMAND-14/DEMAND-30",
+   "date": "2026-10-18",
+   "notes": "建议：首发只做 (1)，作为「扫码的另一种触发方式」，体验提升有限但成本低。(2) 要接卡收单（属于渠道 1），不在 0% 模型里。"
+  },
+  {
+   "id": "TECH-25",
+   "claim": "【记忆，待核】Apple 自 iOS 18.1（2024-10）起，在澳大利亚、巴西、加拿大、日本、新西兰、英国、美国开放 NFC 与 Secure Element API，让第三方 App 做非接触支付，但要取得 entitlement 并签商业协议。",
+   "confidence": "low",
+   "source": "https://developer.apple.com/support/nfc-se-platform/（未抓取）",
+   "date": "2024-10（记忆）",
+   "notes": "未核实。即使开放，加密钱包在 iPhone 上做「碰一下付稳定币」，也要钱包和终端两边按私有协议实现，短期内不现实。"
+  },
+  {
+   "id": "TECH-26",
+   "claim": "【推论·设计】离线分三种情况：(i) 终端离线、付款人在线：付款人自己广播交易，但终端无法确认到账，不能安全交货；对策是终端配 LTE 备份，或者事后核对并由商户承担风险。(ii) 付款人离线、终端在线：付款人钱包离线签一笔 EIP-3009 授权，经付款人出示的 QR（CPM）、NFC 或 BLE 交给终端，终端在线筛查、提交，几秒内就能终局，这是最可行的「离线支付」。(iii) 双方都离线：终端只能先收下签名授权、事后再提交，结算没有保证。transfer request 和 EIP-681 都要求付款人在线。",
+   "confidence": "low",
+   "source": "推论，依据 EIP-3009 与 Solana Pay 规范",
+   "date": "2026-10-18",
+   "notes": "(ii) 没有跨钱包标准：目前没有约定「付款人出示签名授权 QR」格式的 EIP，必须用 INSPAY 自己的钱包或 SDK，或与合作钱包共同制定格式。如果 INSPAY 的核心卖点是「离线支付」，就绕不开自有钱包或钱包 SDK。"
+  },
+  {
+   "id": "TECH-27",
+   "claim": "【推论·风险】预签授权不等于已付款。在双方离线的情况(iii) 下：(1) 付款人可以在终端提交前把余额花掉（对余额的「双花」），授权提交时会因余额不足失败；(2) 付款人可以先调用 cancelAuthorization(nonce) 让授权作废；(3) 发行方可能冻结付款人地址；(4) 授权会过 validBefore 失效。nonce 是随机的，同一授权不能重放，但多笔授权可以同时指向同一份余额。缓解手段：单笔和单日限额（如 ≤5,000 日元，假设）、只对已注册的付款人开放、把资金预先锁进托管合约再发限额凭证（终端在安全芯片里校验签名和计数器）、按风险评分决定是否接受；由商户还是 INSPAY 承担损失必须事先写进合同。",
+   "confidence": "low",
+   "source": "推论，依据 https://eips.ethereum.org/EIPS/eip-3009",
+   "date": "2026-10-18",
+   "notes": "如果 INSPAY 为离线交易提供担保，就变成了信用或担保业务，可能带来额外的监管和资本问题（见 TECH-28）。"
+  },
+  {
+   "id": "TECH-28",
+   "claim": "【推论·合规】预存额度或托管合约型离线方案：资金如果锁在 INSPAY 能单方面放行的合约或账户里，可能构成「管理」或为替取引；以日元额度形式预付的，还可能落入前払式支払手段。只有放行规则完全由合约代码和商户密钥决定、INSPAY 无法单独动用时，才可能维持设计(a) 的定性。",
+   "confidence": "low",
+   "source": "推论，依据 law.json LAW-40/LAW-41",
+   "date": "2026-10-18",
+   "notes": "须律师意见确认。建议首发不做双方离线；只做情况(ii)，并在终端上明确提示需要联网。"
+  },
+  {
+   "id": "TECH-29",
+   "claim": "【推论·设计】链上支付没有 chargeback，退款是一笔新的出账，必须由商户密钥签名，商户地址上还要有 gas。退款应打到付款人指定的地址，而不是默认原路退回：从交易所提现付款时，from 是交易所的汇总热钱包，退到那里可能无法入账。USDC 退款要事先定规则：按原 USDC 数额退（汇率风险在商户），还是按日元等值退；JPYC 按面额退，没有汇率问题。部分退款、超付或少付的处理也要定规则。",
+   "confidence": "low",
+   "source": "推论，依据 law.json LAW-38",
+   "date": "2026-10-18",
+   "notes": "在设计(a) 下，INSPAY 不能替商户退款，只能生成「退款请求」，由商户在自己的钱包里签名；或者商户授权一把只能退款、限额不超过原交易的 session key（ERC-4337 或 7702 智能账户）。"
+  },
+  {
+   "id": "TECH-30",
+   "claim": "【推论·设计】商户私钥托管有三种选择：(a) 商户自托管：终端上只放收款地址或 xpub，不放私钥，归集、退款、换汇都在商户自己的钱包里做（硬件钱包或多签），INSPAY 的监管暴露最低；(b) MPC 或智能账户：商户持有控制权，INSPAY 只持有不能单独签名的策略份额或受限 session key（如退款上限、只能转到白名单出金地址）；如果 INSPAY 的份额能单独动用资金，可能构成「管理」；(c) 托管方持有：商户在持牌伙伴开法人账户，收款地址由伙伴控制（设计 c），或由 INSPAY 托管（设计 b，要登録）。",
+   "confidence": "low",
+   "source": "推论，依据 law.json LAW-40/LAW-41/LAW-42",
+   "date": "2026-10-18",
+   "notes": "小商户自己管助记词是现实中的最大运维风险（丢钥匙等于丢钱）。可以用「商户 passkey 加社交恢复」的智能账户降低门槛，但要确认 INSPAY 不持有可单独签名的份额。"
+  },
+  {
+   "id": "TECH-31",
+   "claim": "【推论·设计】终端上的密钥卫生：终端（尤其是无人设备）不应持有任何能动用货款的私钥，只保存商户收款地址或 xpub，以及终端身份密钥（用于向 INSPAY 云端认证、签订单）。relayer 的 gas 钱包放在云端 KMS/HSM，只放少量原生币，并设自动补充上限。终端被盗或被改时，最坏后果应只是「收款地址被替换」，所以订单要由云端签名，终端显示的收款地址要可以校验（钱包端显示商户名或 ENS，或做地址签名校验）。",
+   "confidence": "low",
+   "source": "推论",
+   "date": "2026-10-18",
+   "notes": "QR 被替换（贴假码）是线下 QR 支付的常见欺诈；动态 QR 加订单签名可以缓解。"
+  },
+  {
+   "id": "TECH-32",
+   "claim": "【二手资料，low】JPYC 换日元：商户在 JPYC EX 开账户，把 JPYC 送到赎回地址后，按面额以日元汇入登记的银行账户。解说文章称 JPYC EX 的发行和赎回手续费免费（银行转账费和 gas 可能由用户负担），赎回最低 3,000 日元起，每次上限 100 万日元；法人账户的条件未查到。",
+   "confidence": "low",
+   "source": "https://www.issoh.co.jp/tech/details/11180/ ；law.json LAW-27；上限见 TECH-08",
+   "date": "2026",
+   "notes": "【推论】JPYC 按面额收、按面额赎，没有汇率差额（law.json LAW-31）。商户一侧自动赎回，可以由商户自己的智能账户按规则执行，不经过 INSPAY。"
+  },
+  {
+   "id": "TECH-33",
+   "claim": "【推论，依据已核实事实】USDC 换日元：日本境内唯一确认能处理 USDC 的電子決済手段等取引業者是 SBI VC Trade，模板是 SBI×アプラス 实证（TECH-12）。USDT 和 PYUSD 没有查到境内出金通道（law.json LAW-08），只能走境外出金，而 INSPAY 境外实体收币后向日本商户付日元，可能落入 2026-06-01 起的クロスボーダー収納代行规制（law.json LAW-41）。所以首发不原生收 USDT；持 USDT 的游客应引导到已有通道（TECH-34）。",
+   "confidence": "low",
+   "source": "推论，依据 TECH-11/12、law.json LAW-08/LAW-24/LAW-41",
+   "date": "2026-10-18",
+   "notes": "外国稳定币每笔约 100 万日元上限的府令原文至今未找到（law.json LAW-24），对 B2B 归集是否适用也不清楚。"
+  },
+  {
+   "id": "TECH-34",
+   "claim": "【媒体报道·多源】PayPay 自 2026-09-30 起经 HIVEX 接入 Binance Pay：海外居住的 Binance Pay 用户可在全国 PayPay 加盟店用 USDT 等付款，商户收日元，不需要另行申请，用户免网络费；用户侧 KYC 和制裁筛查由 Binance Pay 负责。",
+   "confidence": "medium",
+   "source": "https://k-tai.watch.impress.co.jp/docs/news/2144448.html ; https://paymentnavi.com/?p=183010 ；demand.json DEMAND-24",
+   "date": "2026-09-30",
+   "notes": "【推论】持币量最大的一类游客（交易所用户）在日本的最佳路径已是 PayPay 码，而不是链上转账。INSCREEN 在技术上应做多通道：原生链上通道加 QR 网关通道（PayPay、Alipay+、HIVEX），稳定币原生通道主要服务自托管钱包用户和 JPYC 用户。"
+  },
+  {
+   "id": "TECH-35",
+   "claim": "【推论·设计】收款时的地址筛查：(1) 直接转账模式只能事后筛查，钱已经到了商户地址，要有隔离和退回预案（但退回本身可能违反资产冻结规制，要先问律师）；(2) EIP-3009 模式可以在提交前筛查：终端或云端先查 from 地址，命中就拒绝提交，资金根本不会进来，这是 EIP-3009 路线的另一大优点；(3) 同时查发行方黑名单（USDC 的 isBlacklisted；JPYC Prepaid v2 有 blocklist，新合约的冻结函数未核实）；(4) 筛查结果和版本写进每笔交易的记录。",
+   "confidence": "low",
+   "source": "推论，依据 law.json LAW-21/LAW-22、TECH-07/09",
+   "date": "2026-10-18",
+   "notes": "按 law.json LAW-22，商户没有法定筛查义务，但受外為法资产冻结支付规制约束，也可能收到被冻结的币，所以筛查应做成产品功能。日本财务省是否公布制裁对象的加密地址，未查到。"
+  },
+  {
+   "id": "TECH-36",
+   "claim": "【记忆，low】筛查供应商：Chainalysis 提供免费的 Sanctions Screening API 和链上 Sanctions Oracle（只覆盖制裁名单）；TRM Labs、Elliptic、Chainalysis KYT 提供按风险类别的付费筛查，单次延迟一般为数百毫秒级，价格不公开。",
+   "confidence": "low",
+   "source": "凭记忆，本轮未检索",
+   "date": "2026-10-18",
+   "notes": "免费 API 只够满足「不收 OFAC 名单地址」的底线；如果要做风险评分（混币器、诈骗、暗网），要付费，每笔成本未知，会直接影响「0% 手续费」的成本结构（TECH-50）。"
+  },
+  {
+   "id": "TECH-37",
+   "claim": "【推论，依据部分事实】Travel Rule 对终端的影响：顾客从日本交易所转账到商户的自托管地址时，该地址属于 unhosted wallet，交易所要向顾客收集收款方信息，可能延迟、限制或拦截转账（law.json LAW-20）。改用持牌伙伴控制的收款地址（设计 c），就是 VASP 之间的转账，通过 TRUST、Sygna 等协议传递信息，可能更顺。从海外交易所付款则受其所在法域的规则约束。",
+   "confidence": "low",
+   "source": "推论，依据 law.json LAW-17/LAW-20、STABLECOIN-INFRA（日本 Travel Rule）",
+   "date": "2026-10-18",
+   "notes": "柜台场景的含义：从交易所直接付款的成功率和等待时间不可控，主路径应面向自托管钱包。"
+  },
+  {
+   "id": "TECH-38",
+   "claim": "【推论·设计】USDC 的报价：终端按日元标价换算成 USDC 数额时，INSPAY 不应作为交易对手报价（否则可能被视为売買，law.json LAW-40），而应显示公开数据源或持牌伙伴的参考汇率，由商户设定加价和容差；报价有效期 60–120 秒，超时重新报价；规定少付、超付的容差和处理办法。会计入账按交易日 TTM 换算（law.json 的税务事实），并记下所用的汇率来源和时间戳。",
+   "confidence": "low",
+   "source": "推论，依据 law.json LAW-40 及税务部分",
+   "date": "2026-10-18",
+   "notes": "JPYC 以日元计价、按面额收款，不需要报价，这是首发优先 JPYC 的技术理由之一。"
+  },
+  {
+   "id": "TECH-39",
+   "claim": "【推论·设计】每笔交易至少要记录：订单号、日元价格、币种、链、合约地址、代币数额、汇率及其来源和时间、tx hash、区块时间、from 地址、筛查结果、确认级别、gas 由谁付和金额、退款关联、终端 ID。每日对账要核对链上到账和订单，按 freee、マネーフォワード、弥生 能导入的 CSV 或 API 导出；インボイス 按日元开具。電子帳簿保存法要求電子取引数据以电子方式保存（2024-01 起全面义务化），导出和保存功能要满足检索要件。",
+   "confidence": "low",
+   "source": "推论；電子帳簿保存法凭记忆，见 https://www.nta.go.jp/law/joho-zeikaishaku/sonota/jirei/index.htm（未抓取）",
+   "date": "2026-10-18",
+   "notes": "电帳法的具体要件（真实性、可检索性）须由税理士确认。USDC 在法人税上的分类未找到国税庁明文（law.json LAW-33）。"
+  },
+  {
+   "id": "TECH-40",
+   "claim": "【推论·设计】POS 集成有四种模式：(a) 单机：在 INSCREEN 上手输金额；(b) 半集成：POS 经局域网、USB 或蓝牙把金额发给终端，终端回传结果（类似卡终端的 ECR 协议）；(c) 云集成：POS 后台调用 INSPAY API 建 payment_intent，终端显示 QR，经 webhook 回传结果；(d) 电商、预约：同一 API 生成支付链接。建议先做 (a) 和 (c)，(b) 按大客户的 POS 厂商逐家做。",
+   "confidence": "low",
+   "source": "推论",
+   "date": "2026-10-18",
+   "notes": "日本主流 POS（スマレジ、Airレジ 等）的外部决济接口要逐家确认，未检索。"
+  },
+  {
+   "id": "TECH-41",
+   "claim": "【推论·设计】无人设备（自动售货机、游戏机）：(1) 只用确定性终局链（Polygon、Avalanche、Kaia、Arc），等待 ≤5 秒，超时即取消；(2) EIP-3009 模式下，可以先校验签名和余额，提交并终局后再出货；出货失败时，要由商户的受限退款 key 自动退款，或者用托管合约（付款进合约，出货确认后放行，超时自动退回），但放行权不能在 INSPAY 手里（TECH-28）；(3) 接口：国际上自动售货机的无现金外设多用 MDB/ICP（NAMA）协议，日本机型和游戏机的接口规格要和机台厂商确认；(4) 小额高频，gas 代付成本必须在 1 日元以下量级，否则吃掉收益。",
+   "confidence": "low",
+   "source": "推论；MDB 凭记忆",
+   "date": "2026-10-18",
+   "notes": "日本自动售货机和游戏机（如脉冲投币信号、各厂私有协议）的接口规格未查到，是硬件开发的关键前提。"
+  },
+  {
+   "id": "TECH-42",
+   "claim": "【推论/记忆】钱包兼容（需逐个实测）：MetaMask（EVM；移动端能扫 EIP-681；可加 Polygon、Avalanche、Kaia；支持 EIP-712 签名；也支持 WalletConnect）；Trust Wallet（EVM、Tron、Solana、TON；部分支持 EIP-681；支持 WalletConnect）；Phantom、Solflare（原生支持 Solana Pay；Phantom 也支持 Base、Polygon 等 EVM 链）；Coinbase Wallet / Base App、OKX Wallet、Bitget Wallet（多链，各有自己的扫码支付功能）；Unifi（LINE NEXT，支持 JPYC，见 TECH-44）。WalletConnect 能覆盖大部分自托管钱包，是 INSCREEN 最省力的兼容层（TECH-05）。",
+   "confidence": "low",
+   "source": "凭记忆；SBI×アプラス 实证以 MetaMask 为例（TECH-12）",
+   "date": "2026-10-18",
+   "notes": "各钱包对 EIP-681 金额和 chainId 的处理、对 Kaia JPYC 的显示、离线签名能力都要实测。没有一种格式能让所有钱包都扫得通，所以终端要同时提供多种格式（WalletConnect、EIP-681、Solana Pay），并按币和链自动选择。"
+  },
+  {
+   "id": "TECH-43",
+   "claim": "【推论】交易所 App（Binance、OKX、Bybit、Upbit、Bithumb、Coinbase 等）大多不能直接「扫一个链上支付 QR 并按准确金额付款」：用户要走提现流程，自己填地址、选网络、填金额，要付提现手续费，还可能遇到风控审核、地址白名单和 Travel Rule 带来的延迟。这在柜台上很难在 30 秒内完成。Binance 用户已经有 PayPay×HIVEX 的路径（TECH-34）。",
+   "confidence": "low",
+   "source": "推论；Bitget 交易所 Scan to Pay 只扫特定国家码，见 ALIPAY-VERIFY",
+   "date": "2026-10-18",
+   "notes": "这是「原生稳定币终端」能覆盖的人群远小于「稳定币持有者」的技术原因，与 demand.json 的结论一致。"
+  },
+  {
+   "id": "TECH-44",
+   "claim": "【媒体报道/公司说法】LINE NEXT 的 Unifi 钱包自 2026-05-22 起正式支持 JPYC，JPYC 社称 Unifi 目前占 JPYC 流通量的最大份额；2026-06-30 起奢侈品电商 MOLTS 引入 Unifi Pay，可用 JPYC 支付。",
+   "confidence": "medium",
+   "source": "https://coinpost.jp/?p=709623 ; https://paymentnavi.com/?p=176452 ；demand.json DEMAND-07",
+   "date": "2026-05-22 / 2026-06-30",
+   "notes": "【推论，low】Unifi 很可能基于 Kaia（LINE 系链），与 JPYC 在 2026-05 加入 Kaia 的时间吻合，但本轮未核实。Unifi 能扫哪种支付请求格式、是否支持 EIP-3009 签名、是否开放 SDK，都未查到。如果要吃到最大的 JPYC 用户群，Unifi 的兼容性是首要的 BD 和技术事项。"
+  },
+  {
+   "id": "TECH-45",
+   "claim": "【推论·参考架构】INSCREEN 由以下组件构成：终端侧是支付 App，负责生成多格式支付请求（WalletConnect 会话、EIP-681、带 reference 的 Solana Pay、EIP-3009 签名请求）、展示金额和汇率、发出 NFC NDEF、显示结果和打印小票、在离线时排队，并持有终端身份密钥；云端有订单服务（订单签名、报价）、链监听和索引（多 RPC 冗余）、匹配引擎、确认策略引擎、EIP-3009 relayer 和 gas 钱包、筛查适配层、汇率服务、对账账本、商户后台和会计导出、POS API 和 webhook、伙伴适配层（SBI VC Trade、JPYC EX、HIVEX 或 PayPay 等 QR 网关）。",
+   "confidence": "low",
+   "source": "推论",
+   "date": "2026-10-18",
+   "notes": "三种监管设计共用这套组件，区别只在「收款地址由谁控制」和「兑换由谁做」（TECH-46/47/48）。"
+  },
+  {
+   "id": "TECH-46",
+   "claim": "【推论·设计(a) 非托管】流程：POS 或店员输入金额 → 云端生成签名订单（invoiceId、日元价、币、链、商户地址）→ 终端展示 QR → 付款人钱包二选一：① 签 EIP-3009 授权（to = 商户地址），云端筛查 from 后由 relayer 提交、代付 gas；② 直接转账，由索引器按 reference 或唯一金额匹配，事后筛查 → 等到终局（Polygon、Kaia、Avalanche 约 1–5 秒）→ 终端显示成功 → 每日对账导出。货款直接进商户自己的钱包；退款和换汇由商户自己做，或由商户自己的智能账户规则自动转给 JPYC EX、SBI VC Trade。INSPAY 只收月费或 SaaS 费。",
+   "confidence": "low",
+   "source": "推论，依据 TECH-23 与 law.json LAW-40/LAW-43",
+   "date": "2026-10-18",
+   "notes": "这是牌照要求最低、也最贴合「0% 手续费 + 月费」的设计。代价是：商户要自己管钥匙、自己换汇、自己承担 USDC 的汇率风险；INSPAY 不能报价、不能托管、不能替商户退款。"
+  },
+  {
+   "id": "TECH-47",
+   "claim": "【推论·设计(b) 由 INSPAY 托管】流程：付款人转到 INSPAY 控制的收款地址（每商户或每单一个）→ INSPAY 用 MPC 或 HSM 托管 → 内部账本记商户余额 → INSPAY 在自家或合作交易所换成日元 → 银行转账给商户。技术上要新增：托管系统、客户资产分别管理的账本、KYC/KYB、Travel Rule（TRUST、Sygna）、外為法确认、审计日志、国内保有。监管上要電子決済手段等取引業登録；向商户付日元的部分可能还要資金移動業登録（law.json LAW-41）。",
+   "confidence": "low",
+   "source": "推论，依据 law.json LAW-41",
+   "date": "2026-10-18",
+   "notes": "体验最好（商户只收日元、INSPAY 能统一退款和报价），但牌照、资本和合规的成本最高，不适合首发。"
+  },
+  {
+   "id": "TECH-48",
+   "claim": "【推论·设计(c) 持牌伙伴】流程：商户以自己的名义在伙伴处开法人账户 → 伙伴为每个商户（最好每单）分配收款地址，或通过 API 建支付 → 终端显示伙伴的收款请求 → 付款人转账 → 伙伴用 webhook 回传确认 → 伙伴换成日元，入账商户（或像实证那样经アプラス）→ INSPAY 读取伙伴 API 做对账。INSPAY 只提供系统；如果替伙伴招揽商户，要登録电子决济手段・暗号资产服务仲介业（law.json LAW-42）。变体(a)+(c)：先收进商户自托管地址，再由商户自己的规则归集到伙伴的入库地址。",
+   "confidence": "low",
+   "source": "推论，依据 TECH-11/12 与 law.json LAW-42",
+   "date": "2026-10-18",
+   "notes": "技术依赖全在伙伴：支持哪些链、能否每单分配地址、确认速度（SBI 入库 ≥100 万日元会变慢，小额速度未知）、API 和回调能力，目前都未查到。"
+  },
+  {
+   "id": "TECH-49",
+   "claim": "【推论·自建或采购】自建（差异化和合规边界所在）：终端支付 App、订单签名与匹配引擎、确认策略引擎、EIP-3009 relayer 及 gas 资金管理、离线签名协议和付款方钱包 SDK、商户后台与对账和会计导出、POS/ECR 与 MDB 接口、伙伴适配层。采购：RPC 和索引（Alchemy、Infura、QuickNode、Helius 等多家冗余）、制裁和 KYT 筛查（Chainalysis、TRM、Elliptic）、钱包连接层（WalletConnect SDK 或 WalletConnect Pay）、4337 paymaster 和 bundler（Circle Paymaster、Pimlico 等，可选）、云 KMS/HSM（只管 relayer 的 gas 钱包）、日元兑换和出金（SBI VC Trade、JPYC EX）、QR 网关通道（PayPay、HIVEX、Alipay+）。只有设计(b) 才需要采购 MPC 托管（Fireblocks、BitGo 一类）和 Travel Rule 方案。",
+   "confidence": "low",
+   "source": "推论",
+   "date": "2026-10-18",
+   "notes": "供应商名单是举例，没有做选型比较，价格也未查到。"
+  },
+  {
+   "id": "TECH-50",
+   "claim": "【推论·假设】「0% 手续费」的真实成本（设计 a）：没有收单方抽成，0% 在技术上可行；但 INSPAY 要承担每笔的 gas 代付（低费链上假设 <1 日元）、筛查（价格未知）、RPC 和索引、服务器和支持，商户还要自担换汇点差、出金的银行转账费、退款 gas 和 USDC 的汇率风险。月费 2,000 日元是创始人的暂定数字（假设），能否覆盖这些成本，取决于付费筛查的单价和每个商户的交易笔数。",
+   "confidence": "low",
+   "source": "推论；月费为假设，见 fees.json、demand.json DEMAND-40",
+   "date": "2026-10-18",
+   "notes": "建议在成本模型里把筛查单价和 RPC 费用设为变量，按每商户每月 10、50、200 笔做敏感性测算，交给财务模型。"
+  },
+  {
+   "id": "TECH-51",
+   "claim": "【假设】INSCREEN 的硬件规格未知。本设计假设它是 Android 终端，带摄像头（扫付款人出示的码）、屏幕（显示 QR）、NFC、Wi-Fi 或 LTE、安全存储（终端身份密钥），无人版另有 MDB 或脉冲接口。",
+   "confidence": "low",
+   "source": "假设（research 文件中没有 INSCREEN 规格）",
+   "date": "2026-10-18",
+   "notes": "如果没有摄像头，就不能做付款人离线（CPM）模式；如果没有 LTE，就要把终端离线当作常态来设计。"
+  },
+  {
+   "id": "TECH-52",
+   "claim": "【推论·首发建议】币和链：JPYC 上 Polygon、Kaia、Avalanche（Ethereum 只收不代付）；USDC 上伙伴支持的链（待确认）加上 Polygon、Base、Solana，面向自托管钱包的游客；USDT 不原生收，引导到 PayPay×HIVEX（Binance Pay）等已有通道；PYUSD 不支持；JPYSC 只有和 SBI 合作才能做账户型对接。主路径用 EIP-3009 签名加 INSPAY 代付 gas，兜底用直接转账加 reference 或唯一金额，兼容层用 WalletConnect。",
+   "confidence": "low",
+   "source": "推论，综合 TECH-06/07/11/13/15/19/22/34",
+   "date": "2026-10-18",
+   "notes": "选 Polygon 和 Kaia 的依据是终局约 5 秒以内、费用低、Unifi（推测基于 Kaia）的用户群；各链 JPYC 的实际流通分布未查到，应在上线前用链上数据核对。"
+  },
+  {
+   "id": "TECH-53",
+   "claim": "【媒体/公司说法】支付专用链：Circle 的 Arc（2026-09-16 主网，用 USDC 付 gas、亚秒级终局、兼容 EVM，SBI Group 是创始验证者之一）和 Stripe 与 Paradigm 的 Tempo（2026-03-18 主网）都面向支付设计。",
+   "confidence": "medium",
+   "source": "STABLECOIN-INFRA.json（Arc、Tempo 两条均为 medium）",
+   "date": "2026-09-16 / 2026-03-18",
+   "notes": "【推论】钱包支持和持有量还很少，列入观察名单，不进首发。SBI 是 Arc 验证者，日后若 SBI VC Trade 支持 Arc 上的 USDC 出入库，Arc 可能成为设计(c) 的首选链（未核实）。"
+  }
+ ],
+ "key_claims": [
+  "TECH-06",
+  "TECH-07",
+  "TECH-12",
+  "TECH-19",
+  "TECH-23",
+  "TECH-27",
+  "TECH-33",
+  "TECH-43",
+  "TECH-46",
+  "TECH-52"
+ ],
+ "open_questions": [
+  "SBI VC Trade 的 USDC 支持哪些链（Ethereum、Polygon、Solana、Arc 等）？法人账户能否为每个商户或每一单分配入库地址，有没有回调 API？小额入库要多久才反映？SBI×アプラス 实证用的是哪条链、平均确认时间多少、费用多少？",
+  "JPYC 社能否用官方文档确认新合约的 EIP-3009 和 EIP-2612 支持、EIP-712 domain、冻结和黑名单函数？四条链上 JPYC 的流通量各占多少？JPYC EX 法人账户能否用 API 自动赎回，单日上限多少？",
+  "LINE NEXT Unifi 钱包基于哪条链？能扫哪种支付请求格式，是否支持 EIP-712/EIP-3009 签名和 WalletConnect，是否开放 SDK 或商户接入？",
+  "付款人离线签名（CPM）没有跨钱包标准：INSPAY 是否有、或打算做自有钱包或 SDK？合作钱包是否愿意支持同一种格式？",
+  "法律定性须律师确认：INSPAY 只代付 gas、提交付款人签好的 EIP-3009 授权，是否构成媒介或為替取引？由 INSPAY 部署、按合约规则放行的托管合约，以及离线预存额度，是否构成管理、資金移動业或前払式支払手段？",
+  "WalletConnect Pay 是否在日本提供服务，费用多少？资金是否经 PSP 托管（这决定它属于设计 a 还是 b）？Ingenico 的部署在 2026 年有没有实际商户量？",
+  "制裁和 KYT 筛查的单价（Chainalysis、TRM、Elliptic）多少，是否支持日本外為法名单？日本财务省是否公布制裁对象的加密资产地址？命中后能否退回（退回本身是否违反支付规制）？",
+  "INSCREEN 的硬件规格：操作系统、摄像头、NFC、LTE、安全芯片如何？无人版对接日本自动售货机和游戏机用什么接口（MDB、脉冲或厂商私有协议）？",
+  "USDC 原生链清单和合约地址、Circle Paymaster 2026 年的链与费率、Polygon 和 Kaia 的历史终局延迟和 reorg 记录，都要在上线前用一手页面和链上数据核对。",
+  "電子帳簿保存法对链上交易记录的保存要件，以及 USDC 收款的会计和税务分类，须由税理士确认，再定导出格式。"
+ ]
+}

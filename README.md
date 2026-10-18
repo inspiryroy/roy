@@ -41,6 +41,7 @@ Phase 1 选**泰国**（理由见 [05 章 5.1](docs/05-country-playbooks.md)、[
 | [08 路线图](docs/08-roadmap.md) | 分阶段计划、阶段门槛、上线前置（认证、测试与运营）、最便宜的下一步验证 |
 | [09 资料来源](docs/09-sources.md) | 关键事实来源与置信度 |
 | [10 单位经济](docs/10-economics.md) | 每笔交易的资金与收入瀑布、成本假设、敏感性、法币基准对照（测算框架） |
+| [11 INSCREEN 受理稳定币](docs/11-inscreen-stablecoin-acceptance.md) | 日本商户经 INSCREEN 收稳定币：三类通道对比、非托管做法、商户成本与单台经济、竞品（Netstars Stablecoin Pay、PayPay×HIVEX×Binance Pay） |
 | [12 东南亚动态码需求](docs/12-inscreen-sea-dynamic-qr.md) | 静态码升级动态码的需求有多强、现有音箱与设备、INSCREEN 的接入方式与商业模式 |
 
 ## 代码

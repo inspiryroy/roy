@@ -1,0 +1,372 @@
+{
+  "summary": "结论（需求侧）：在日本用原生稳定币向商户付款的人群很小，而且最大的一块已经被现有通道覆盖。(1) 访日游客：2025 年 4,268 万人次，消费 9 兆 4,549 億円；2026 年 1–8 月 2,763 万人次（-2.7%），中国客月度同比约 -60%，韩国、台湾创新高。稳定币或加密使用率高的客源（越南、菲律宾、印尼、泰国，Chainalysis 2025 前 10 名中有越、印尼、菲）合计约 340 万人次/年，只占访日总数约 8%；访日人数最多的韩国有约 1,629 万个交易所账户（2025-02），但韩国客有 Alipay+/卡等成熟替代。至今没找到“游客想用稳定币付款”的调查证据，现有信号都是供给方的押注。(2) 最关键的替代：2026-09-30 起，PayPay 经 HIVEX 接入 Binance Pay，海外 Binance 用户可在全国 PayPay 加盟店用 USDT 付款，商户不用申请、收日元，用户免网络费并有限时 10% 立减；加上全球稳定币卡月消费约 11 亿美元（2026-08，同比约 3 倍）、Visa 上超过 160 个稳定币联名卡项目、RedotPay 自称用户 800 万以上，持币游客已能在任何刷卡终端或 PayPay 码上花稳定币。原生终端只剩自托管钱包（MetaMask 等）用户、折扣驱动的消费和 0% 费率这几个差异点。(3) 日本居民：加密资产设定口座 1,231 万、稼働口座 740 万（JVCEA 2025-02），但稳定币基数很小。JPYC 直接开户约 1.9 万（2026-06），持有地址 13.7 万以上（2026-04），链上流通约 28 亿日元（2026-08），累计发行超过 100 亿日元（2026-09）；实体店 150 家以上（公司说法），线下支付方案在 2026 年才开始立项。境内 USDC 截至 2026-07 只有 SBI VC Trade 在卖，持有人多为了 5–10% 的借贷收益而持有；JPYSC 不能转出 SBI 账户。居民已有 Slash Card（USDC Visa，2026-04）、bitbank×EPOS 卡、LINE Unifi Pay 等用法。(4) 先例：SBI VC Trade×アプラス 2026-05-25 至 29 在大阪两家店做了“自托管钱包扫码付 USDC→SBI 换成日元→アプラス 入账给商户”的实证，主打入境游客，结果未公布；Coincheck Payment 2016 年占店铺比特币支付约 99%，2018 年停止。全球没有查到实测的线下 POS 稳定币交易量；有标签的稳定币支付约 3,745 亿美元（2025），主要是 B2B 和汇款。(5) 自下而上的推算（推论，假设见各条）：全日本每年用原生稳定币在柜台付款的游客约 1.6 万–23 万人，交易约 3.3 万–94 万笔，GMV 约 1.6 亿–47 亿日元，相当于入境消费的 0.002%–0.05%。如果 INSCREEN 有 1,000 家商户并拿下其中 20%，每家每月不到 1 笔到约 16 笔。按客单价 5,000 日元、替代 2.5% 刷卡计算，月费 2,000 日元要每月约 16 笔才能靠省下的手续费回本；替代 1% 的二维码则要约 40 笔。所以只靠稳定币的单一功能终端，需求侧撑不起来。“0% 手续费 + 月费”只在加密人流密集的商圈或场景（秋叶原、难波电器、加密活动、面向东南亚或加密社群的酒店等）、或者与 JPYC 类折扣活动绑定时才成立。更合理的定位是多通道终端，稳定币只作为其中一种支付方式；或者接入 HIVEX、Alipay+ 一类网络，不和它们正面竞争。",
+  "facts": [
+    {
+      "id": "DEMAND-01",
+      "claim": "【公司声明】JPYC EX 累计发行额：2026-04-15 超过 21 亿日元，2026-05-18 为 25 亿日元（总交易额超过 350 亿日元），2026-06 超过 30 亿日元，2026-09-18 超过 100 亿日元。",
+      "confidence": "medium",
+      "source": "https://paymentnavi.com/?p=182688 ；https://thebridge.jp/2026/04/jpyc-raises-2-8-billion-yen-in-series-b-second-close ；https://coinpost.jp/?p=709623",
+      "date": "2026-04-15 / 2026-05-18 / 2026-06 / 2026-09-18",
+      "notes": "JPYC 公司公告，经媒体转载并出现在搜索摘要中，原文没有打开（WebFetch 对 paymentnavi.com 和 coinpost.jp 返回 DNS 失败）。累计发行额不等于流通余额，也不等于支付额。"
+    },
+    {
+      "id": "DEMAND-02",
+      "claim": "【公司声明】JPYC 直接开户数：2026-02 约 1.3 万，2026-04-15 约 1.7 万，2026-06 约 1.9 万；持有 JPYC 的钱包地址 2026-02 约 8 万，2026-04-15 超过 13.7 万。",
+      "confidence": "medium",
+      "source": "https://thebridge.jp/2026/04/jpyc-raises-2-8-billion-yen-in-series-b-second-close ；https://coinpost.jp/?p=709623",
+      "date": "2026-04-15 / 2026-06",
+      "notes": "地址数不等于人数：一人可有多个地址，交易所和合约地址也计入。2026-10 的数值没有查到。和 PayPay 约 7,300 万用户（JP-PAYPAY，medium）相比，差了 3 个数量级以上。"
+    },
+    {
+      "id": "DEMAND-03",
+      "claim": "【已核实事实·沿用】据 JPYC info 链上数据，JPYC 流通量 2026-06-26 超过 10 亿日元，2026-08-18 约 28.3 亿日元。",
+      "confidence": "medium",
+      "source": "https://jp.bloomingbit.io/feed/news/118550",
+      "date": "2026-08-18",
+      "notes": "沿用 STABLECOIN-INFRA.json，本轮没有重查；2026-10 的数值没有查到。流通量约是累计发行额的 1/3，说明大部分已赎回或在做流动性周转。"
+    },
+    {
+      "id": "DEMAND-04",
+      "claim": "【公司声明】JPYC 称已可在实体店、移动店铺和电商合计 150 家以上的导入店使用（餐饮、零售、农产品直销等），JPYC 不向加盟店收手续费，靠省下的成本给消费者优惠。",
+      "confidence": "low",
+      "source": "https://voix.jp/money/?p=34083（出处候选；同一检索摘要里多个页面混在一起，具体出自哪一页无法区分）",
+      "date": "2026（具体日期未查到）",
+      "notes": "只有公司说法，没有店铺名单，也没有交易笔数。150 家里实体店占多少不明。"
+    },
+    {
+      "id": "DEMAND-05",
+      "claim": "【媒体报道】截至 2026-04 的报道称，2026 年才开始启动多个实现 JPYC“实店铺支付方案”的项目，说明线下 JPYC 支付还没有成规模的受理网络。",
+      "confidence": "medium",
+      "source": "https://netshop.impress.co.jp/n/2026/04/28/15997",
+      "date": "2026-04-28",
+      "notes": "从这条推论：线下受理仍在立项阶段，对 INSCREEN 来说既是空白，也说明需求还没被验证。"
+    },
+    {
+      "id": "DEMAND-06",
+      "claim": "【媒体报道】電算システム与 JPYC 达成合意，研究把 JPYC 与其覆盖全国便利店、药妆店等 6.5 万家以上门店的收纳代行/便利店支付网络结合。",
+      "confidence": "medium",
+      "source": "https://coinpost.jp/?p=650355（出处候选）",
+      "date": "2025-09",
+      "notes": "只是研究合意，到 2026-10 是否上线没有查到。如果上线，便利店柜台会成为 JPYC 的主要线下入口，是 INSCREEN 的替代者。"
+    },
+    {
+      "id": "DEMAND-07",
+      "claim": "【媒体报道/公司声明】LINE NEXT 的 Unifi 钱包自 5 月 22 日起正式支持 JPYC；JPYC 公司称 Unifi 目前占 JPYC 流通量的最大份额；2026-06-30 起奢侈品电商 MOLTS 引入 Unifi Pay，可用 JPYC 支付，并有最高 8% 返还活动。",
+      "confidence": "medium",
+      "source": "https://coinpost.jp/?p=709623 ；https://paymentnavi.com/?p=176452 ；https://news.livedoor.com/pr_article/detail/31792513/",
+      "date": "2026-05-22 / 2026-06-30",
+      "notes": "“最大份额”是发行方的说法，没有比例；Unifi 的用户数和支付笔数没有查到。已知用例都在线上，而且靠返还活动拉动。"
+    },
+    {
+      "id": "DEMAND-08",
+      "claim": "【公司声明】JPYC 株式会社于 2026-09-14 向公正取引委員会提交信息，内容是稳定币支付普及后无现金市场的竞争环境，目的是让导入店更容易对 JPYC 支付给折扣、免运费等优惠；JPYC 说明这不代表公取委的见解。",
+      "confidence": "medium",
+      "source": "https://bestcalendar.jp/press/124168（PR 转载，出处候选）",
+      "date": "2026-09-14",
+      "notes": "推论：发行方自己也认为，消费者选稳定币的主要理由是商户能给的折扣（商户省下 2–3% 刷卡费后让利），而不是支付体验。这直接影响 INSCREEN 的营销设计：0% 费率要转化成给消费者的折扣。"
+    },
+    {
+      "id": "DEMAND-09",
+      "claim": "【媒体报道】截至 2026-07，日本境内能买到 USDC 的只有 SBI VC Trade；Circle 2025-03 称 Binance Japan、bitbank、bitFlyer 也计划上线，但没有查到上线报道。",
+      "confidence": "medium",
+      "source": "https://coinpost.jp/?p=677254（摘要）；Circle 新闻稿 https://www.businesswire.com/news/home/20250324944828/en（沿用 STABLECOIN-INFRA，high）",
+      "date": "2026-07 / 2025-03-24",
+      "notes": "“未查到上线”不等于没有上线。SBI VC Trade 的 USDC 持有人数和交易额都没有公开（没查到）。"
+    },
+    {
+      "id": "DEMAND-10",
+      "claim": "【媒体报道】SBI VC Trade 自 2026-03-19 起提供 USDC 借贷：首期 12 周募集年化 10%，平时约 5%，每个账户申请上限 5,000 USDC。",
+      "confidence": "medium",
+      "source": "https://coinpost.jp/crypto/sbi-vc-usdc-lending/ ；https://www.sbbit.jp/article/fj/182847",
+      "date": "2026-03-18 / 2026-03-19",
+      "notes": "推论：日本居民持有 USDC 主要是为了美元敞口和收益；拿 5–10% 收益的资产去消费有机会成本，日本居民用 USDC 付款的动机弱。"
+    },
+    {
+      "id": "DEMAND-11",
+      "claim": "【已核实事实】SBI VC Trade 与アプラス于 2025-12-25 宣布做 USDC 店铺支付实证，2026-05-25（周一）至 05-29（周五）在大阪「名代 宇奈とと」本町店和「ビックカメラ」なんば店实施：用户用 MetaMask 等自托管钱包中的 USDC 扫店铺 QR 码付款，SBI VC Trade 把 USDC 换成日元汇给アプラス，アプラス 再入账给店铺；目的是以入境游客为中心创造 USDC 在日本的实际需求，手续费和汇率影响在实证中评估。",
+      "confidence": "high",
+      "source": "https://corp.sbishinseibank.co.jp/ja/news/news/20260430a/main/01/link/260430_AP_VC_USDC.pdf ；https://paymentnavi.com/?p=174144 ；https://www.watch.impress.co.jp/docs/news/2075489.html",
+      "date": "2025-12-25（发布）/ 2026-04-30（日程）/ 2026-05-25～29（实施）",
+      "notes": "SBI 新生银行的一手 PDF 出现在搜索结果中。这和 INSCREEN 的流程基本相同，也是最接近的先例和竞品，而且由登记的電子決済手段等取引業者负责兑换。实施后的笔数、用户国籍和问题都没有查到公开结果，应作为尽调重点。"
+    },
+    {
+      "id": "DEMAND-12",
+      "claim": "【已核实事实·沿用】JPYSC（SBI 新生信托银行发行的信托型日元稳定币）2026-06-24 发行，先行阶段只能在 SBI VC Trade 账户内使用，不能转到外部钱包；2026-09-07 发行余额约 201 亿日元。",
+      "confidence": "high",
+      "source": "https://corp.sbishinseibank.co.jp/ja/news/news/20260624b/main/01/link/20260624_JPYSC.pdf ；https://www.sbigroup.co.jp/news/pdf/group/2026/0907_a.pdf",
+      "date": "2026-06-24 / 2026-09-07",
+      "notes": "沿用 STABLECOIN-INFRA.json。推论：在上公链之前，JPYSC 不能在 INSCREEN 这类第三方终端支付，零售支付方案没有查到；余额大，主要是机构/投资用途，不代表消费需求。"
+    },
+    {
+      "id": "DEMAND-13",
+      "claim": "【已核实事实】JVCEA 统计：2025-02 会员暗号资产交易所的设定口座 12,314,833 个，稼働口座 7,395,869 个（2025-01 分别为 12,138,680 和 7,344,859）；稼働口座指当月有交易或有余额的账户。",
+      "confidence": "high",
+      "source": "https://jvcea.or.jp/cms/wp-content/themes/jvcea/images/pdf/statistics/202502-KOUKAI-01-FINAL.pdf",
+      "date": "2025-02",
+      "notes": "JVCEA 一手 PDF 出现在搜索结果中。2026 年的数值没有查到。账户数不等于人数；这些是暗号資産（BTC 等）账户，不是稳定币持有人数。"
+    },
+    {
+      "id": "DEMAND-14",
+      "claim": "【媒体报道】Slash Vision、オリエントコーポレーション（オリコ）和アイキタス三方合作的 Slash Card（以 USDC 支付的 Visa 卡）于 2026-04-20 开始发卡，用户资产留在自己的钱包里，可在国内外 Visa 加盟店消费。",
+      "confidence": "medium",
+      "source": "https://coinpost.jp/?p=743196（出处候选，检索摘要）",
+      "date": "2026-04-20",
+      "notes": "推论：日本居民持有的 USDC 已经可以经卡组织在任何刷卡终端花掉，商户照付刷卡费，原生终端不再是唯一的消费途径。发卡数量没有查到。"
+    },
+    {
+      "id": "DEMAND-15",
+      "claim": "【媒体报道】bitbank 与マルイ系 EPOS Card 合作推出加密资产联动信用卡，可直接用交易所余额结清信用卡账单。",
+      "confidence": "medium",
+      "source": "https://www.theblock.co/post/399102",
+      "date": "2026",
+      "notes": "日本居民“用加密资产消费”的又一条卡通道。具体上线日期没有核实。"
+    },
+    {
+      "id": "DEMAND-16",
+      "claim": "【已核实事实】2025 年访日外客数 4,268 万人次，创历史新高；同年访日外国人旅行消费额（観光庁确报）为 9 兆 4,549 億円，国别依次为中国、台湾、美国、韩国、香港。",
+      "confidence": "high",
+      "source": "https://www.mlit.go.jp/kankocho/content/002003329.pdf ；JNTO 2025 年数（JP-VERIFY：https://asset.japan.travel/image/upload/v1769050010/pdf/Number_of_visitor_arrivals_to_Japan_in_December_2025.pdf）",
+      "date": "2026-01～2026-03",
+      "notes": "推论：人均约 22 万日元，包括住宿和交通；能在柜台用终端支付的购物、餐饮部分大约只占一半（未核实）。"
+    },
+    {
+      "id": "DEMAND-17",
+      "claim": "【二手引用 JNTO】2025 年主要客源：韩国约 946 万、中国约 910 万、台湾约 676 万、香港约 252 万人次。",
+      "confidence": "medium",
+      "source": "https://setouchitourism.or.jp/ja/wp-content/uploads/sites/2/2026/02/年次レポート_26.07.03.pdf",
+      "date": "2026-02",
+      "notes": "観光庁消费动向调查的表中中国约 800 万（-10.9%），与此不一致，口径（如邮轮客）可能不同，没有核实。美国 2025 年全年数没有查到。"
+    },
+    {
+      "id": "DEMAND-18",
+      "claim": "【已核实事实·沿用】2025 年东南亚访日客（JNTO 确定值）：泰国 1,233,103，菲律宾 885,023，新加坡 726,251，越南 678,594，印尼 640,577，马来西亚 636,575。",
+      "confidence": "high",
+      "source": "https://asset.japan.travel/image/upload/v1769050010/pdf/Number_of_visitor_arrivals_to_Japan_in_December_2025.pdf",
+      "date": "2026-01",
+      "notes": "沿用 JP-VERIFY.json。越、菲、印尼、泰四国合计约 344 万人次，约占访日总数 8%。"
+    },
+    {
+      "id": "DEMAND-19",
+      "claim": "【已核实事实】2026 年访日外客数（JNTO 推计）：上半年累计 21,084,800；6 月 3,148,600（-6.8%）；7 月 3,442,100（+0.1%）；8 月约 310 万（-9.6%，有 14 个市场创同月新高）；1–8 月累计 27,626,300（-2.7%）。",
+      "confidence": "high",
+      "source": "https://www.jnto.go.jp/news/press/20260715_monthly.html ；https://asset.japan.travel/image/upload/v1787134368/pdf/Number_of_visitor_arrivals_to_Japan_in_July_2026.pdf ；https://www.travelvoice.jp/20260916-160529",
+      "date": "2026-07-15 / 2026-08 / 2026-09-16",
+      "notes": "6 月和 7 月数据的 JNTO 一手资料出现在搜索结果中；8 月和 1–8 月累计来自业界媒体对 JNTO 速报的报道。检索时没有查到 9 月数值。WebFetch 和 curl 都无法打开 JNTO PDF，所以国别 1–8 月累计没有拿到。"
+    },
+    {
+      "id": "DEMAND-20",
+      "claim": "【已核实事实/媒体报道】2026 年国别月度数据：5 月韩国 951,300、台湾 616,800、美国 333,700、中国 313,000（-60.4%）、香港 207,900；8 月韩国 850,500（+28.7%）、台湾 666,000（+7.3%）、中国 418,000（-59.0%，连续 9 个月同比下降）、香港 247,300（+9.4%）、美国 197,400（+1.5%）。",
+      "confidence": "medium",
+      "source": "https://www.travelvoice.jp/20260617-159989/print ；https://www.travelvoice.jp/20260916-160529 ；https://www.aviationwire.jp/archives/351081/print/",
+      "date": "2026-06-17 / 2026-09-16",
+      "notes": "报道认为中国减少与中国政府提醒民众避免赴日有关。推论：2026 年客源结构偏向韩国、台湾、香港和欧美，这些市场都有成熟的卡或钱包替代（韩国 Alipay+、台湾 HIVEX）。"
+    },
+    {
+      "id": "DEMAND-21",
+      "claim": "【二手引用 Chainalysis】Chainalysis 2025 全球加密采用指数前 10 名：印度、美国、巴基斯坦、越南、巴西、尼日利亚、印尼、乌克兰、菲律宾、俄罗斯；亚太链上交易额同比增长 69%，从 1.4 万亿美元增至 2.36 万亿美元；统计区间为截至 2025-06 的 12 个月，覆盖 151 个国家。",
+      "confidence": "medium",
+      "source": "https://www.theblock.co/post/369420/india-leads-global-crypto-adoption-chainalysis ；https://decrypt.co/341100/asia-pacific-leads-worldwide-crypto-adoption-report/",
+      "date": "2025-09",
+      "notes": "韩国和日本的排名，以及各国稳定币占比都没有查到。指数衡量的是采用程度，不是人均稳定币持有率，不能直接换算成访日游客中的持币者人数。"
+    },
+    {
+      "id": "DEMAND-22",
+      "claim": "【二手报道】据提交给韩国国会议员的数据，2025-02 末在韩国五大交易所开户的人数为 1,629 万（按去重人数计，约占人口 32%）。",
+      "confidence": "medium",
+      "source": "https://www.crowdfundinsider.com/2025/03/237927-south-koreas-virtual-asset-investors-top-16-million/",
+      "date": "2025-03",
+      "notes": "另有说法称 FSC 统计 2024 年末为 970 万（口径不同）。韩国交易所账户以韩元交易为主，能否方便地把 USDT/USDC 转到自托管钱包用于境外支付没有核实。韩元稳定币立法计划在 2026 年下半年，未确认。"
+    },
+    {
+      "id": "DEMAND-23",
+      "claim": "【未查到】没有找到能证明访日游客希望用稳定币付款的调查或数据；现有信号都来自供给方（SBI×アプラス 实证“以入境游客为中心”、PayPay 接入 Binance Pay、JPYC 实体店扩张）。",
+      "confidence": "low",
+      "source": "本轮检索（2026-10-18）",
+      "date": "2026-10-18",
+      "notes": "没查到不等于不存在。观光厅的 2025 年访日客支付方式占比也没有查到；只有二手说法称中国客用 Alipay/WeChat 等 QR，欧美客用非接触卡或 Apple Pay（https://www.digima-japan.com/knowhow/world/d-globalbusiness-250611.php，low）。"
+    },
+    {
+      "id": "DEMAND-24",
+      "claim": "【媒体报道·多源】PayPay 自 2026-09-30 起经 HIVEX 接入 Binance Pay：海外居住的 Binance Pay 用户可在全国 PayPay 加盟店付款，支持用户扫码和店铺扫码两种方式；商户收日元，不需要单独申请；用户可用 USDT 付款，不收网络费，并有限时 10% 立减；报道称对象用户约 4,800 万人。日本居住的 Binance Japan 用户不在对象内。用户侧 KYC 和制裁筛查由 Binance Pay 负责，商户侧的合规由 HIVEX 及其本地伙伴负责。",
+      "confidence": "medium",
+      "source": "https://k-tai.watch.impress.co.jp/docs/news/2144448.html ；https://paymentnavi.com/?p=183010 ；https://cointelegraph.com/news/binance-pay-usdt-paypay-merchants-japan",
+      "date": "2026-09-30",
+      "notes": "这是需求侧最重要的替代：最大交易所的海外用户已经能在日本主要 QR 网络上不经商户改造就花 USDT。商户手续费、汇率和点差、是否支持 USDC、4,800 万的口径都没有查到；CryptoBriefing 写的是 2026-08 初宣布，日期说法不一。PayPay 一手新闻稿没有打开（WebFetch DNS 失败）。"
+    },
+    {
+      "id": "DEMAND-25",
+      "claim": "【已核实事实·沿用】PayPay 于 2026-06-29 宣布：约 80% 的访日游客可以通过 PayPay 使用本国支付服务，合计受理 17 个国家/地区的 35 项服务（含越南 MoMo、Zalopay、VCB，ShopeePay（新加坡、泰国），SCB PLANET PLUS 等）；PayPay 用户数超过 7,300 万。",
+      "confidence": "medium",
+      "source": "https://about.paypay.ne.jp/en/pr/20260629/01/ ；https://www.gvm.com.tw/article/129405",
+      "date": "2026-06-29 / 2026-04",
+      "notes": "沿用 JP-PAYPAY 和 ALIPAY-VERIFY。推论：稳定币使用率最高的越南、泰国等客源，已经能用本国钱包在 PayPay 码上付款。"
+    },
+    {
+      "id": "DEMAND-26",
+      "claim": "【二手引用 Paymentscan】全球稳定币卡月消费额：2025-07 约 3.39 亿美元，2026-07 约 10.4 亿美元（首次超过 10 亿），2026-08 约 11.16 亿美元；2026-09-14 当周创纪录，约 1.89 亿美元。",
+      "confidence": "medium",
+      "source": "https://technode.global/2026/08/25/stablecoin-card-spending-passes-10-9b-as-sector-matures-redotpay/ ；https://cryptobriefing.com/stablecoin-card-spending-record-189m/ ；https://www.analyticsinsight.net/news/stablecoin-card-spending-hits-record-108b-as-transactions-surge",
+      "date": "2026-08 / 2026-09",
+      "notes": "数据由 RedotPay 引用 Paymentscan，属于有利益关系的一方发布。日本境内的消费额没有查到。推论：持币游客的主流用法是用稳定币卡在任何刷卡终端付款，商户照付刷卡费，感受不到是稳定币。"
+    },
+    {
+      "id": "DEMAND-27",
+      "claim": "【二手报道】Visa 称 2026 财年第二季度其网络上有超过 160 个稳定币联名卡项目，相关支付额同比增长近 200%；截至 2026-09-08，Visa 稳定币结算的年化运行率超过 200 亿美元。",
+      "confidence": "medium",
+      "source": "https://stablecoininsider.org/visa-stablecoin-settlement-20b-onchain-lending/ ；https://www.kucoin.com/blog/visa-stablecoin-adoption-20-billion-settlements",
+      "date": "2026-09",
+      "notes": "结算额是机构间结算，不等于消费者对商户的支付。Visa 一手资料没有打开。沿用 STABLECOIN-INFRA：2025-11 年化 35 亿美元，Mastercard 2026-06-03 起支持 USDC/PYUSD 等稳定币结算。"
+    },
+    {
+      "id": "DEMAND-28",
+      "claim": "【公司声明】RedotPay 称用户超过 800 万，年化支付额超过 140 亿美元（包含卡消费和充值）；2026-07 卡消费约 3.95 亿美元，在追踪的发卡方中最多；预测 2028 年稳定币卡年消费达到 500 亿美元。",
+      "confidence": "medium",
+      "source": "https://technode.global/2026/08/25/stablecoin-card-spending-passes-10-9b-as-sector-matures-redotpay/ ；https://www.kucoin.com/news/flash/redotpay-projects-50b-annual-stablecoin-card-spending-by-2028",
+      "date": "2026-08",
+      "notes": "500 亿美元是行业参与者自己的预测。RedotPay 用户中有多少是访日游客没有查到。"
+    },
+    {
+      "id": "DEMAND-29",
+      "claim": "【第三方说法】一份 2025-08 的第三方指南称 RedotPay 的实体卡可寄送到日本；能否在 POS 消费取决于 Visa 受理，而不是寄送国家名单。",
+      "confidence": "low",
+      "source": "https://www.blog.brightcoding.dev/2025/08/08/redotpay-supported-countries-where-can-you-spend-crypto-like-cash-in-2025",
+      "date": "2025-08",
+      "notes": "非官方，可能已过时。RedotPay 是否向日本居民发卡没有用一手资料核实。"
+    },
+    {
+      "id": "DEMAND-30",
+      "claim": "【媒体报道】Bitget 于 2026-04 在部分亚太市场推出 Visa 加密卡，先发虚拟卡，实体卡几个月后推出；发行市场是否包括日本无法判断。Crypto.com Visa 卡和 MetaMask Card 能否向日本居民发卡没有查到。",
+      "confidence": "low",
+      "source": "https://www.crowdfundinsider.com/?p=270816 ；https://www.cryptometer.io/news/bitget-expands-crypto-payments-in-apac-with-new-visa-linked-card",
+      "date": "2026-04",
+      "notes": "Bitget 卡上线本身是 medium，日本是否可用是 low。不论居民能否申请，外国游客拿着本国发的这类卡都可以在日本刷卡终端使用（推论，前提是 Visa 受理）。"
+    },
+    {
+      "id": "DEMAND-31",
+      "claim": "【已核实事实·沿用+未查到】Bitget Wallet 和 Bitget 交易所的 Scan to Pay、RedotPay 的 Scan to Pay 已支持越南 VietQR、菲律宾 QR Ph、巴西 Pix 等国家二维码（RedotPay 还有哥伦比亚、秘鲁、坦桑尼亚、肯尼亚）；没有查到支持日本 JPQR 或日本商户码。",
+      "confidence": "medium",
+      "source": "https://web3.bitget.com/pt/helpCenter/193 ；https://helpcenter.redotpay.com/pt/articles/14133264-comece-a-usar-pagamentos-instantaneos-por-qr-code",
+      "date": "2025-2026",
+      "notes": "沿用 ALIPAY-VERIFY。推论：在日本，自托管钱包和 Bitget/OKX 用户扫码付款的通道目前还空着，这是 INSCREEN 少数实际存在的差异化人群；但 Bitget/RedotPay 已在其他国家证明能接入国家码，进入日本只是时间问题，不是需求护城河。"
+    },
+    {
+      "id": "DEMAND-32",
+      "claim": "【媒体报道】Binance Japan 于 2024-11 推出的国内版“Binance Pay”是 Binance Japan 用户之间的加密资产转账（P2P），不是店铺支付。",
+      "confidence": "medium",
+      "source": "https://voix.jp/biz/?p=130230",
+      "date": "2024-11",
+      "notes": "日本居民不能用 PayPay×Binance Pay（见 DEMAND-24）。"
+    },
+    {
+      "id": "DEMAND-33",
+      "claim": "【媒体报道·历史】Coincheck Payment 在 2016 年末占日本店铺比特币支付系统约 99% 的份额（公司资料）；2018-01-27 起因 Coincheck 被盗事件停止受理支付和日元出金，回转寿司「銀座沼津港」、DMM.com 等导入方也停止受理。",
+      "confidence": "medium",
+      "source": "https://www.bcnretail.com/market/detail/20180214_51567.html",
+      "date": "2018-02-14",
+      "notes": "日本商户受理加密支付的先例：份额集中在单一服务商，一出事整个受理网络就停了。bitFlyer×ビックカメラ 比特币支付（凭记忆是 2017 年起）的现状本轮没有查到，记 low。"
+    },
+    {
+      "id": "DEMAND-34",
+      "claim": "【媒体报道】Slash Payment 于 2022-08 开始服务，支持 1,000–1,400 种以上的代币；有报道称“Slash Payment with JPYC Pay”可把加密资产支付以日元入账，并支持店头 QR 码支付。",
+      "confidence": "low",
+      "source": "https://ascii.jp/elem/000/004/167/4167734/ ；https://coinpost.jp/?p=703313",
+      "date": "2022-2026（文章日期未确认）",
+      "notes": "Slash 的加盟店数和交易额没有查到；JPYC Pay 相关文章可能是早期（前払式時代）的旧稿。"
+    },
+    {
+      "id": "DEMAND-35",
+      "claim": "【二手引用 Allium】2025 年有标签的稳定币支付额约 3,745 亿美元，共 11 亿笔，平均每笔 342 美元；2026-02 稳定币流通量约 2,663 亿美元。另有 McKinsey/Artemis 按 2025-12 活动估算年化约 3,900 亿美元。",
+      "confidence": "medium",
+      "source": "https://stablecoininsider.org/allium-stablecoins-report-2026/ ；https://stablecoininsider.org/stablecoin-trends-in-2026/",
+      "date": "2026-02～2026-04",
+      "notes": "以 B2B、汇款和卡结算为主；平均每笔 342 美元也说明不是零售柜台为主。没有查到实测的线下 POS 稳定币交易额（onekey.so 2026-04 只说线下终端正从试点走向门店试用，没有数字）。"
+    },
+    {
+      "id": "DEMAND-36",
+      "claim": "【已核实事实】Stripe 于 2025-06 宣布帮助 34 个国家的 Shopify 商户受理 USDC（Base 链），商户可选择以本币入账或把 USDC 提到外部钱包；2026-03 有报道称 Shopify 已把 USDC 放进核心结账流程（与 Stripe、Coinbase 合作），并计划支持 USDT。",
+      "confidence": "high",
+      "source": "https://stripe.com/en-my/newsroom/news/shopify-stripe-stablecoin-payments ；https://www.shopifreaks.com/shopify-adds-usdc-stablecoin-to-its-core-payments-stack-letting-merchants-settle-in-crypto-or-fiat/",
+      "date": "2025-06 / 2026-03",
+      "notes": "2025-06 部分出现在 Stripe 官方新闻页；2026-03 部分为 medium。都是线上场景。“Stripe 稳定币支付上线数周即达 2.23 亿美元”“150 多国、费率 1.5%”只来自二手博客，记 low。Shopify 中实际使用 USDC 的商户数没有查到。"
+    },
+    {
+      "id": "DEMAND-37",
+      "claim": "【已核实事实·沿用】海外“稳定币消费走现有国家码或收单方、商户收法币”的先例：Binance Pay 接巴西 Pix（2025-05）；Bitget Wallet 接 Pix（2025-09）；OKX SG 在 GrabPay 商户用 USDC/USDT 付款，先换成 XSGD（2025-09）；dtcpay 在 SGQR/NETS 受理点用 USDT/USDC 即时换成法币付款（2025-07）。",
+      "confidence": "medium",
+      "source": "https://www.crowdfundinsider.com/2025/05/239838-binance-pay-introduces-instant-crypto-payments-to-brazil-via-pix/ ；https://www.pymnts.com/cryptocurrency/2025/bitget-wallet-integrates-pix-enable-crypto-payments-brazil/ ；https://www.nst.com.my/amp/business/corporate/2025/09/1284336/okx-singapore-launches-stablecoin-payments-local-grabpay ；https://dtcpay.com/company/newsroom/dtcpay-rolls-out-qr-payments-and-celebrates-sg60-with-exclusive-rewards",
+      "date": "2025",
+      "notes": "沿用 ALIPAY-VERIFY 和 SG-MY。全球主流做法是在付款方钱包里兑换、借用现有受理网络，而不是让商户装专用稳定币终端；PayPay×Binance Pay 就是这个做法在日本的落地。"
+    },
+    {
+      "id": "DEMAND-38",
+      "claim": "【推论】按客源推算的“可能在日本柜台用原生稳定币付款的游客”：越、菲、印尼、泰四国约 344 万人次 ×（持有可支付稳定币的比例 5–15%，假设）×（在日本愿意不用卡或 PayPay、改用原生稳定币付款的比例 5–15%，假设）≈ 0.9 万–7.7 万人；其他约 3,900 万人次 ×（1–4%，假设）×（2–10%，假设）≈ 0.8 万–15.7 万人；合计每年约 1.6 万–23 万人。",
+      "confidence": "low",
+      "source": "本报告推算，基于 DEMAND-16/18/19/21/24/26",
+      "date": "2026-10-18",
+      "notes": "比例都是假设，没有找到按国家统计的人均稳定币持有率，访日客的支付意愿也没有调查（DEMAND-23）。由于 PayPay×Binance Pay（DEMAND-24）和稳定币卡（DEMAND-26）已经存在，“愿意改用原生方式”的比例只会偏低。"
+    },
+    {
+      "id": "DEMAND-39",
+      "claim": "【推论】按每人每次旅行在受理商户付 2–4 笔、客单价 5,000 日元计算：全日本原生稳定币柜台支付约 3.3 万–94 万笔/年，GMV 约 1.6 亿–47 亿日元，相当于入境消费（9.45 兆日元）的约 0.002%–0.05%。如果 INSCREEN 有 1,000 家商户并拿下其中 20%，每家每年约 7–190 笔，即每月不到 1 笔到约 16 笔。",
+      "confidence": "low",
+      "source": "本报告推算，基于 DEMAND-38、DEMAND-16",
+      "date": "2026-10-18",
+      "notes": "商户数、份额、笔数和客单价都是假设。加密人流集中的门店（秋叶原、难波、银座的电器/奢侈品店，加密活动，面向东南亚或加密社群的酒店）可能高出 1 个数量级。"
+    },
+    {
+      "id": "DEMAND-40",
+      "claim": "【推论】月费 2,000 日元的回本测算：以客单价 5,000 日元计，替代 2.5% 刷卡每笔省 125 日元，需要每月约 16 笔；替代 1% 二维码（Alipay+/HIVEX 一类）每笔省 50 日元，需要约 40 笔；如果商户还要承担 USDC→JPY 的兑换点差（例如 0.5–1%，假设），回本笔数还要增加。在 DEMAND-39 的推算下，多数商户只靠省手续费回不了本；能支撑月费的，是这些付款人带来的新增客户（毛利）或促销效果，而不是省下的手续费。",
+      "confidence": "low",
+      "source": "本报告推算；月费 2,000 日元是创始人自己的暂定数字（假设）",
+      "date": "2026-10-18",
+      "notes": "刷卡 2–3%、二维码约 1% 用的是用户给出的费率区间（假设，本轮没有核实各收单方实际 MDR）；PayPay×Binance Pay 的商户费率没有查到。"
+    },
+    {
+      "id": "DEMAND-41",
+      "claim": "【推论】付款人放弃卡或 PayPay、改用原生稳定币的理由只有四种：(a) 商户把 0% 手续费让利成 3–10% 折扣（JPYC 和 Binance 都在用这一招，见 DEMAND-07/08/24）；(b) 用自托管钱包（MetaMask 等），没有可用的稳定币卡，也不是 Binance 用户（DEMAND-11 实证针对的就是这类人）；(c) 不想付卡的境外交易手续费和换汇点差；(d) 加密社群的身份认同或尝鲜。反过来，阻力有：gas 费和链的选择、到账确认等待、没有退款或退单保护、汇率展示、日本居民的税务申报负担（未核实）。",
+      "confidence": "low",
+      "source": "本报告分析，依据 DEMAND-07/08/11/24/26/31",
+      "date": "2026-10-18",
+      "notes": "建议 INSCREEN 的价值主张用“商户把省下的费用让给顾客，比如稳定币支付立减 X%”来拉动消费，同时支持多链和多钱包；只说“商户 0 手续费”对付款人没有吸引力。"
+    },
+    {
+      "id": "DEMAND-42",
+      "claim": "【推论】日本居民侧：JPYC 约 1.9 万个直接账户、13.7 万以上地址、约 28 亿日元链上流通，境内 USDC 只有 SBI 一家在卖，JPYSC 不能转出账户；居民的线下稳定币支付需求在 2026–2027 年只能靠活动拉动，量级远小于游客侧。居民持有的 USDC 和其他加密资产已经可以经 Slash Card、bitbank×EPOS 卡在任何刷卡终端消费。",
+      "confidence": "low",
+      "source": "本报告分析，依据 DEMAND-02/03/09/12/14/15",
+      "date": "2026-10-18",
+      "notes": "变量：JPYSC 或三大行共同稳定币如果开放零售和公链（最早 2027，沿用 STABLECOIN-INFRA），电算システム 6.5 万店的方案（DEMAND-06）如果上线，居民侧需求结构会改变，这两项应当跟踪。"
+    },
+    {
+      "id": "DEMAND-43",
+      "claim": "【未查到】没有找到自动售货机、游戏机等无人值守设备受理稳定币或加密支付的需求证据，日本和海外都没有可用的数据。",
+      "confidence": "low",
+      "source": "本轮检索（2026-10-18）",
+      "date": "2026-10-18",
+      "notes": "没查到不等于不存在。无人机器客单价低（几百日元），链上 gas 和到账确认时间的问题更突出；交通 IC 卡和 PayPay 已经是强替代。"
+    }
+  ],
+  "key_claims": [
+    "DEMAND-24",
+    "DEMAND-11",
+    "DEMAND-26",
+    "DEMAND-02",
+    "DEMAND-19",
+    "DEMAND-18",
+    "DEMAND-23",
+    "DEMAND-38",
+    "DEMAND-40",
+    "DEMAND-41"
+  ],
+  "open_questions": [
+    "PayPay×Binance Pay（2026-09-30）的商户手续费、给用户的汇率和点差、支持的币种和链（只有 USDT 还是也有 USDC）、“4,800 万”的口径、上线后的交易量？需要 PayPay、HIVEX 或 Binance 的一手新闻稿或商务沟通。",
+    "SBI VC Trade×アプラス 2026-05 大阪 USDC 实证的结果：笔数、客单价、付款人国籍、钱包和链、手续费和汇率问题，以及是否转入正式服务？INSCREEN 是在这个通道上做终端，还是与它竞争？",
+    "按客源国统计的人均稳定币（USDT/USDC）持有率，以及访日游客对稳定币支付的意愿调查：Chainalysis、Triple-A 和各国监管的统计都没有查到；可以考虑在大阪、东京的商户自己做问卷。",
+    "观光厅 2025 年访日客支付方式占比（现金、卡、二维码），以及 JNTO 2026 年 9 月数据和国别 1–8 月累计（JNTO PDF 无法下载）。",
+    "JPYC 2026-10 的流通量、Unifi 用户数、线下支付笔数；150 家导入店的名单和实体店占比；電算システム 6.5 万店方案是否上线？",
+    "SBI VC Trade 的 USDC 持有人数和余额；bitFlyer、bitbank、Binance Japan 是否已上线 USDC？",
+    "RedotPay、Bitget Card、Crypto.com、MetaMask Card 是否向日本居民发卡，在日本 POS 上的拒付率如何？这些卡在日本的消费额是多少？",
+    "日本居民用 USDC 或 JPYC 付款的税务处理（電子決済手段是否按外币处理、USDC 的汇兑损益），对居民使用意愿的影响？需要税理士确认。",
+    "INSCREEN 收到稳定币后由谁兑换成日元、点差多少；INSCREEN 或商户是否落入電子決済手段等取引業或 2026-06 新设的仲介業监管？这直接决定“0% 手续费”能否成立（属于其他子课题，这里只记为对需求测算的约束）。"
+  ]
+}

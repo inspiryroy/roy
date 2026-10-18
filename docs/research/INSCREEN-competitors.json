@@ -1,0 +1,436 @@
+{
+ "summary": "结论：创始人的判断只部分成立。(1)“Netstars 在日本不如 HIVEX”：在境外钱包入境受理上成立。HIVEX 不自己签约商户，直接借用 PayPay 全部线下加盟店（默认开启，7,400万用户的 PayPay 网络），已接入台湾钱包、WeChat Pay、UnionPay App，以及2026-09-30起的 Binance Pay（外国游客用 USDT 付款，商户收日元、零接入）。JPQR Global 首批只有35家商户，后续规模未披露。但作为国内收单和聚合网关，Netstars（东证 Growth 5590，FY2025 营收约48亿日元并扭亏，StarPay 约70万账户）并不弱，HIVEX 不在这个赛道。(2)“Netstars 海外没有进展”与证据不符：JPQR Global 已在 METI 框架下上线柬埔寨 KHQR（2025-07）和印尼 QRIS（2025-08）入境；印尼反向已获 FSA 许可但未上线；另有卡塔尔 QNB/UPI 和柬埔寨 ACLEDA 网关业务。只是规模小、偏政府项目，KHQR 二期、DuitNow、泰、老、越均未见上线。(3)最关键的新发现是两者都已进入稳定币：Netstars 2026-07-13 推出 Stablecoin Pay（商户费率0.98%，USDC、USDT、JPYC，Solana 和 Polygon，CPM，日元结算，已在ローソン做 POS 联动实证），是 INSCREEN 的直接竞品；HIVEX 让 Binance Pay 用户在 PayPay 加盟店用 USDT 付款，商户按 PayPay 费率1.60%或1.98%收费，并非“约1%”。对 INSCREEN 的含义：面向游客的“普通商户收 USDT”已被 PayPay/HIVEX 零接入覆盖，Netstars 用0.98%卡住了商户主动接入的价格带。INSCREEN“0%加月费约2,000日元”（假设）需要说明换汇、gas、合规成本由谁承担，差异化应放在无人值守机器、高客单价、JPYC 居民支付或商户持币等场景。注意：WebFetch 对 paymentnavi、impress、prtimes、paypay.ne.jp 全部 DNS 失败，所有事实都来自检索摘要。",
+ "facts": [
+  {
+   "id": "COMPETITORS-01",
+   "claim": "【事实】株式会社ネットスターズ（NETSTARS）在东证 Growth 上市，证券代码 5590。",
+   "confidence": "high",
+   "source": "https://www2.jpx.co.jp/disc/55900/081220260212556119_tse-acedjpsm-55900-20260212355900-ixbrl.htm",
+   "date": "2026-02-12",
+   "notes": "JPX TDnet 披露文件出现在检索结果中。上市日期本轮未核实。"
+  },
+  {
+   "id": "COMPETITORS-02",
+   "claim": "【事实】2025年12月期决算短信（2026-02-12）：合并营收约48亿日元，同比增长超过22%；营业利润约2.9亿日元，由上期亏损转为盈利。",
+   "confidence": "high",
+   "source": "https://www2.jpx.co.jp/disc/55900/081220260212556119_tse-acedjpsm-55900-20260212355900-ixbrl.htm",
+   "date": "2026-02-12",
+   "notes": "一手决算短信，但原文未打开，金额来自检索摘要的概数（“48億円余り”“2億9千万円台”）。"
+  },
+  {
+   "id": "COMPETITORS-03",
+   "claim": "【公司自述（经二手摘要）】2026年12月期中期（2026-08-13发布）：营收同比+14.3%，营业利润1.54亿日元；GPV（決済取扱高）11,289亿日元；全年预测营收57.6亿日元、营业利润5亿日元、经常利润7.07亿日元。",
+   "confidence": "medium",
+   "source": "https://edinetdb.jp/company/E38957/presentations/",
+   "date": "2026-08-13",
+   "notes": "edinetdb 对决算说明资料的摘要。GPV 的期间口径（中期累计还是年化）未确认；logmi 另引 CEO 李剛“上半年营收+25.6%、季度 GPV 历史最高”，可能指 FY2025 上半年（https://finance.logmi.jp/articles/383874），两者口径有冲突。"
+  },
+  {
+   "id": "COMPETITORS-04",
+   "claim": "【公司自述】StarPay 是面向店铺的多元支付聚合平台，把 QR 码支付、信用卡、电子货币、各类钱包集成到一个终端或 API；国内支持 25+ 品牌（另一来源称国内外 40+ QR 品牌）；也支持 WeChat Pay、Alipay/Alipay+ 以及东南亚、韩国等境外钱包；另有面向海外支付的 StarPay-Global。Netstars 2009 年成立，2015 年作为首家代理在日本引入 WeChat Pay。",
+   "confidence": "medium",
+   "source": "https://www.teamz.co.jp/en/participant/netstars",
+   "date": "未查到",
+   "notes": "活动参展页的公司介绍，属公司自述；品牌数各来源不一。说明 Netstars 本身也是 Alipay+/WeChat Pay 在日本的收单网关之一（非独家）。"
+  },
+  {
+   "id": "COMPETITORS-05",
+   "claim": "【公司自述（经分析师报告）】StarPay 规模：2023-06 末在国内约1.5万家企业、40万以上账户（含店铺、自动售货机等）使用（paymentnavi 2023 另报“约1万5,000社34万拠点以上”）。",
+   "confidence": "medium",
+   "source": "https://holistic-r.org/report/5590/",
+   "date": "2023-06",
+   "notes": "“账户”包含自动售货机等，不等于商户数。另见 https://paymentnavi.com/?p=128179"
+  },
+  {
+   "id": "COMPETITORS-06",
+   "claim": "【公司自述（经第三方摘要）】截至2025-12末，StarPay 已导入国内约70万个账户。",
+   "confidence": "low",
+   "source": "https://envalith.com/en/companies/5590/overview",
+   "date": "2025-12",
+   "notes": "第三方财报聚合站摘要，原文（决算说明资料）未打开；口径同上（账户≠商户）。"
+  },
+  {
+   "id": "COMPETITORS-07",
+   "claim": "【事实】伊藤忠商事 2019-11-21 宣布与 Netstars 资本业务合作，目标把 StarPay 推广到国内外零售商。",
+   "confidence": "high",
+   "source": "https://www.itochu.co.jp/en/news/press/2019/191121.html",
+   "date": "2019-11-21",
+   "notes": "伊藤忠官方新闻稿出现在检索结果中。当前持股比例未查到。"
+  },
+  {
+   "id": "COMPETITORS-08",
+   "claim": "【事实（媒体）】柬埔寨 ACLEDA Bank 采用 StarPay 作为 WeChat Pay 网关（2024-03）。",
+   "confidence": "medium",
+   "source": "https://www.acledasecurities.com.kh/kh/eng/md_ln20240305",
+   "date": "2024-03-05",
+   "notes": "ACLEDA Securities 页面的检索摘要。属于 Netstars 的海外 B2B 网关业务。"
+  },
+  {
+   "id": "COMPETITORS-09",
+   "claim": "【事实（行业媒体）】2025-09 Netstars 把 StarPay 接入卡塔尔国家银行 QNB，使印度 UPI 可在卡塔尔全境受理，首家导入为 Qatar Duty Free；Netstars 另支持 QNB 推出 GCC 首个 WeChat Pay 电商收款。",
+   "confidence": "medium",
+   "source": "https://paymentnavi.com/?p=165815",
+   "date": "2025-09",
+   "notes": "paymentnavi（日本支付行业媒体）摘要；另见 https://paymentnavi.com/?p=168279 。说明 Netstars 有中东海外业务，但规模未披露。"
+  },
+  {
+   "id": "COMPETITORS-10",
+   "claim": "【公司自述（经第三方摘要）】Netstars FY2025 资料称，卡塔尔门店数较2023年增长112.2%，达3,000家以上。",
+   "confidence": "low",
+   "source": "https://envalith.com/en/companies/5590/reports/019c5146-a5cb-7621-b72c-3c21a9486d15",
+   "date": "2026（FY2025 决算）",
+   "notes": "沿用上一轮 ASEAN-LINK 的 low 结论；本轮检索未在一手资料或媒体中找到“112.2%”或“3,000+”的出处。"
+  },
+  {
+   "id": "COMPETITORS-11",
+   "claim": "【公司自述】JPQR Global 由 Netstars 以“switching system operator”（交换系统运营方）身份运营；大阪・关西世博期间与 UC Card（作为国内收单方）合作提供，并称今后将继续推进 JPQR Global。",
+   "confidence": "medium",
+   "source": "https://www2.infomart.co.jp/web/jp/images/upload/3338/140120250704508451_21007974.pdf",
+   "date": "2025-07",
+   "notes": "TDnet 公告 PDF 经 infomart 转载的检索摘要；UC Card 在 QRIS 导入中的角色另见 https://paymentnavi.com/?p=164557"
+  },
+  {
+   "id": "COMPETITORS-12",
+   "claim": "【事实】METI 于2022-12与印尼央行、2023-12与柬埔寨国家银行签署 QR 互操作合作备忘录（MOC）；JPQR Global 的境外联通都是在这些政府间框架下落地的（印尼方有 BI、ASPI、METI、PJA、Netstars；柬埔寨方有 METI–NBC MOC 和 NBC–PJA MoU（2025-04-21））。",
+   "confidence": "medium",
+   "source": "https://www.ide.go.jp/library/Japanese/Publish/Reports/AjikenPolicyBrief/pdf/242.pdf",
+   "date": "2025-04",
+   "notes": "引自上一轮 SG-MY、VN-KH 的结论；PJA 新闻稿：https://paymentsjapan.or.jp/wp-content/uploads/2025/04/PressRelease_en_20250421.pdf"
+  },
+  {
+   "id": "COMPETITORS-13",
+   "claim": "【事实】柬埔寨→日本 Phase 1 于2025-07-04在大阪启动：Bakong、ACLEDA mobile、Sathapana mobile 用户可在日本扫 JPQR 付款。Phase 2（JPQR 侧日本用户在柬埔寨扫 KHQR）截至2026-10检索未查到上线。",
+   "confidence": "high",
+   "source": "https://fintechnews.sg/113469/cambodia/cambodia-japan-qr/",
+   "date": "2025-07",
+   "notes": "Phase 1 沿用上一轮的 high 结论；Phase 2 属“未查到”，不能证明未上线。"
+  },
+  {
+   "id": "COMPETITORS-14",
+   "claim": "【事实】印尼→日本 QRIS 于2025-08-17上线：印尼用户用本国银行或钱包 App 扫 JPQR Global 付款，首批35家商户，14家银行加若干钱包；日本是首个接入 QRIS 的东盟外国家；GoPay 自2025-09起支持。",
+   "confidence": "high",
+   "source": "https://www.bi.go.id/en/publikasi/ruang-media/news-release/Pages/sp_2719325.aspx",
+   "date": "2025-08-17",
+   "notes": "BI 新闻稿（上一轮已核实）；GoPay 见 https://www.cnnindonesia.com/teknologi/20250912141119-206-1272982/belanja-di-jepang-kini-bisa-pakai-qris-gopay-china-menyusul/amp ；JPQR Global 商户数的后续增长本轮未查到。"
+  },
+  {
+   "id": "COMPETITORS-15",
+   "claim": "【官方表态】反方向（日本游客在印尼扫 QRIS）：BI 副行长 Filianingsih 于2026-04-22称已获日本 FSA 许可、“即将”实施；截至2026-10检索未查到正式上线公告。",
+   "confidence": "medium",
+   "source": "https://www.metrotvnews.com/read/N6GCVl8e-turis-jepang-bisa-iscani-qr-saat-belanja-di-ri-qris-segera-berlaku",
+   "date": "2026-04-22",
+   "notes": "媒体转述官员讲话。日方由哪个钱包或银行 App 出境未查到。BI 另称印尼与韩国的 QRIS 跨境合作已于2026-04-01正式启动。"
+  },
+  {
+   "id": "COMPETITORS-16",
+   "claim": "【事实（银行自述）】泰国：Krungsri 2020-10 与 NTT DATA 合作在日本推出 MyPromptQR，此后与 NETSTARS 合作扩展；这是单家银行的产品，不是 PromptPay 国家级互联。",
+   "confidence": "medium",
+   "source": "https://www.krungsri.com/en/newsandactivities/krungsri-banking-news/krungsri-ntt-launch-mypromptqr",
+   "date": "2020-10",
+   "notes": "引自上一轮 TH-LA 的结论。"
+  },
+  {
+   "id": "COMPETITORS-17",
+   "claim": "【未查到】马来西亚 DuitNow–JPQR 互通：2024 年有“2025 财年实现”的报道，截至2026-10未查到上线证据；老挝、越南与 JPQR Global 的联通公告也未查到。",
+   "confidence": "low",
+   "source": "https://www.imoney.my/articles/duitnow-payment-japan-cashless-travel",
+   "date": "2024-03",
+   "notes": "属“未查到”，不等于不存在。"
+  },
+  {
+   "id": "COMPETITORS-18",
+   "claim": "【事实（公司一手）】Netstars 自2026-07-13起把“Stablecoin Pay”作为 StarPay 的新服务正式提供，同日开始受理申请；商户手续费0.98%；支持 USDC、USDT、JPYC；自称“日本初”；服务内容、币种、链、钱包和手续费等可能不经通知变更。",
+   "confidence": "high",
+   "source": "https://prtimes.jp/main/html/rd/p/000000185.000019526.html",
+   "date": "2026-07-13",
+   "notes": "PR TIMES 公司新闻稿出现在检索结果中（WebFetch 失败，ENOTFOUND）；“日本初”属公司自述，脚注条件未读到。另见 https://paymentnavi.com/?p=176943"
+  },
+  {
+   "id": "COMPETITORS-19",
+   "claim": "【媒体报道】Stablecoin Pay 的规格：链为 Solana、Polygon，Aptos 计划于2026年夏以后支持；目前是顾客出示码（CPM），商户出示码（MPM）在计划中；可沿用商户现有终端，不需另装设备；外币稳定币也按日元记账和结算；一次申请后，新增币种、钱包、链会自动开通。",
+   "confidence": "medium",
+   "source": "https://www.watch.impress.co.jp/docs/news/2124659.html",
+   "date": "2026-07",
+   "notes": "Impress Watch 与 paymentnavi 摘要一致；具体支持哪些钱包未查到。"
+  },
+  {
+   "id": "COMPETITORS-20",
+   "claim": "【事实（公司一手和媒体）】实证经过：2026-01~02 在羽田机场做 USDC 实证；2026-04 起在兵库县姬路市一家集换卡专门店实证；2026-08-17 在ローソンゲートシティ大崎アトリウム店做 POS 联动的 USDC、USDT、JPYC 店头支付实证（2026-08-03 先做预备实验）。报道称操作接近现有 QR 支付，但链上交易需要用户本人确认；ローソン表示将视需求再考虑是否导入。",
+   "confidence": "high",
+   "source": "https://prtimes.jp/main/html/rd/p/000000187.000019526.html",
+   "date": "2026-08-17",
+   "notes": "ローソン实证为 PR TIMES 一手稿；羽田、姬路和ローソン的态度来自 paymentnavi（https://paymentnavi.com/?p=180782）。实证不等于正式导入。"
+  },
+  {
+   "id": "COMPETITORS-21",
+   "claim": "【媒体报道】受外为法限制，Stablecoin Pay 单笔上限为200万日元；发生不正交易时由 Netstars 承担风险。",
+   "confidence": "medium",
+   "source": "https://paymentnavi.com/?p=180832",
+   "date": "2026-08",
+   "notes": "只见 paymentnavi 英文版的单一报道；外为法与200万日元的具体关系（例如支付报告义务的门槛）未核实。"
+  },
+  {
+   "id": "COMPETITORS-22",
+   "claim": "【公司自述（StarPay-X 构想）】Netstars 2026-04-13 开始用 Circle 的跨链基础设施 Gateway 开发多链稳定币支付；2026-06 与 Startale Group（与 SBI 共同开发 JPYSC）签基本合意（MOU），共同研究包括 JPYSC 在内的支付应用；2026-09 与 Web3 钱包 imToken（自称用户2,000万+、覆盖150+国家和地区）签 MOU。",
+   "confidence": "high",
+   "source": "https://prtimes.jp/main/html/rd/p/000000182.000019526.html",
+   "date": "2026-04 ~ 2026-09",
+   "notes": "Startale MOU 为 PR TIMES 一手稿（high）；Circle Gateway 与 imToken 来自 paymentnavi 摘要（https://paymentnavi.com/?p=173327、https://paymentnavi.com/?p=182077），为 medium。都还是 MOU 或技术开发阶段，不是商用上线。"
+  },
+  {
+   "id": "COMPETITORS-23",
+   "claim": "【未查到/推断】Stablecoin Pay 的牌照架构：由谁以電子決済手段等取引業者、暗号資産交換業者或資金移動業者的身份收币并兑换日元，本轮未查到。上一轮检索没有发现任何日本登记业者把 USDT 作为電子決済手段处理，所以 Netstars 如何合规受理 USDT 是关键疑点。",
+   "confidence": "low",
+   "source": "https://www.fsa.go.jp/menkyo/menkyoj/denshikessaisyudan.pdf",
+   "date": "2026-10-18 检索",
+   "notes": "推断加未查到。INSCREEN 设计自身合规架构时应优先核实这一点。"
+  },
+  {
+   "id": "COMPETITORS-24",
+   "claim": "【未查到】Stablecoin Pay 导入商户数、交易额、支持的钱包清单，截至2026-10均未公开。",
+   "confidence": "low",
+   "source": "https://paymentnavi.com/?p=182462",
+   "date": "2026-10-18 检索",
+   "notes": "属“未查到”。"
+  },
+  {
+   "id": "COMPETITORS-25",
+   "claim": "【事实】JPQR 是一般社団法人キャッシュレス推進協議会2019-03-29制定的《コード決済に関する統一技術仕様ガイドライン》（CPM、MPM），2020-04-27出 Ver.2.0（新增請求書払い），2022-11-08出 Ver.3.0；MPM 采用 EMVCo 式 TLV，ID 26 的 GUID 例为 jp.or.paymentsjapan。",
+   "confidence": "medium",
+   "source": "https://www.soumu.go.jp/main_content/000844779.pdf",
+   "date": "2022-11-08",
+   "notes": "沿用上一轮 JP-VERIFY 的结论。"
+  },
+  {
+   "id": "COMPETITORS-26",
+   "claim": "【事实】総務省与キャッシュレス推進協議会、METI 合作的 JPQR 普及事业：2019-08 在4县开始实证，2019-10 时约1.2万店导入；累计导入约1.4万店（2022年度末）、约1.5万店（2023年度末）。",
+   "confidence": "high",
+   "source": "https://www.soumu.go.jp/johotsusintokei/whitepaper/ja/r06/html/nd226440.html",
+   "date": "2024（令和6年版情報通信白書）",
+   "notes": "总务省白书（一手）。规模与 PayPay 等数百万级商户相差两个数量级。"
+  },
+  {
+   "id": "COMPETITORS-27",
+   "claim": "【事实/未查到】一份総務省资料称 JPQR 普及事业已于令和3年度（FY2021）结束；令和7年度（FY2025）是否继续，本轮未查到。",
+   "confidence": "medium",
+   "source": "https://www.soumu.go.jp/main_content/000834472.pdf",
+   "date": "2021-2022",
+   "notes": "检索摘要显示该资料是对令和3年度已结束事业的评价；“FY2025 是否继续”属未查到。"
+  },
+  {
+   "id": "COMPETITORS-28",
+   "claim": "【事实】自2023年度起，地方税统一QR码（eL-QR）用于地方税缴纳，采用 JPQR 统一规格（請求書払い）。",
+   "confidence": "high",
+   "source": "https://www.soumu.go.jp/johotsusintokei/whitepaper/ja/r06/html/nd226440.html",
+   "date": "2024",
+   "notes": "总务省白书摘要。"
+  },
+  {
+   "id": "COMPETITORS-29",
+   "claim": "【推断】今天的“JPQR”主要有两层含义：一是码规格标准（含地方税 eL-QR），二是 Netstars 运营的跨境交换品牌“JPQR Global”。作为商户受理网络，国内 JPQR 导入只有约1.5万店，境外入境受理在 QRIS 首批只有35家商户；店头实际的 QR 受理以 PayPay 等私营品牌为主。",
+   "confidence": "medium",
+   "source": "推断：基于 COMPETITORS-14、COMPETITORS-26、COMPETITORS-39",
+   "date": "2026-10",
+   "notes": "JPQR Global 当前商户数未查到，因此“规模小”是基于首批数据和无后续披露的推断。"
+  },
+  {
+   "id": "COMPETITORS-30",
+   "claim": "【事实（多源）】TBCASoft 为美国公司，2016年由吴陵（Ling Wu）创立，股东或战略投资方包括软银、Naver、富士康、远传电信；HIVEX 是区块链底层的跨境 QR 互操作网络，钱包方不用改码格式，商户不用改 POS。",
+   "confidence": "medium",
+   "source": "https://www.softbank.jp/en/sbnews/entry/20260423_01",
+   "date": "2026-04-23",
+   "notes": "沿用上一轮 ALIPAY-VERIFY、JP-PAYPAY 的结论。TBCASoft 的融资额和估值未查到。"
+  },
+  {
+   "id": "COMPETITORS-31",
+   "claim": "【事实】HIVEX 2023-08 在台湾首发；PayPay 加盟店帮助页的连接清单显示台湾 JKO PAY（街口）于2023-10-02开始在 PayPay 加盟店可用；2024-02 底启用日本反扫（CPM）。",
+   "confidence": "high",
+   "source": "https://paypay.ne.jp/help-merchant/b0761/",
+   "date": "2023-10-02",
+   "notes": "PayPay 官方帮助页（检索摘要）；上线时间另见 https://www.cna.com.tw/news/firstnews/202308230196.aspx"
+  },
+  {
+   "id": "COMPETITORS-32",
+   "claim": "【事实】WeChat Pay 用户自2025-09-16起可经 HIVEX 在日本 PayPay 加盟店付款，仅限顾客扫码（MPM）加盟店，加盟店无需负担费用或办理手续。",
+   "confidence": "high",
+   "source": "https://paypay.ne.jp/notice-merchant/20250916/n-01/",
+   "date": "2025-09-16",
+   "notes": "PayPay 加盟店公告（检索摘要）。"
+  },
+  {
+   "id": "COMPETITORS-33",
+   "claim": "【事实（媒体）】2026-02-03 台新 Pay+ 与全盈+PAY 经 HIVEX 开通日本 PayPay 加盟店付款。",
+   "confidence": "medium",
+   "source": "https://www.ctee.com.tw/news/20260203701784-430303",
+   "date": "2026-02-03",
+   "notes": "工商时报摘要；PayPay 同日加盟店公告（https://paypay.ne.jp/notice-merchant/20260203/n-01/）出现在检索结果中，但内容未显示。"
+  },
+  {
+   "id": "COMPETITORS-34",
+   "claim": "【事实】2026-09-03 中国大陆、香港、澳门的“UnionPay App”被加入 HIVEX，可在 PayPay 加盟店使用。",
+   "confidence": "high",
+   "source": "https://paypay.ne.jp/notice-merchant/20260903/n-01/",
+   "date": "2026-09-03",
+   "notes": "PayPay 加盟店公告标题。"
+  },
+  {
+   "id": "COMPETITORS-35",
+   "claim": "【事实】2026-09-30 HIVEX 新增 Binance Pay：海外 Binance 用户可在 PayPay 线下加盟店（顾客扫码和店铺扫码两种方式都支持）用 USDT 付款，商户收日元；“マネー限定加盟店”不在对象内；加盟店无需负担费用或办理手续；居住在日本的 Binance Japan 用户不在对象内。",
+   "confidence": "high",
+   "source": "https://paypay.ne.jp/notice-merchant/20260930/n-01/",
+   "date": "2026-09-30",
+   "notes": "PayPay 加盟店公告（一手，检索摘要）。也见 Cointelegraph、The Paypers 等。这是日本第一条“外国游客用稳定币在数百万普通商户付款、商户零接入”的已上线通道，直接压缩 INSCREEN 面向游客 USDT 的空间。"
+  },
+  {
+   "id": "COMPETITORS-36",
+   "claim": "【公司自述/媒体】Binance 称约4,800万合格用户、覆盖100多个国家；每24小时上限100万日元、每30天上限200万日元；有限时10%即时折扣；Binance Pay 是首个经 HIVEX 进入 PayPay 加盟店的加密支付服务；HIVEX 已把约9个境外 QR 服务（主要来自中国大陆、香港、台湾）接入 PayPay 加盟店。",
+   "confidence": "medium",
+   "source": "https://crypto.news/binance-pay-brings-crypto-spending-to-millions-of-paypay-merchants-in-japan/",
+   "date": "2026-09-30",
+   "notes": "限额来自 crypto.news，折扣与“9个服务”来自 CoinGape（https://coingape.com/binance-pay-opens-usdt-spending-at-paypay-merchants-across-japan/）；HIVEX 新闻稿（2026-08-05）见 wboc.com 转载。报道称付款时不收 gas，未在一手资料中核实。"
+  },
+  {
+   "id": "COMPETITORS-37",
+   "claim": "【事实】经 HIVEX 的交易，加盟店支付的決済システム利用料与 PayPay 决济同率：所有实体店都加入“PayPayマイストア ライトプラン”时为1.60%，否则为1.98%；HIVEX 不需要加盟店申请，默认开启，可在 PayPay for Business 中关闭（关闭后重开需申请）；“マネー限定加盟店”和线上加盟店不在对象内。",
+   "confidence": "high",
+   "source": "https://paypay.ne.jp/help-merchant/b0761/",
+   "date": "2026（检索时）",
+   "notes": "PayPay 官方帮助页（检索摘要）。说明 HIVEX 在日本不直接签约或收单商户，商户端费率不是约1%。"
+  },
+  {
+   "id": "COMPETITORS-38",
+   "claim": "【事实】PayPayマイストア ライトプラン：每店每月1,980日元（税别），所有实体店都加入时決済システム利用料为1.60%（税别）；不加入（制限プラン）为1.98%（税别）；优惠费率只适用于申请了顾客扫码支付（MPM）的加盟店；新签约有初期费用和首两个月月费免费的活动。",
+   "confidence": "high",
+   "source": "https://paypay.ne.jp/help-merchant/B0515/",
+   "date": "2026（检索时）",
+   "notes": "PayPay 官方页面（检索摘要）。这是评估 INSCREEN“月费约2,000日元”假设的直接对标：PayPay 每月1,980日元仍要收1.60%。"
+  },
+  {
+   "id": "COMPETITORS-39",
+   "claim": "【事实】PayPay 注册用户数为7,400万（2026-05）。",
+   "confidence": "high",
+   "source": "https://paypay.ne.jp/store/merit/",
+   "date": "2026-05",
+   "notes": "PayPay 官方页面摘要。加盟店总数本轮未查到。"
+  },
+  {
+   "id": "COMPETITORS-40",
+   "claim": "【事实】2026-04-27 起 PayPay 用户可经 HIVEX 在台湾贴 TWQR 标识的40万处以上店铺付款（TWQR Inbound 于2026-04-14开通，清算银行为玉山）；PayPay 海外支払いモード目前只覆盖韩国（Alipay+）和台湾（HIVEX）。",
+   "confidence": "high",
+   "source": "https://paypay.ne.jp/notice/20260427/f-overseaspayment/",
+   "date": "2026-04-27",
+   "notes": "沿用上一轮 JP-PAYPAY、ALIPAY-VERIFY 的结论。这是 HIVEX 在“日本人出境”方向的唯一已上线案例。"
+  },
+  {
+   "id": "COMPETITORS-41",
+   "claim": "【事实（媒体）】HIVEX 2025-01 在韩国上线；台湾全支付与韩国 ZeroPay、ICB 经 HIVEX 推出跨境支付（2025）。",
+   "confidence": "medium",
+   "source": "https://technews.tw/2024/10/20/hivex-paypay/",
+   "date": "2024-10 ~ 2025",
+   "notes": "沿用上一轮的结论；方向与交易量未查到。"
+  },
+  {
+   "id": "COMPETITORS-42",
+   "claim": "【事实（媒体）】菲律宾：TBCASoft 2023-11 与 RCBC 及 Novus Technologies 宣布合作；2026-07 三方再签 MOU，研究让 HIVEX 钱包用户在日本、韩国、台湾等 HIVEX 受理市场付款。目前仍是 MOU 阶段。",
+   "confidence": "medium",
+   "source": "https://diskartech.ph/?p=2927",
+   "date": "2026-07",
+   "notes": "沿用上一轮 ASEAN-LINK 的结论。"
+  },
+  {
+   "id": "COMPETITORS-43",
+   "claim": "【事实】TBCASoft 与 StraitsX（新加坡 MPI，发行 XSGD 和 XUSD）于2025-09签 Project HIVEX StableLink MOU，目标用受监管稳定币实现即时换汇与结算终局，连接日本、台湾、香港、泰国、美国等地的受监管发行方；TBCASoft 称 HIVEX 自2023年起已用稳定币技术做跨境清算。截至2026-10未查到 StableLink 商用上线。",
+   "confidence": "high",
+   "source": "https://fintechnews.sg/?p=117407",
+   "date": "2025-09-05",
+   "notes": "MOU 为 high；“2023年起用稳定币清算”属公司自述（medium）；上线属未查到。"
+  },
+  {
+   "id": "COMPETITORS-44",
+   "claim": "【未查到】HIVEX 在日本的交易额、交易笔数、活跃用户数，以及 HIVEX 向 PayPay 或钱包方收取的网络费率，本轮均未查到公开数据。",
+   "confidence": "low",
+   "source": "未查到",
+   "date": "2026-10-18 检索",
+   "notes": "所以“HIVEX 约1%手续费”在网络层是否成立无法核实；在商户端已被 COMPETITORS-37 推翻。"
+  },
+  {
+   "id": "COMPETITORS-45",
+   "claim": "【事实】Alipay+ 在日本：2024-03 时经40多家本地收单方连接200万以上商户，16个钱包或银行 App 可用。",
+   "confidence": "high",
+   "source": "https://www.businesswire.com/news/home/20240327604903/en",
+   "date": "2024-03-27",
+   "notes": "Ant International 新闻稿（BusinessWire）。"
+  },
+  {
+   "id": "COMPETITORS-46",
+   "claim": "【公司新闻稿】2024-11 PayPay 与 Alipay+ 扩大合作，把境外钱包受理扩展到日本300万以上商户；截至2026-06-29，PayPay 作为 Alipay+ 收单方共受理17个国家和地区的35项服务。",
+   "confidence": "medium",
+   "source": "https://www.silicon.co.uk/press-release/paypay-and-alipay-extend-enhanced-e-wallet-payment-options-to-over-3-million-merchants-across-japan-with-expanded-partnership",
+   "date": "2024-11 / 2026-06-29",
+   "notes": "2024-11 为新闻稿转载；2026-06-29 数字见 https://about.paypay.ne.jp/en/pr/20260629/01/（上一轮已核实）。Netstars StarPay 也受理 Alipay/Alipay+，但 Netstars 是否为“40+收单方”之一未单独核实。"
+  },
+  {
+   "id": "COMPETITORS-47",
+   "claim": "【事实/未查到】Alipay+ 的稳定币应用目前见于新加坡（StraitsX × Ant International × Grab，后台用 XSGD 加 Purpose Bound Money 清结算，商户收 SGD，2024-11）；在日本经 Alipay+ 让游客用稳定币付款或给商户做稳定币结算的案例，本轮未查到。",
+   "confidence": "medium",
+   "source": "https://www.straitsx.com/case-study/alipay-grab",
+   "date": "2024-11-05",
+   "notes": "新加坡案例沿用上一轮结论；日本部分属“未查到”。StraitsX 同时是 Alipay+ 与 HIVEX 的稳定币伙伴。"
+  },
+  {
+   "id": "COMPETITORS-48",
+   "claim": "【推断】日本商户覆盖：两者不在同一层。Netstars 是国内商户收单和聚合网关（StarPay 约70万账户，GPV 约万亿日元量级，上市公司，自己签约商户、售货机），HIVEX 在日本不签约商户，它的覆盖等于 PayPay 线下加盟店（默认开启）。仅就“境外钱包入境受理”而言，HIVEX 和 Alipay+ 经 PayPay 的覆盖远大于 JPQR Global（首批35家）；但就“国内商户网关业务”而言，Netstars 并不弱，HIVEX 不在这个赛道。",
+   "confidence": "medium",
+   "source": "推断：基于 COMPETITORS-01~06、14、29、31~39、45~46",
+   "date": "2026-10",
+   "notes": "创始人“Netstars 在日本不如 HIVEX”的说法，只在跨境入境钱包受理这一维度成立。"
+  },
+  {
+   "id": "COMPETITORS-49",
+   "claim": "【推断】海外进展：“Netstars 海外没有进展”与证据不符。Netstars 在 METI 政府间框架下已上线柬埔寨（2025-07）和印尼（2025-08）入境联通，印尼反向已获 FSA 许可但未上线，另有卡塔尔 QNB/UPI（2025-09）和柬埔寨 ACLEDA 网关业务。不过规模小，日本人出境方向尚无上线案例。HIVEX 的境外钱包伙伴更多（台湾、中国大陆、港澳、韩国，以及 Binance 覆盖的100+国家），并已为 PayPay 用户上线台湾出境（40万+店）。",
+   "confidence": "medium",
+   "source": "推断：基于 COMPETITORS-08~17、31~35、40~42",
+   "date": "2026-10",
+   "notes": "更准确的说法是：海外“有进展、规模小、偏政府项目”；HIVEX 的海外钱包网络更宽、商业化程度更高。"
+  },
+  {
+   "id": "COMPETITORS-50",
+   "claim": "【推断】稳定币就绪度：截至2026-10，两者都已有上线的稳定币通道，但路线不同。Netstars 的 Stablecoin Pay（2026-07-13，0.98%，USDC、USDT、JPYC，需要商户申请，日本居民也能用 JPYC）是面向商户的产品，是 INSCREEN 的直接竞品；HIVEX 是经 Binance Pay 让外国游客在全部 PayPay 线下加盟店用 USDT 付款（2026-09-30，商户零接入，按1.60%或1.98%收费，排除日本居民），覆盖面最大。StableLink（结算层）尚未上线。Alipay+ 在日本未见稳定币动作。",
+   "confidence": "medium",
+   "source": "推断：基于 COMPETITORS-18~24、35~37、43、47",
+   "date": "2026-10",
+   "notes": "Stablecoin Pay 的实际商户数和合规架构未查到，所以“谁更领先”在规模上无法定量比较。"
+  },
+  {
+   "id": "COMPETITORS-51",
+   "claim": "【推断/假设】对 INSCREEN 定价的含义：可见的对标是信用卡2~3%（创始人给的数字，本轮未核实），PayPay 1.98%或1.60%加每月1,980日元，HIVEX/Binance 按 PayPay 费率且商户零接入，Netstars Stablecoin Pay 0.98%且无需新终端。INSCREEN“0%手续费加每月约2,000日元”（创始人的假设）在月费上与 PayPay ライトプラン相当，但要回答两个问题：换汇、gas、合规和资金移动的成本由谁承担；对已有 PayPay 的商户，游客 USDT 已经零成本可收，INSCREEN 的增量价值在哪里。可能的差异化方向：无人值守机器、高客单价商户（百分比费率更痛）、JPYC 居民支付、商户想直接持有稳定币。",
+   "confidence": "low",
+   "source": "推断：基于 COMPETITORS-18、35、37、38",
+   "date": "2026-10",
+   "notes": "属推断和假设；INSCREEN 成本结构不在本主题范围内。"
+  }
+ ],
+ "key_claims": [
+  "COMPETITORS-18",
+  "COMPETITORS-35",
+  "COMPETITORS-37",
+  "COMPETITORS-38",
+  "COMPETITORS-14",
+  "COMPETITORS-02",
+  "COMPETITORS-26",
+  "COMPETITORS-48",
+  "COMPETITORS-49",
+  "COMPETITORS-50"
+ ],
+ "open_questions": [
+  "Stablecoin Pay 的牌照与资金流：谁以電子決済手段等取引業者、暗号資産交換業者或資金移動業者的身份收 USDT、USDC、JPYC 并兑成日元给商户？日本尚未查到登记业者把 USDT 作为電子決済手段处理，Netstars 如何合规受理 USDT？",
+  "Stablecoin Pay 的0.98%是否含换汇价差和 gas？结算周期多长？已导入商户数和交易额是多少？支持哪些钱包？",
+  "Binance Pay 经 HIVEX 在 PayPay 加盟店的实际交易量；HIVEX 向 PayPay 或钱包方收的网络费、汇率加价由谁获得；PayPay 是否会把同样的通道开放给其他加密钱包（如 OKX、Bitget）？",
+  "JPQR Global 目前在日本的受理商户数；印尼反向（日本游客在印尼）与 KHQR 二期的上线时间；日方出境用哪个 App？",
+  "Netstars“卡塔尔3,000+店、增长112.2%”的原文出处与口径。",
+  "Netstars 2026年中期 GPV 11,289亿日元的期间口径，以及营收增速“+14.3%”与“+25.6%”的冲突。",
+  "総務省 JPQR 普及事业在 FY2022 以后是否以任何形式延续；JPQR 加盟申请窗口现在是否仍在运营？",
+  "Alipay+ 是否计划在日本引入稳定币钱包或稳定币结算（例如经 StraitsX）？",
+  "创始人所说信用卡2~3%、HIVEX 约1%的来源：本轮在商户端没有找到约1%的证据（HIVEX 在日本按 PayPay 费率收费）。约1%是否指某个境外市场或网络层费率？"
+ ]
+}

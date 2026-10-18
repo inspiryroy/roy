@@ -1,0 +1,352 @@
+{
+ "topic": "FEES：日本三类商户收款渠道（信用卡、QR、账户型直连终端）的费率与成本基准",
+ "summary": "日本商户收款成本基准（截至2026-10，挂牌价为主）：信用卡/多合一终端的中小优惠价已集中到1.98%–2.5%（stera pack 1.98%、2026-09-28起 stera pack light 月费0+1.98%起、STORES 中小方案 Visa/MC 1.98%（月费3,300円）、Square 中小2.5%、Airペイ 2.48%方案、楽天ペイ 2.20%（月费2,200円）/2.48%），标准价2.70%–3.25%；这是2022年公取委・经产省推动インターチェンジフィー（约占加盟店手数料7成）公开后，2024年底开始出现的中小低价方案。QR 方面 PayPay 1.98%（全店加入月费1,980円/店的ライトプラン可降至1.60%），d払い/au PAY/メルペイ 2.6%税別，楽天ペイ 2.20%–3.24%；经 PayPay 受理 Alipay+ 入境钱包的商户费为1.98%税別，HIVEX（如微信支付扫 PayPay 码）未见面向商户的费率，推断商户只付 PayPay 的手续费、HIVEX 在批发层收费。因此创始人'QR 网关约1%'不符合日本商户挂牌价，可能是批发/议价价；'信用卡2–3%'基本符合。终端方面 Square ターミナル 39,980円税込、月费0；Airペイ 读卡器审查后免费贷与；stera 以月费（第2年起3,300円/台/月）或 light 版月费0提供。入金周期从每日（楽天銀行、PayPay銀行）到月1回不等，提前入金常收0.38%+振込费（PayPay 都度）。2025年无现金比率按新国内指標为58.0%（旧口径46.3%），其中信用卡占金额82.7%、QR 10.2%。对 INSCREEN 的含义（推断）：按创始人暂定月费2,000円、0%手续费，商户每月稳定币收款需超过约10万円才比1.98%渠道便宜；市场基准已是'月费0+约2%'的多品牌一体机，且0%不含稳定币→日元的兑换与出金成本，所以单靠'手续费0'难以说服小商户，需要按稳定币流水分层定价或聚焦高客单入境商户与无人设备。",
+ "facts": [
+  {
+   "id": "FEES-01",
+   "claim": "经产省于2026-03-31公表2025年キャッシュレス決済比率：改用新的'国内指標'为58.0%，キャッシュレス決済額162.7兆円；按旧'国際比較指標'为46.3%",
+   "confidence": "medium",
+   "source": "https://www.watch.impress.co.jp/docs/news/2099068.html ; https://www.scbri.jp/reports/.assets/newstopics_20260403.pdf ; https://www.commercepick.com/archives/89761",
+   "date": "2026-03-31",
+   "notes": "[已核实事实-二手] Impress Watch、SCB総研、commercepick 三家数字一致；METI 原始公表页未在检索结果中出现，WebFetch/curl 均被网络拦截，故不评 high"
+  },
+  {
+   "id": "FEES-02",
+   "claim": "2025年无现金支付额按手段：信用卡82.7%（134.6兆円）、コード決済10.2%（16.6兆円）、電子マネー3.7%（6.0兆円）、デビット3.4%（5.5兆円）",
+   "confidence": "medium",
+   "source": "https://www.watch.impress.co.jp/docs/news/2099068.html ; https://www.scbri.jp/reports/.assets/newstopics_20260403.pdf",
+   "date": "2026-03-31",
+   "notes": "[已核实事实-二手] 含义：商户手续费负担的主体仍是信用卡；QR 只占约一成金额"
+  },
+  {
+   "id": "FEES-03",
+   "claim": "2024年キャッシュレス決済比率（旧指标）为42.8%，提前达成政府'2025年4割'目标；commercepick 称按新国内指標2024年为52.8%，2025年上升5.2个百分点",
+   "confidence": "medium",
+   "source": "https://paymentnavi.com/?p=165410 ; https://www.commercepick.com/archives/89761",
+   "date": "2025-09 / 2026-03",
+   "notes": "[已核实事实-二手] 经产省キャッシュレス推進室课长访谈（paymentnavi 2025-09）给出42.8%，把旧研究 JP-PAYPAY #36（low）升为 medium；52.8% 只见 commercepick 一处"
+  },
+  {
+   "id": "FEES-04",
+   "claim": "政府新目标：将来国内指標80%，2030年中间目标国内指標65%（国際比較指標55%）",
+   "confidence": "medium",
+   "source": "https://www.scbri.jp/reports/.assets/newstopics_20260403.pdf",
+   "date": "2026-04-03",
+   "notes": "[已核实事实-二手] SCB総研整理经产省资料"
+  },
+  {
+   "id": "FEES-05",
+   "claim": "「デジタル田園都市国家構想基本方針」（2022-06-07閣議決定）写明：インターチェンジフィー约占加盟店手数料的7成，要推进其标准料率公开，以提高市场透明度、促进加盟店议价",
+   "confidence": "high",
+   "source": "https://www.meti.go.jp/press/2022/09/20220914001/20220914001-1.pdf",
+   "date": "2022-06-07 / 2022-09-14",
+   "notes": "[已核实事实-一手] METI 新闻资料 PDF 出现在检索结果中（摘要引用原文）"
+  },
+  {
+   "id": "FEES-06",
+   "claim": "公正取引委員会与経済産業省于2022-09-14表明：不自行发卡/收单的国际品牌应公开インターチェンジフィー标准料率；2022-11-30 Visa、Mastercard、UnionPay 公开标准料率（Visa 页面 visa.co.jp/about-visa/interchange.html）；2023-06-01 JCB 公开加盟店手数料在イシュア与アクワイアラ之间的配分率",
+   "confidence": "high",
+   "source": "https://www.jftc.go.jp/houdou/pressrelease/2022/sep/220914creditcard.html ; https://www.jftc.go.jp/houdou/pressrelease/2022/nov/221130creditcard.html ; https://www.jftc.go.jp/houdou/pressrelease/2023/jun/230601creditcard.html",
+   "date": "2022-09-14 / 2022-11-30 / 2023-06-01",
+   "notes": "[已核实事实-一手] 具体インターチェンジ数值（如一般加盟店对面料率）本轮未取得，见 open_questions"
+  },
+  {
+   "id": "FEES-07",
+   "claim": "公取委「クレジットカードの取引に関する実態調査報告書」（2022-04）认为设有标准料率的国际品牌公开该料率是适当的，并希望公开イシュア手数料的平均料率",
+   "confidence": "high",
+   "source": "https://www.jftc.go.jp/houdou/pressrelease/2023/jun/230601creditcard.html",
+   "date": "2022-04-08",
+   "notes": "[已核实事实-一手] 报告正文中的'按商户规模平均手续费率'本轮未读到"
+  },
+  {
+   "id": "FEES-08",
+   "claim": "经产省キャッシュレス検討会（2020起）议事中出现的意见：中小店铺利润率在2%台半ば，3%以上手续费负担沉重，需要手续费'見える化'和下调；2022-03とりまとめ把'加盟店手数料负担重、导入好处看不清'列为进一步普及的课题",
+   "confidence": "high",
+   "source": "https://www.meti.go.jp/shingikai/mono_info_service/cashless_payment/pdf/001_gijiyoshi.pdf ; https://www.meti.go.jp/shingikai/mono_info_service/cashless_payment/pdf/20220318_3.pdf",
+   "date": "2020 / 2022-03-18",
+   "notes": "[已核实事实-一手，内容为委员意见而非统计] 可用作 INSCREEN '0%手续费'诉求的政策背景"
+  },
+  {
+   "id": "FEES-09",
+   "claim": "经产省课长称：2022年与公取委一起要求国际品牌公开インターチェンジフィー后，多家品牌响应，'24年末前后开始出现面向中小加盟店的低手续费方案'",
+   "confidence": "medium",
+   "source": "https://paymentnavi.com/?p=165410",
+   "date": "2025-09",
+   "notes": "[官方人士口径-二手转述] 与下文 Square 2.5%、Airペイ 2.48%、STORES/stera 1.98% 等2024年底集中出现的中小方案时间吻合"
+  },
+  {
+   "id": "FEES-10",
+   "claim": "经产省有2023年度委托调查，研究インターチェンジフィー公开后加盟店手数料设计与议价是否活跃（報告書 000797）",
+   "confidence": "medium",
+   "source": "https://www.meti.go.jp/meti_lib/report/2023FY/000797.pdf",
+   "date": "2024",
+   "notes": "[已核实事实-存在性] 报告中的具体统计未读到"
+  },
+  {
+   "id": "FEES-11",
+   "claim": "按商户规模的信用卡加盟店手数料平均值（大企业 vs 中小）：本轮未在 METI/公取委公开资料中检到具体数字；民间解说称一般在3%台（三井住友カード加盟店媒体）或1.5%–3.5%（pay-route 2026-08）",
+   "confidence": "low",
+   "source": "https://www.smbc-card.com/kamei/magazine/point/creditcard_fee.jsp ; https://pay-route.co.jp/article/2026/08/07/compare-credit-card-fees-to-find-cheapest-guide-2026/",
+   "date": "2026-08",
+   "notes": "[未查到≠不存在] 大型连锁通常为议价费率、远低于中小挂牌价，这一点为行业常识（推断），本轮无一手数字"
+  },
+  {
+   "id": "FEES-12",
+   "claim": "Square（日本）对面决济手续费：年间キャッシュレス決済額未满3,000万円且符合中小企业定义者为2.5%，否则3.25%起或定制费率；手入力等非对面3.75%，在线决济3.6%；JCB・Diners・Discover・Amex 对面费率自2025-01-21起也由3.25%降至2.5%",
+   "confidence": "high",
+   "source": "https://squareup.com/jp/ja/townsquare/pricing-detail ; https://squareup.com/jp/ja/press/jcb-diners-discover-americanexpress-reduction ; https://squareup.com/jp/ja/press/card-processing-reduction",
+   "date": "2025-01-21（JCB等）；Visa/MC 降至2.5%的生效日未读到",
+   "notes": "[公司公开挂牌价] 有比较站写3.50%，应为旧数据；2.5%是有条件的中小优惠价"
+  },
+  {
+   "id": "FEES-13",
+   "claim": "Square ターミナル（一体机：POS+决济+小票打印）售价39,980円（税込），月费0円；手续费另计2.5%–3.25%",
+   "confidence": "high",
+   "source": "https://squareup.com/jp/ja/hardware/terminal",
+   "date": "2026（页面未标日期）",
+   "notes": "[公司公开挂牌价] Square 读卡器价格本轮未检到"
+  },
+  {
+   "id": "FEES-14",
+   "claim": "Airペイ（Recruit）：标准为信用卡・电子マネー3.24%，交通系IC与QR 2.95%（部分文章写 Visa/MC/Amex 2.95%）；对中小事业者的2.48%优惠计划自2024-12-02开始，需报名(エントリー制)，可能有期限",
+   "confidence": "medium",
+   "source": "https://www.watch.impress.co.jp/docs/news/1634404.html ; https://saas.imitsu.jp/cate-payment/service/1989/price",
+   "date": "2024-10 / 2024-12-02",
+   "notes": "[公司口径-二手] 2.48%计划在2026-10是否仍有效未核实；各文章费率口径不一"
+  },
+  {
+   "id": "FEES-15",
+   "claim": "Airペイ：官方宣传初期费用0、月额固定费0、振込手数料0（一文称ゆうちょ除外）；读卡器审查后无偿贷与；入金为三大行每5天（月6次）、其他银行每10天（月3次）。另有比较文章列月额3,300円，与'月额0'冲突",
+   "confidence": "medium",
+   "source": "https://paymentnavi.com/?p=53350 ; https://www.pricey.jp/web/articles/7165 ; https://saas.imitsu.jp/cate-payment/service/1989/price",
+   "date": "2019 起（入金规则为上线初期信息）",
+   "notes": "[公司口径-二手，部分可能过时] 月额冲突需看官网"
+  },
+  {
+   "id": "FEES-16",
+   "claim": "STORES 決済：「中小支援プラン」（月额3,300円）自12月起 Visa・Mastercard 1.98%，JCB・Amex・Diners・Discover 2.38%；此前 JCB・Diners・Discover 于2023-04-01由3.74%降至3.24%；交通系电子マネー于2021-10-13由3.24%降至1.98%",
+   "confidence": "medium",
+   "source": "https://www.watch.impress.co.jp/docs/news/1644124.html ; https://paymentnavi.com/en/?p=129181 ; https://ecnomikata.com/ecnews/32239",
+   "date": "推定2024-12（Impress 1644124 约为2024-11 文章）",
+   "notes": "[公司口径-二手] 中小支援プラン年份未在摘要中明写，按文章编号推定；2026现状未核实"
+  },
+  {
+   "id": "FEES-17",
+   "claim": "楽天ペイ（実店舗決済）'最強プラン'（2024-12）：此前信用卡一律3.24%；スタンダードプラン月额2,200円→楽天ペイ与信用卡2.20%；ライトプラン月额0→2.48%；交通系IC・电子マネー2.95%，QUICPay・iD 3.24%；スタンダードプラン月费有至2025-12-31免费的活动",
+   "confidence": "medium",
+   "source": "https://www.watch.impress.co.jp/docs/news/1644124.html",
+   "date": "2024-11/12",
+   "notes": "[公司口径-二手] 2026-10 现行条件未核实。推断：2,200円/月方案的盈亏平衡月流水=2,200÷0.28%≈78.6万円"
+  },
+  {
+   "id": "FEES-18",
+   "claim": "楽天ペイ入金：楽天銀行口座每日自动、最短翌日入金且振込手数料免费；JPQR 一览（2025-06-16）载楽天ペイ（アプリ決済）手续费3.24%～，入金'日々或月1回'，入金手数料楽天銀行免费、他行300円（税別）",
+   "confidence": "medium",
+   "source": "https://jpqr.paymentsjapan.or.jp/wp-content/uploads/2025/06/TC_services_20250616.pdf ; https://meetsmore.com/products/rakutenpay",
+   "date": "2025-06-16",
+   "notes": "[协会一览+公司口径] JPQR 一览为'经 JPQR 申请时的条件'，可能与直签不同"
+  },
+  {
+   "id": "FEES-19",
+   "claim": "三井住友カード stera pack：スモールビジネスプラン决济手续费1.98%（面向满足条件的中小企业・个人事业主；2024年报道对象品牌为 Visa・Mastercard），服务费第1年0円、第2年起每台3,300円（税込）/月，过去1年キャッシュレス売上3,000万円以上则永久免费；スタンダードプラン2.70%",
+   "confidence": "high",
+   "source": "https://www.smbc-card.com/kamei/start/plan.jsp?facet3=pdf ; https://www.watch.impress.co.jp/docs/news/1636050.html",
+   "date": "2024-10 起",
+   "notes": "[公司公开挂牌价-一手] 端末单买价格本轮未检到（stera 以月费方式含端末）"
+  },
+  {
+   "id": "FEES-20",
+   "claim": "三井住友カード「stera pack light」于2026-09-28起提供：月额利用料0円，决济手续费1.98%起，一台终端支持信用卡、タッチ決済、电子マネー、コード決済（銀聯及部分コード決済除外），SIM 选配另收费；对象为个人事业主、小规模店铺、开业准备中事业者",
+   "confidence": "medium",
+   "source": "https://www.watch.impress.co.jp/docs/news/2143846.html ; https://paymentnavi.com/?p=182897",
+   "date": "2026-09-28",
+   "notes": "[公司口径-二手，最新] 官方新闻稿原文未在结果中出现。意义：'月费0 + 约2%'已成为小商户基准，INSCREEN 月费模式要与此对比"
+  },
+  {
+   "id": "FEES-21",
+   "claim": "PayPay 决済システム利用料：标准1.98%；加盟店名下所有实体店都加入'PayPayマイストア ライトプラン'时适用1.60%（部分店铺加入则仍为1.98%），自加入次月1日起适用；PayCAS 加盟店与'あんしんプラス'除外；均为税別",
+   "confidence": "high",
+   "source": "https://paypay.ne.jp/help-merchant/b0544/ ; https://paypay.ne.jp/store/cost/ ; https://paypay.ne.jp/merchant-knowhow/new-customers/plan/",
+   "date": "页面未标日期（2026-10 检索）",
+   "notes": "[公司公开挂牌价-一手] 1.98%税別≈2.178%税込（若课税）"
+  },
+  {
+   "id": "FEES-22",
+   "claim": "PayPayマイストア ライトプラン：初期费用1,980円/加盟店，月额1,980円/店铺；クーポン利用料为交易额3%",
+   "confidence": "high",
+   "source": "https://paypay.ne.jp/store/cost/ ; https://paypay.ne.jp/store/offer/liteplan-lp/",
+   "date": "页面未标日期（2026-10 检索）",
+   "notes": "[公司公开挂牌价-一手]"
+  },
+  {
+   "id": "FEES-23",
+   "claim": "推断：PayPay 1.60%方案仅当单店月 PayPay 流水≥约52.1万円（1,980÷0.38%）时比1.98%划算；多数小店达不到，即实际适用1.98%",
+   "confidence": "low",
+   "source": "由 FEES-21、FEES-22 计算",
+   "date": "2026-10-18",
+   "notes": "[推断-算术] 未计入ライトプラン的营销价值"
+  },
+  {
+   "id": "FEES-24",
+   "claim": "PayPay 加盟店入金：基本为月1回（月末締め）；可选'早期振込サービス(自動)'（达到1円–10万円设定额即自动入金，入金手数料按售额满1万円之日计）和'早期振込サービス(都度)'（振込金额的0.38%+振込手数料 PayPay銀行20円/其他200円，税別；到账 PayPay銀行翌日、ゆうちょ4营业日、其他翌々営業日）；PayPay銀行无休业日；JPQR 一览写'月末締め、最短翌日入金'",
+   "confidence": "medium",
+   "source": "https://paypay.ne.jp/help-merchant/b0585/ ; https://paypay.ne.jp/help-merchant/b0570/ ; https://jpqr.paymentsjapan.or.jp/wp-content/uploads/2025/10/TC_services2_20251017.pdf",
+   "date": "页面未标日期 / 2025-10-17",
+   "notes": "[公司口径-一手摘要，细节不一致] 一处摘要写'翌月末入金'，与 JPQR '最短翌日'冲突；自动早期入金每次费用额未读到。2019–2020 的入金免费为限时措施"
+  },
+  {
+   "id": "FEES-25",
+   "claim": "经 PayPay 受理 Alipay+（入境钱包）：加盟店无初期费用，Alipay+ 经由的决済システム利用料为交易额1.98%（税別），自动从货款中扣除；需按店铺在 PayPay for Business 申请开通；仅支持用户扫店铺码（MPM）；2024-01-29时对象为10国18个海外服务（Alipay、AlipayHK、Kakao Pay、NAVER Pay、GCash 等），2024-01追加服务无需加盟店负担费用或办手续",
+   "confidence": "high",
+   "source": "https://paypay.ne.jp/help-merchant/b0076/ ; https://paypay.ne.jp/notice-merchant/20240129/n-01/",
+   "date": "2024-01-29（追加）；帮助页未标日期",
+   "notes": "[公司公开挂牌价-一手] 把旧研究 docs/09 #17（PayPay 加盟店手数料1.98%，medium）升为 high。结论：日本商户收境外 QR 的挂牌价约2%，不是'1%左右'"
+  },
+  {
+   "id": "FEES-26",
+   "claim": "Weixin Pay（微信支付）用户自2025-09中旬起可经 HIVEX 在日本 PayPay 商户扫 PayPay 码付款，无需换汇或下载新 App；HIVEX 称钱包方无需新码格式、商户无需改 POS；本轮未检到 HIVEX 或 PayPay 针对此类交易的加盟店费率表",
+   "confidence": "medium",
+   "source": "https://fintechnews.sg/117472/payments/hivex-cashless-payments-japan-wechat-pay-paypay/ ; https://ibsintelligence.com/ibsi-news/weixin-pay-taps-tbcasoft-to-launch-qr-code-payments ; https://technews.tw/2024/10/20/hivex-paypay/",
+   "date": "2025-09",
+   "notes": "[已核实事实-二手；费率'未查到'] 不等于不存在"
+  },
+  {
+   "id": "FEES-27",
+   "claim": "推断：HIVEX 是钱包↔收单方之间的网络，不与日本商户直接签约收费；日本商户受理 HIVEX 入境交易时承担的是 PayPay 的加盟店手续费（预计与 Alipay+ 同为1.98%税別，未核实），HIVEX 的网络费由钱包方/PayPay 在批发层结算。因此'HIVEX 手续费约1%'若存在，应是批发层（网络费/汇差）而非商户挂牌价",
+   "confidence": "low",
+   "source": "由 FEES-25、FEES-26 及 ALIPAY-VERIFY #38 推导",
+   "date": "2026-10-18",
+   "notes": "[推断] 需向 PayPay/TBCASoft 确认"
+  },
+  {
+   "id": "FEES-28",
+   "claim": "台湾 HIVEX 合作钱包（台新 Pay+、全盈+PAY）2026-02 开通日本 PayPay 服务时对用户免收1.5%海外交易手续费（消费者侧促销，非商户费）",
+   "confidence": "medium",
+   "source": "https://www.ctee.com.tw/news/20260203701784-430303",
+   "date": "2026-02-03",
+   "notes": "[公司口径-二手] 供对比用户侧成本；PayPay 出境模式用户侧为汇率+3.85%（JP-PAYPAY 已核实）"
+  },
+  {
+   "id": "FEES-29",
+   "claim": "d払い：决济手续费2.6%（税別；JPQR 一览为2.86%税込）；2023-12-01以后新登记加盟店有决济手续费0円的活动，结束日'未定'；单次入金额未满1万円时另收200円振込手数料",
+   "confidence": "high",
+   "source": "https://service.smt.docomo.ne.jp/keitai_payment/corporation/shop/cost.html ; https://service.smt.docomo.ne.jp/keitai_payment/corporation/shop/tips/ID15.html ; https://jpqr.paymentsjapan.or.jp/wp-content/uploads/2025/12/TC_services_20251215.pdf",
+   "date": "页面未标日期 / 2025-12-15",
+   "notes": "[公司公开挂牌价-一手] 2026-10 活动是否仍在未核实"
+  },
+  {
+   "id": "FEES-30",
+   "claim": "au PAY：手续费2.6%（税別），入金可选月2回等，入金手数料免费（JPQR 参画決済サービス一览2025-12-15）；2021年曾对中小店免收2.6%至2022-09-30",
+   "confidence": "high",
+   "source": "https://jpqr.paymentsjapan.or.jp/wp-content/uploads/2025/12/TC_services_20251215.pdf ; https://paymentnavi.com/?p=109750",
+   "date": "2025-12-15",
+   "notes": "[协会一览-一手] 为'经 JPQR 申请'的条件"
+  },
+  {
+   "id": "FEES-31",
+   "claim": "JPQR 参画決済サービス一览（2025-10-17，'现在暂停受理申请'清单）列有 PayPay（2.95%税別，月1回、月末締め最短翌日入金）与メルペイ（2.60%税別，月1/2回，入金未满1万円收200円）；即经 JPQR 统一窗口申请 PayPay/メルペイ 已暂停",
+   "confidence": "medium",
+   "source": "https://jpqr.paymentsjapan.or.jp/wp-content/uploads/2025/10/TC_services2_20251017.pdf",
+   "date": "2025-10-17",
+   "notes": "[协会一览-一手摘要] PayPay 经 JPQR 的2.95%与直签1.98%不同，原因未查到；可作为'JPQR 国内统一申请窗口在收缩'的一个信号（推断）"
+  },
+  {
+   "id": "FEES-32",
+   "claim": "ネットスターズ StarPay：有価証券報告書（FY2025）称整合国内外40种以上 QR 决济品牌；2015年作为日本首家 WeChat Pay アクワイアラ起步，2018-06起受理 Alipay；加盟店多经取次店获取；StarPay 的加盟店费率未在公开资料中检到",
+   "confidence": "medium",
+   "source": "https://edinetdb.jp/company/E38957/text?fy=2025 ; https://www.hokugin.co.jp/info/files/pdf/1734.pdf",
+   "date": "FY2025 / 2019",
+   "notes": "[公司口径-有報] 费率'未查到'；按品牌、按取次店不同（推断）"
+  },
+  {
+   "id": "FEES-33",
+   "claim": "ネットスターズ 相关进展：2025-09-16起'メルペイ・d払い共通QRコード'加盟店可受理 WeChat Pay；ダイソー等经 ネットスターズ 可用 WeChat Pay、Alipay+；キャッシュレス推進協議会2025-05-26宣布提供 JPQR Global，2025-10-20开始受理 JPQR Global 申请",
+   "confidence": "medium",
+   "source": "https://paymentnavi.com/en/?p=165572 ; https://paymentnavi.com/?p=131094 ; https://paymentsjapan.or.jp/announcement/20250526_jpqr-global/ ; https://jpqr.paymentsjapan.or.jp/20251020_jpqrglobal/",
+   "date": "2025-05-26 / 2025-09-16 / 2025-10-20",
+   "notes": "[已核实事实-标题/摘要] 说明 Netstars 在日本国内入境受理有实质进展（不是'没有进展'）；海外出境方向见其他研究文件。JPQR Global 商户费率未查到"
+  },
+  {
+   "id": "FEES-34",
+   "claim": "Alipay+ 收单侧（ACQP）承担 wallet interchange fee 与 Alipay+ service fee，从结算款中扣除；ACQP 结算默认 T+2",
+   "confidence": "high",
+   "source": "https://docs.alipayplus.com/alipayplus/alipayplus/reconcile_acq/reconcile_overview ; https://docs.alipayplus.com/alipayplus/alipayplus/reconcile_acq",
+   "date": "旧研究 ALIPAY-VERIFY #14/#16（2026-10-18）",
+   "notes": "[沿用已核实事实] 结构上 PayPay 作为 ACQP 向商户收1.98%，再向 Alipay+ 付批发费；批发费率未公开（见 open_questions）"
+  },
+  {
+   "id": "FEES-35",
+   "claim": "对用户三类渠道的核对：(1)'信用卡2–3%'与公开价一致——中小优惠价1.98%（stera/STORES 中小方案、stera pack light）至2.5%（Square 中小）、标准价2.70%–3.25%（stera 标准、Square 非中小、Airペイ/楽天 旧标准3.24%）；(2)'QR 约1%'不符合日本商户挂牌价——PayPay 1.98%/1.60%、Alipay+ 经 PayPay 1.98%、d払い/au PAY/メルペイ 2.6%、楽天ペイ 2.20%–3.24%",
+   "confidence": "medium",
+   "source": "由 FEES-12~FEES-31 汇总",
+   "date": "2026-10-18",
+   "notes": "[推断-基于已核实挂牌价] 'QR 1%'可能是大商户议价价或批发层费率，需提供出处"
+  },
+  {
+   "id": "FEES-36",
+   "claim": "推断（用户假设月费2,000円、0%手续费）：仅看手续费，INSCREEN 要比现有渠道便宜，商户每月经 INSCREEN 收的稳定币额需超过 2,000÷1.98%≈10.1万円（对比 PayPay/stera 1.98%）、8万円（对比 Square 2.5%）、约6.2万円（对比3.24%）；且这只替代'用稳定币付款的那部分'销售，商户仍需保留卡/QR 渠道",
+   "confidence": "low",
+   "source": "基于 FEES-12、FEES-19~22 及用户假设",
+   "date": "2026-10-18",
+   "notes": "[假设+推断] 月费2,000円为创始人暂定数，未验证"
+  },
+  {
+   "id": "FEES-37",
+   "claim": "推断：市场基准已变为'月费0+约2%'（stera pack light 2026-09、PayPay 1.98%、Airペイ/楽天 2.48% 方案），终端多为免费贷与或含在月费中；INSCREEN 若收月费，面对的是'零月费、多品牌一体机'，单靠'0%手续费'难说服低稳定币流水的小商户，更可能的定价是：低流水免月费+小比例费，或面向高客单入境商户/无人设备打包",
+   "confidence": "low",
+   "source": "由 FEES-13~20 推导",
+   "date": "2026-10-18",
+   "notes": "[推断] 需与需求侧数据（稳定币持有/使用率）合并判断"
+  },
+  {
+   "id": "FEES-38",
+   "claim": "INSCREEN '0%'不等于商户全成本为0：至少还需计入稳定币→日元的兑换点差与出金费（经電子決済手段等取引業者或发行方赎回）、银行振込费、USDC/USDT 的汇率波动、会计与税务处理成本、退款处理；这些在本轮未量化",
+   "confidence": "low",
+   "source": "分析推导",
+   "date": "2026-10-18",
+   "notes": "[假设清单] 需向 JPYC、SBI VC Trade 等索取实际费率"
+  },
+  {
+   "id": "FEES-39",
+   "claim": "消费税口径提示：日本信用卡加盟店手数料一般按非课税处理，而 QR 决济系统利用料（如 PayPay）为课税；比较时 PayPay 1.98%税別≈2.178%税込，d払い2.6%税別=2.86%税込",
+   "confidence": "low",
+   "source": "未核实-记忆（国税庁相关质疑应答未在本轮检索）；税込换算见 JPQR 一览 https://jpqr.paymentsjapan.or.jp/wp-content/uploads/2025/12/TC_services_20251215.pdf",
+   "date": "2026-10-18",
+   "notes": "[未核实] 信用卡非课税的说法需查国税庁；INSCREEN 月费/稳定币兑换费的消费税处理亦需税理士确认"
+  },
+  {
+   "id": "FEES-40",
+   "claim": "Square 入金：三井住友・みずほ口座翌营业日、其他银行每周入金，振込手数料免费",
+   "confidence": "low",
+   "source": "未核实-记忆（本轮未检索）",
+   "date": "未查到",
+   "notes": "[未核实] 仅作参照，需查 Square 官网"
+  }
+ ],
+ "key_claims": [
+  "FEES-01",
+  "FEES-05",
+  "FEES-12",
+  "FEES-19",
+  "FEES-20",
+  "FEES-21",
+  "FEES-25",
+  "FEES-27",
+  "FEES-35",
+  "FEES-36"
+ ],
+ "open_questions": [
+  "Visa・Mastercard 在日本公开的インターチェンジフィー标准料率具体数值（一般对面、小额、特定业种）——本轮只确认了公开事实，未取得数值",
+  "公取委2022报告或经产省检讨会中按商户规模（大企业/中小）的平均加盟店手数料率——本轮未查到",
+  "PayPay 经 HIVEX 受理微信支付等入境交易时，日本商户适用的费率是否与 Alipay+ 一样为1.98%；HIVEX 对钱包方/PayPay 的网络费",
+  "Alipay+ wallet interchange fee 与 service fee 的水平（INSPAY 若作为收单方的批发成本），以及创始人'QR 约1%'的出处",
+  "Airペイ 2.48%方案在2026-10是否仍有效、月费是否为0（与比较站3,300円的说法冲突）；STORES 中小支援プラン的开始年份与现状",
+  "PayPay 标准入金日（'最短翌日' vs '翌月末'）与自动早期振込每次手数料额",
+  "ネットスターズ StarPay 与 JPQR Global 对商户的手续费率；PayPay 经 JPQR 窗口为何是2.95%、为何暂停受理",
+  "INSCREEN 全成本：JPYC 赎回/出金费、USDC/USDT→日元经電子決済手段等取引業者的点差与出金费、银行振込费、会计与消费税处理",
+  "信用卡加盟店手数料非课税、QR 利用料课税这一税务口径（需查国税庁）以及 INSCREEN 月费与兑换费的消费税处理",
+  "自动售货机、游戏机等无人设备的キャッシュレス模块价格与手续费（本轮未覆盖）",
+  "Square 入金周期与读卡器价格（本轮未核实）"
+ ],
+ "searches_used": 18
+}
