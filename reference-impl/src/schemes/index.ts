@@ -4,12 +4,13 @@ import { qris, sampleQris } from './id.ts';
 import { khqr, sampleKhqrMerchant } from './kh.ts';
 import { laoQr, sampleLaoQr } from './la.ts';
 import { duitNow, sampleDuitNowQr } from './my.ts';
+import { qrPh, sampleQrPhMerchant } from './ph.ts';
 import { grabPaySg, netsQr, payNow, sampleSgqr } from './sg.ts';
 import { samplePromptPayQr, sampleThaiMerchantQr, thaiQr } from './th.ts';
 import type { SchemeDefinition } from './types.ts';
 import { sampleVietQrMerchant, vietQr, vnpayQr } from './vn.ts';
 
-export const ALL_SCHEMES: SchemeDefinition[] = [thaiQr, duitNow, payNow(), netsQr, grabPaySg, laoQr, qris, vietQr, vnpayQr, khqr()];
+export const ALL_SCHEMES: SchemeDefinition[] = [thaiQr, duitNow, payNow(), netsQr, grabPaySg, laoQr, qris, vietQr, vnpayQr, khqr(), qrPh];
 
 export interface Sample {
   schemeId: string;
@@ -28,6 +29,7 @@ export const SAMPLES: Sample[] = [
   { schemeId: 'ID.QRIS', qr: sampleQris(), enterAmountMinor: 8500000n },
   { schemeId: 'VN.VIETQR', qr: sampleVietQrMerchant({ amount: '85000' }) },
   { schemeId: 'KH.KHQR', qr: sampleKhqrMerchant(), enterAmountMinor: 1600000n },
+  { schemeId: 'PH.QRPH', qr: sampleQrPhMerchant({ amount: '450.00' }) },
 ];
 
 export { samplePromptPayQr };

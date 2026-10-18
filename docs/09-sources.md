@@ -343,6 +343,65 @@
 
 </details>
 
+## 菲律宾 / 缅甸
+
+事实 35 条（高 2 / 中 25 / 低 8）。
+
+| # | 事实 | 置信度 | 来源 | 日期 | 备注 |
+|---|---|---|---|---|---|
+| 1 | Wise 于 2024-11-04 宣布获得 InstaPay 直连，并直接在 BSP 的 PhilPaSSplus 结算 | 高 | [链接](https://www.businesswire.com/news/home/20241101510219/en/Wise-Granted-Direct-Access-to-Philippines-Instant-Payments-Infrastructure-Gets-Settlement-Account-With-BSP) | 2024-11-04 | Wise 官方新闻稿（搜索摘要） |
+| 2 | MAS 与 BSP 于 2021-11 签署增强版 FinTech 合作协议，要联通实时支付和 QR 支付系统 | 高 | [链接](https://www.mas.gov.sg/news/media-releases/2021/mas-and-bsp-to-pursue-cross-border-payment-linkages) | 2021-11 |  |
+| 3 | QR Ph P2M 码用 MAI tag 28，子 00 GUID 是 'ph.ppmi.p2m'；P2P 码用 tag 27，GUID 是 'com.p2pqrpay' | 中 | [链接](https://www.npmjs.com/package/@qrph/qrph) | 2025-01-03 | 开源库 schema.ts 加上 14 个真实商户码样例（GCash/Maya/BPI/BDO/Security Bank/AUB/ShopeePay/PayMongo），我在本地做了 TLV 解析并校验 CRC |
+| 4 | tag 28/27 子 01 是 11 位 BIC 格式的收单/InstaPay 参与者代码：GCash=GXCHPHM2XXX，Maya=PAPHPHM1XXX，ShopeePay=SHPHPHM2XXX，BPI=BOPIPHMMXXX，BDO=BNORPHMMXXX，Security Bank=SETCPHMM000，AUB=AUBKPHMMXXX，PayMongo=PAEYPHM2XXX | 中 | [链接](https://www.npmjs.com/package/@qrph/qrph) | 2025-01-03 | 从样例观察得出；子标签官方名称未核实 |
+| 5 | QR Ph 的 tag 62 子 00 也带 GUID（ph.ppmi.qrph / com.paymaya.qr / com.ppmi.qrph），05 是 Reference Label，03 是 Store Label，07 是 Terminal Label；值为 '***' 时提示付款方输入；tag 88 带 ph.ppmi.qrph 加商户标识 | 中 | [链接](https://www.npmjs.com/package/@qrph/qrph) | 2025-01-03 | 真实样例观察 |
+| 6 | 样例中 P2P 码 MCC 都是 6016，个人名掩码（如 'BR****N S.'）；P2M 用真实 MCC | 中 | [链接](https://www.npmjs.com/package/@qrph/qrph) | 2025-01-03 |  |
+| 7 | 开源注册表里 GCash 的 SWIFT 是 GLTEPHMT，和 QR 码中的 GXCHPHM2XXX 不同，说明码里的是 InstaPay/PPMI 参与者代码，不能直接用 SWIFT 映射 | 中 | [链接](https://www.npmjs.com/package/@ph-dev-utils/banks) | 2026-04-30 |  |
+| 8 | QR Ph 由 BSP Circular No. 1055（2019 年 10 月）确立为国家互通 QR 标准，由 PPMI 推出；P2M 于 2021 年 4 月起试点 | 中 | [链接](https://www.transfi.com/blog/qr-ph-explained-how-p2p-and-p2m-qr-payments-work-for-individuals-and-merchants) |  | 二手摘要 |
+| 9 | 2025 年 QR Ph 交易 24.7 亿笔、₱1.16 万亿；数字支付占零售交易笔数 64.69% | 中 | [链接](https://mb.com.ph/2026/08/17/digital-payments-hit-647-of-philippine-retail-transactions-nearing-bsps-70-target) | 2026-08-17 | 媒体转述 BSP |
+| 10 | InstaPay 是实时 7x24 贷记推送，单笔上限 ₱50,000 | 中 | [链接](https://www.bpi.com.ph/personal/bank/remit-and-transfer/interbank-fund-transfer-terms-and-conditions) |  |  |
+| 11 | InstaPay 参与者名单由 BancNet 发布，PESONet 名单由 PCHC 发布（截至 2026-04-30）；InstaPay 94 家、PESONet 123 家 | 中 | [链接](https://www.npmjs.com/package/@ph-dev-utils/banks) | 2026-04-30 | 开源包打包的 BSP 名单 |
+| 12 | Alipay Philippines, Inc. 是 InstaPay 参与者，但标注为 receiver-only（截至 2026-04-30）；Wise Pilipinas、DCPAY Philippines（Coins.ph）、PDAX、PayMongo、GCash、Maya 都是 InstaPay 参与者 | 中 | [链接](https://www.npmjs.com/package/@ph-dev-utils/banks) | 2026-04-30 |  |
+| 13 | MUFG、Mizuho、SMBC 马尼拉分行只参与 PESONet，不在 InstaPay 名单 | 中 | [链接](https://www.npmjs.com/package/@ph-dev-utils/banks) | 2026-04-30 |  |
+| 14 | PPMI 与 Ant International 于 2026-09-01 在 QR Ph 上启用 Alipay+，海外钱包用户可以直接扫全国 QR Ph 商户，商户不需要新码 | 中 | [链接](https://fintech.global/2026/09/01/alipay-opens-philippine-merchants-to-global-shoppers/) | 2026-09-01 | 多家媒体报道；结算机构和支持钱包未查到 |
+| 15 | BSP 计划 2026 年上线与马来西亚的 QR 联通（DuitNow App 扫 QR Ph，经 InstaPay 桥接），与 Nexus 并行 | 中 | [链接](https://www.philstar.com/business/2026/02/01/2504833/bsp-roll-out-cross-bank-auto-debit-year/amp/) | 2026-02-01 | 截至 2026-10 是否上线未查到 |
+| 16 | 菲律宾计划 2027 年年中接入 Nexus（连接新、马、泰、印、印尼的快速支付系统） | 中 | [链接](https://fintechnews.ph/70353/digital-payments/philippines-targets-mid-2027-for-project-nexus-cross-border-payments/) | 2026-03 |  |
+| 17 | GCash 和 HelloMoney by AUB 可以经 Alipay+ 在日本 PayPay 商户使用；PayPay 加盟店手续费 1.98% | 中 | [链接](https://paypay.ne.jp/help-merchant/b0076/) |  |  |
+| 18 | PayPay 出境'海外決済モード'于 2025 年 9 月末在韩国上线；在菲律宾的可用性未查到 | 中 | [链接](https://www.watch.impress.co.jp/docs/news/1564491.html) | 2025-09 |  |
+| 19 | SEC CASP Rules（MC No.4 s.2025）与 Guidelines（MC No.5 s.2025）于 2025-07-05 生效，要求实缴资本 ≥ ₱1 亿、境内有办公室 | 中 | [链接](https://insightplus.bakermckenzie.com/bm/financial-institutions_1/philippines-sec-issues-rules-and-guidelines-on-crypto-asset-service-providers-casp) | 2025-06 |  |
+| 20 | BSP 于 2025-09 把新 VASP 牌照暂停期延长为无限期（原从 2022-09-01 起暂停 3 年） | 中 | [链接](https://newsbytes.ph/2025/09/02/bsp-extends-moratorium-on-new-vasp-licenses/) | 2025-09-02 |  |
+| 21 | BSP 征求意见稿（2026-09）：拟暂停新 OPS 注册 12 个月；做商户收单的受监管机构只能和持牌 VASP 合作，并须强化尽调、设交易和结算限额 | 中 | [链接](https://cointelegraph.com/news/philippines-payment-operator-freeze-vasp-checks) | 2026-09-07 | 草案，未定稿 |
+| 22 | Coins.ph 的 PHPC 于 2025-06 出 BSP 沙盒；储备在 UnionBank 和 Security Bank；沙盒上限 1 亿枚 | 中 | [链接](https://fintechnews.ph/67165/crypto/coins-ph-phpc-progresses-beyond-bsp-sandbox/) | 2025-06 |  |
+| 23 | BSP 在审多个稳定币提案，大多是美元稳定币，以沙盒评估为主，态度审慎 | 中 | [链接](https://fintechnews.ph/69153/crypto/bsp-reviews-stablecoins-proposals-philippines-cautious-approach/) |  |  |
+| 24 | BPI 与 Meridian 于 2026-07 宣布用稳定币作为入境汇款结算层，到账时换成比索入账，计划 2026-11 ASEAN 峰会前推广 | 中 | [链接](https://mb.com.ph/2026/07/23/bpi-taps-meridian-to-use-stablecoins-for-remittances) | 2026-07-23 |  |
+| 25 | MMQR（MyanmarPay）由 CBM 制定，规范 v1.0 于 2019-01 发布，2025-02-27 在内比都正式推出，基于 EMVCo | 中 | [链接](https://wavemoney.com.mm/media-center/mmqr-with-wave) | 2025-02-27 | Wikipedia 写的是 2025-03-04 |
+| 26 | Yoma Bank MMQR 动态码有效期 120 秒，过期须 renewQr；生产 API 是 paymenthubapi.yomabank.com | 中 | [链接](https://www.npmjs.com/package/@laranex/myanmar-payments) | 2026-10-16 | 开源 SDK |
+| 27 | 缅甸自 2022-10 起列入 FATF call for action，2026-06-19 全会继续保留，要求强化尽调，未要求反制措施 | 中 | [链接](https://fiaumalta.org/news/fatf-public-statements-19th-june-2026/) | 2026-06-19 |  |
+| 28 | P2M 子 03 是商户收款账户或商户号（开源库当作 account number），子 05 是 3 位标志，取值有 000/010/300/310/311，含义未核实（疑似 proxy-notify flag 或 merchant criteria）；P2P（GCash）子 04 是每个用户唯一的 17 位账户/代理 ID | 低 | [链接](https://www.npmjs.com/package/react-native-instapay-qr) | 2022-02-06 | 官方规范原文未查到，子标签语义是根据样例推断的 |
+| 29 | 较早报道：P2M 商户网点 47.3 万个、参与机构 17 家 | 低 | [链接](https://www.bworldonline.com/?p=455504) |  | 日期不明，已过时 |
+| 30 | 未核实：InstaPay for Business 于 2026-07-29 推出，合资格企业账户单笔上限 ₱500,000 | 低 | [链接](https://www.paymongo.com/blog/instapay-vs-pesonet) | 2026-07 | 只有 PayMongo 博客提到，未经 BSP/PPMI 核实 |
+| 31 | Ronin 钱包计划 2026 年经 PHPC 打通 QR Ph 支付，前提是取得 BSP 许可 | 低 | [链接](https://bitpinas.com/feature/ronin-qr-ph/) |  |  |
+| 32 | PHPX：UnionBank、RCBC 等银行在 Hedera 上的比索代币，是否获批未查到 | 低 | [链接](https://fintechnews.ph/65433/crypto/phpx-stablecoin-launch-hedera-network/) |  |  |
+| 33 | 2025 年 FX Manual 修订（MB Res. 243，2025-03-06）把 FX 衍生品限于对冲和融资需要，并更新 NDF 报告要求 | 低 | [链接](https://regalert.today/document/d6ab2094-ced0-4a15-8297-78f37665b4ca/text) | 2025-03-06 | 第三方汇编 |
+| 34 | 没有查到任何 MMQR 跨境 QR 联通 | 低 | [链接](https://en.wikipedia.org/wiki/ASEAN_Integrated_QR_Code_Payment_System) |  | 负面结论 |
+| 35 | 未核实：Payplus 于 2021 年被选为缅甸数字支付交换机运营方 | 低 | [链接](https://en.wikipedia.org/wiki/MyanmarPay) |  |  |
+
+<details><summary>待确认问题</summary>
+
+- 向 PPMI 索取 QR Ph P2M/P2P 规范原文与当前版本：tag 28/27 子 02/04/05 的官方定义（05 取值 000/010/300/310/311 的含义），是否有跨境专用 GUID 或字段，是否有 CPM
+- Alipay+ × QR Ph（2026-09）的结算机构是谁？Alipay Philippines 是否已从 receiver-only 升级为发送方？报价、限额、退款怎么处理？PPMI 是否愿意给第二个跨境网络（INSPAY）相同的安排？
+- PPMI/BancNet 规则是否允许 InstaPay 发送方参与者为境外钱包用户发起 QR Ph 付款（issuer-sponsor 模式）？BSP 会把它定性为跨境支付、汇款还是别的？需要什么牌照？
+- InstaPay 的结算模式（轧差还是预存资金、PhilPaSSplus 每天几个窗口、周末怎么处理）与 ISO 20022 报文版本
+- 参与者代码（如 GXCHPHM2XXX）到机构的权威映射表从哪里拿
+- BSP 2026-09 OPS 注册冻结草案何时定稿？对'受监管机构与持牌 VASP 合作'的要求里，日本的電子決済手段等取引業者是否算 'other relevant authority' 许可？
+- Coins.ph / PDAX 能否接收 USDC 或日元稳定币并在境内换成比索付款？需要 BSP 额外批准吗？外汇申报怎么做？
+- InstaPay for Business（₱500,000）是否真的已上线，是否适用于 P2M QR
+- 菲律宾—马来西亚 DuitNow 联通是否已上线？报价和结算模式（是否 LCS）？
+- PayPay 出境模式是否经 Alipay+ 覆盖菲律宾？时间表如何？
+- BSP 对支付数据境内处理、外包上云的要求（条文）
+- MMQR 的 GUID、子标签与样例；MPU 在 MMQR 中的角色；缅甸受制裁银行最新清单及日本监管对缅甸业务的态度
+
+</details>
+
 ## 日本 / PayPay（第一轮）
 
 事实 57 条（高 7 / 中 19 / 低 31）。
@@ -430,6 +489,79 @@
 
 </details>
 
+## 日本 / PayPay（核实轮）
+
+事实 47 条（高 8 / 中 35 / 低 4）。
+
+| # | 事实 | 置信度 | 来源 | 日期 | 备注 |
+|---|---|---|---|---|---|
+| 1 | SBI VC Trade 的電子決済手段等取引業登録编号为 関東財務局長 第00001号（日本第1号） | 高 | [链接](https://corp.sbishinseibank.co.jp/ja/news/news/20260430a/main/01/link/260430_AP_VC_USDC.pdf) | 2026-04-30 | 核实：原 low→high；登録日未查到（记忆为2025-03初，未核实） |
+| 2 | 2024-01-01起，向国外转移电子决济手段须提交「国外電子決済手段移転等調書」，价额100万日元以下免交（国外送金等调书法政令） | 高 | [链接](https://www.mof.go.jp/tax_policy/tax_reform/outline/fy2023/seirei/youkou/16kokusoukin.pdf) | 2023 | 新增；财务省政令改正要綱；是税务报告门槛而非交易上限 |
+| 3 | 2025年改正资金结算法于2025-06-06成立、2025-06-13公布；金融庁2025-12-16征求政令/府令案意见，2026-05-22公布政令与意见结果，2026-06-01施行 | 高 | [链接](https://www.fsa.go.jp/news/r7/sonota/20260522/20260522.html) | 2026-05-22 | 核实：原 low→high（施行日此前'未查到'） |
+| 4 | JPYC株式会社于2025-08-18依资金结算法第37条登録为资金移动业者 | 高 | [链接](https://coinpost.jp/?p=709070) | 2025-08 | 核实：原 low→high（多源一致）；资金移动业类型（第二种）未在一手来源核实 |
+| 5 | JPYC 于2025-10-27正式开始发行，同时正式发布发行/赎回平台 JPYC EX | 高 | [链接](https://ascii.jp/elem/000/004/336/4336809/) | 2025-10-27 | 核实：原 low→high；另有一则摘要称 JPYC EX 于8-18公开，表述冲突 |
+| 6 | JPYC 发行上限原为每日100万日元，2026-05-15 JPYC EX 大更新后改为每次100万日元，并禁止短时间连续申请；适用于所有链；同时新增 Kaia 链（Chain ID 8217） | 高 | [链接](https://prtimes.jp/main/html/rd/p/000000315.000054018.html) | 2026-05-15 | 新增/更正种子中'单笔100万'的模糊描述 |
+| 7 | PayPay为赁金数字支付的指定资金移动业者，指定编号 厚生労働大臣 第00001号，指定日2024-08-09 | 高 | [链接](https://www.mhlw.go.jp/content/11200000/001662519.pdf) | 2025 | 核实：原 low→high（厚労省 PDF） |
+| 8 | 2025年访日游客确定值（JNTO）：总数42,683,301；泰国1,233,103（+7.3%）、菲律宾885,023、新加坡726,251、越南678,594、印尼640,577（+23.7%）、马来西亚636,575（+25.6%） | 高 | [链接](https://asset.japan.travel/image/upload/v1769050010/pdf/Number_of_visitor_arrivals_to_Japan_in_December_2025.pdf) | 2026-01 | 新增（反方向数据）：12月速报 PDF 为推计值，确定值取自 JNTO 统计文件摘要 |
+| 9 | 资金移动业分三种：第一种无每笔上限（登録+业务实施计划认可，认可制，有滞留规制、每日计算履行保证金保全额），第二种每笔≤100万日元（登録），第三种每笔≤5万日元（登録，可用存款分别管理） | 中 | [链接](https://www.shigyo.co.jp/kyoninka/remittance/3_remittance_max_amount.html) | 未查到 | 核实：原 low→medium（行政书士专业网站，非金融庁原文）；类型由2020年改正设立、2021年施行，具体施行日2021-05-01仍未核实 |
+| 10 | 改正资金结算法2022-06成立、2023-06-01施行，在第2条第5项第1–4号定义「電子決済手段」（与法币价值挂钩、承诺按券面额兑付的稳定币及准于此者）；1–3号为价值稳定、预计广泛用于送金结算者 | 中 | [链接](https://www.pwc.com/jp/ja/knowledge/prmagazine/pwcs-view/202403/49-05.html) | 2024-03 | 核实：原 low→medium；1–4号结构已确认，各号条文原文（3号=特定信託受益権）未直接看到 |
+| 11 | 相关府令为「電子決済手段等取引業者に関する内閣府令」；電子決済手段等取引業者的行为规制在资金结算法62条之10至62条之17，须分别管理客户资产 | 中 | [链接](https://www.nishimura.com/sites/default/files/newsletters/file/finance_law_230807_ja.pdf) | 2023-08-07 | 核实：原 low→medium（律所解说摘要） |
+| 12 | SBI VC Trade 自2025-03-26起在交易服务中取扱 USDC | 中 | [链接](https://coinpost.jp/?p=600000) | 2025-03 | 核实：原 low→medium（媒体引述 SBI 说明） |
+| 13 | SBI VC Trade 自2026-03-19起提供 USDC レンディング 服务 | 中 | [链接](https://www.sbbit.jp/article/fj/182847) | 2026-03-18 | 媒体报道 |
+| 14 | SBI VC Trade 2026-06改订的电子决济手段交易说明书写明可能限制外国電子決済手段的新规預託与新规購入 | 中 | [链接](https://www.sbivc.co.jp/assets/docs/comparison20260624_manual-ex_electric-payment-instrument.pdf) | 2026-06-24 | 一手文件的搜索摘要 |
+| 15 | 2025改正允许特定信託受益権（信托型稳定币）准备资产运用于一定国债及可中途解约的定期存款，运用对象、上限组入比率、防止本金损失要件由府令规定 | 中 | [链接](https://www.fsa.go.jp/news/r7/sonota/20251216/20251216.html) | 2025-12-16 | 核实：原 low→medium；种子中'最多约50%'的具体比例未查到，仍为 low |
+| 16 | 2025改正新设「電子決済手段・暗号資産サービス仲介業」：只做媒介、不保管客户资产，登録制，不设财务规制；解说称不直接承担 AML 义务 | 中 | [链接](https://kpmg.com/jp/ja/insights/2026/04/epis-cryptoasset-intermediary.html) | 2026-04 | 核实：原 low→medium；AML 部分来自律所/解说摘要 |
+| 17 | 2025改正：为不涉及自身的交易做结算、跨境汇款的收纳代行（クロスボーダー収納代行），除府令适用除外类型外适用资金移动业规制 | 中 | [链接](https://lfb.mof.go.jp/kantou/kinyuu/pagekt_cnt_20250516001sikinidou.html) | 2025-05-16 | 核实：原 low→medium；与金融庁法案说明 https://www.fsa.go.jp/common/diet/217/02/setsumei.pdf 一致 |
+| 18 | 府令案中クロスボーダー収納代行的适用除外类型：(1)再委托银行/资金移动业者、(2)伴随 escrow、(3)平台事业者等、(4)与受款人有经济一体性者、(5)由其他法令降低风险者（如国际卡组织清算） | 中 | [链接](https://amt-law.com/asset/pdf/bulletins2_pdf/260316.pdf) | 2026-03-16 | 律所对府令案的解说；最终府令是否一致未核实；对 INSPAY 日本实体是否需资金移动业登録很关键 |
+| 19 | 2025改正为暗号资产交换业者与電子決済手段等取引業者引入资产国内保有命令（改正资金结算法62条之21之2、63条之16之2） | 中 | [链接](https://www.amt-law.com/asset/pdf/bulletins2_pdf/250530002.pdf) | 2025-05-30 | 核实：原 low→medium |
+| 20 | JPYC 官方 GitHub 列有 Ethereum、Avalanche C-Chain 合约；用户间链上转移不设金额限制 | 中 | [链接](https://github.com/jpycoin) | 未查到 | Polygon 支持只来自记忆，未核实 |
+| 21 | JPYC 取引时确认统一使用マイナンバーカード公的个人认证（JPKI）；发行流程为 JPYC EX 预约→银行转账→发行到已登记钱包 | 中 | [链接](https://www.watch.impress.co.jp/docs/news/2058390.html) | 2025-10 | 媒体报道 |
+| 22 | JPYC EX 累计发行额：25亿日元（2026-05-18）、30亿日元以上（2026-06，口座1.9万）、突破100亿日元（2026-09-18）；2026-02 口座1.3万、持有地址约8万 | 中 | [链接](https://paymentnavi.com/?p=182688) | 2026-09 | 均为累计发行额；发行余额（扣除赎回）未查到 |
+| 23 | JPYC 支付用例：LINE NEXT 'Unifi' 钱包可在 LINE App 内支付/送金 JPYC；Diners 积分兑换；Series B 累计约50亿日元（2026-05） | 中 | [链接](https://thebridge.jp/2026/05/jpyc-series-b-funding-50-billion-yen) | 2026-05 | 法人间大额结算数据未查到 |
+| 24 | 金融庁'決済高度化プロジェクト（PIP）'第一号案件为 MUFG/SMBC/瑞穗共同发行日元稳定币的实证（三菱商事、Progmat、三菱UFJ信托参与），报道自2025-11起 | 中 | [链接](https://bitbank.cc/knowledge/breaking/article/lsu5w4vnvm1) | 2025-11 | 核实：原 low→medium（二手报道，一手新闻稿未直接看到） |
+| 25 | 据日经2026-06-09报道，三大行签署 MoU（报道日期2026-06-10）设立协议会，目标在2026财年末（2027-03）前在 Progmat 上以信托型日元稳定币开始法人交易（B2B/跨境） | 中 | [链接](https://stablecoininsider.org/japans-three-largest-banks-mufg-smbc-and-mizuho-announce-joint-yen-stablecoin-targeting-march-2027/) | 2026-06-10 | 新增；二手来源，信托结构说法不一，需查三大行官方新闻稿 |
+| 26 | Progmat 于2023-10从三菱UFJ信托分拆，股东包括三井住友信托、瑞穗信托等 | 中 | [链接](https://www.dextools.io/news/japan-three-megabanks-joint-stablecoin-progmat-2026-ja) | 2026-06 | 部分核实：原 low→medium；种子所列完整股东名单未逐一核实 |
+| 27 | PayPay株式会社为资金移动业者，登録编号 関東財務局長 第00068号（2019-09-25登録） | 中 | [链接](https://www.lycorp.co.jp/ja/news/release/016863/) | 2024 | 核实：原 low→medium（多份公开资料一致）；第一种/第二种类别未查到原文，'第二种'仍是推定 |
+| 28 | PayPay为前払式支払手段（第三者型）发行者，登録编号 関東財務局長 第00710号（2018-10-05） | 中 | [链接](https://edinetdb.jp/company/E41128/history) | 未查到 | 核实：原 low→medium |
+| 29 | PayPay另有登録：電子決済等代行業（電代）第109号（2023-02）、銀行代理業（銀代）第396号（2020-11-26）、金融商品仲介業（金仲）第942号（2021-06-25） | 中 | [链接](https://edinetdb.jp/company/E41128/history) | 未查到 | 核实：原 low→medium；未查到 PayPay 持有電子決済手段等取引業登録 |
+| 30 | PayPay海外支払いモード可用支付方式包括 PayPayマネーライト 与 PayPayポイント（及 PayPayクレジット） | 中 | [链接](https://paypay.ne.jp/help/c0478/) | 2025-09 | 推翻：种子 fact 25 的'未查到'；来自官方帮助页摘要，原文未打开 |
+| 31 | PayPay海外支払いモード上限与国内合并计算：付款100万日元/24小时、200万日元/过去30日；未登记PayPayクレジット者50万日元/24小时；送余额（已登PayPayクレジット）30万/24h、100万/30日 | 中 | [链接](https://paypay.ne.jp/help/c0478/) | 2025-09 | 推翻：种子 fact 6 的'海外专属上限未查到/50万·200万'，实为海外与国内合算 |
+| 32 | 2025年起，未完成eKYC用户的PayPayマネーライト送金（譲渡）上限为每日10万日元、每月30万日元 | 中 | [链接](https://paypay.ne.jp/notice/20241113/f-ekyc/) | 2024-11-13 | 官方公告摘要 |
+| 33 | 截至2026-10检索，PayPay海外支払いモード仍只覆盖韩国（Alipay+）和台湾（HIVEX/TWQR），未见泰国、越南、新加坡、香港、夏威夷等第3弹公告 | 中 | [链接](https://www.businessinsider.jp/article/2605-cashless-travel-taiwan-paypay/) | 2026-05 | 维持 medium；基于'未检出' |
+| 34 | 2026-02-12 PayPay 与 Visa 合作，分析称为 NFC 和 QR 的全球使用增加路径，首先研究美国钱包推出 | 中 | [链接](https://sacra.com/chat/h/32c22911-db91-4624-9ce7-a4744b0bdc3f/) | 2026-02-12 | 新增；二手分析，具体合作条款未查到 |
+| 35 | キャッシュレス推進協議会于2019-03-29制定 JPQR「コード決済に関する統一技術仕様ガイドライン」（利用者提示型CPM、店舗提示型MPM）与统一用语集；Ver.2.0 2020-04-27（新增請求書払い）、Ver.3.0 2022-11-08 | 中 | [链接](https://www.soumu.go.jp/main_content/000844779.pdf) | 2022-11-08 | 核实：原 low→medium（总务省所载 PDF 的摘要，原文未打开） |
+| 36 | JPQR MPM 采用 EMVCo 式 TLV，在 ID 26（Merchant Account Information）嵌套表示 JPQR 识别号码；总务省资料中 ID26 的 GUID 例为「jp.or.paymentsjapan」 | 中 | [链接](https://www.soumu.go.jp/main_content/000844782.pdf) | 2022 | 部分核实：原 low（未查到）→medium；另见 PayPay 博客 https://blog.paypay.ne.jp/en/paypay-adapting-to-jpqr/；子字段编号与统一店铺识别码的对应关系未确认 |
+| 37 | PayPay 已适配 JPQR（工程博客'PayPay adapting to JPQR'） | 中 | [链接](https://blog.paypay.ne.jp/en/paypay-adapting-to-jpqr/) | 未查到 | 种子 fact 28（PayPay 店铺码为专有 URL 型）既未推翻也未核实，维持 low |
+| 38 | 2025年日本人出国者数约1,473万人，较2019年减少27%（JNTO推计）；2025-01 91万、2025-08 165万、2025-09 139.45万、2025-12 130万 | 中 | [链接](https://www.travelvoice.jp/tags/JNTO?page=4) | 2026-01 | 核实/新增：2025年数据此前未查到；由-27%反推2019约2,018万，与种子2,008万基本一致；2024年约1,300万仍未直接核实 |
+| 39 | 泰国接待日本游客：2025-Q1 316,744人，1–4月374,896人，1–5月444,274人（排第9） | 中 | [链接](https://www.nationthailand.com/news/tourism/40050808) | 2025-06 | 部分核实种子 fact 53（泰国约100万量级合理）；全年数未查到 |
+| 40 | 越南接待日本游客：2025年1–5月约34.2万人（+18.3%），上半年排第5；越南2025全年国际游客约2,117万（+20.4%） | 中 | [链接](https://news.tuoitre.vn/print/vietnam-leads-global-tourism-growth-in-h1-2025-103250913105530525.htm) | 2025-09 | 部分核实种子 fact 53；全年日本客数未查到（全年总数见 https://asgam.com/2026/01/08/vietnam-books-all-time-visitor-arrival-record-in-2025-aided-by-strong-growth-from-china/） |
+| 41 | 外為法：经日本境内银行等与非居民之间超过3,000万日元相当额的支付/收款须报告，经银行时由银行等提交日本银行；3,000万以下免报 | 中 | [链接](https://www.boj.or.jp/about/services/tame/index.htm) | 未查到 | 核实：原 low→medium（财务省 https://www.mof.go.jp/about_mof/other/regulation_reform/gaiyou_20211018d.pdf 与日银资料摘要） |
+| 42 | 日银报告用换算汇率页面将「電子決済手段等」定义为稳定币、比特币、以太坊等（外為法第6条第1项第9号的電子決済手段及暗号資産），并提供报告用换算汇率 | 中 | [链接](https://www.boj.or.jp/about/services/tame/tame_rate/exhou.htm) | 未查到 | 部分核实种子 fact 46：表明稳定币支付在支払等報告体系内；不经银行时自行报告的细则未核实 |
+| 43 | JVCEA 于2025-11制定规则，规定第一种会员（電子決済手段）依外為法办理支付与资本交易时的遵守事项 | 中 | [链接](https://jvcea.or.jp/cms/wp-content/themes/jvcea/images/pdf/F17_20251114.pdf) | 2025-11-14 | 新增 |
+| 44 | 外国稳定币经取引業者转移/支付每笔不超过100万日元的府令要求 | 低 | 未查到 | 未查到 | 未核实：2次检索未找到府令原文；检索中出现的100万日元门槛是国外送金等调书法的报告门槛（另一制度） |
+| 45 | 新加坡、印尼、菲律宾、马来西亚、柬埔寨、老挝2024/2025年日本人入境数 | 低 | 未查到 | 未查到 | 未查到；种子量级仍为记忆，未核实 |
+| 46 | '為替取引'依最高裁2001年判例定义，只有银行或资金移动业者可从事；境外网络运营方（Alipay+等）在日本是否需要牌照 | 低 | 未核实-记忆 | 未查到 | 未核实：本轮额度不够，未检索；Alipay+在日本的牌照状况未查到 |
+| 47 | 犯収法 Travel Rule 自2023-06-01适用于暗号資産交換業者与電子決済手段等取引業者 | 低 | 未核实-记忆 | 2023-06-01 | 未核实：本轮未检索；金额门槛未查到 |
+
+<details><summary>待确认问题</summary>
+
+- PayPay 资金移动业的种类（第一种/第二种）原文依据（20-F Regulation 章节或関東財務局登録簿）；PayPay 是否计划申请電子決済手段等取引業登録
+- マネーライト（前払式）与ポイント 在海外加盟店使用时的法律属性：PayPay 如何履行前払式发行者的加盟店管理义务，是否另行构成為替取引
+- 外国稳定币每笔转移/支付100万日元上限的府令条文（电子决济手段府令第30条附近？）原文、适用范围（只对用户转移，还是也适用于 B2B 与取引業者自营）及2025–2026是否放宽
+- 2025改正府令最终版：特定信託受益権准备资产中国债/定期存款的上限组入比率（是否为50%）
+- 2025改正府令最终版中クロスボーダー収納代行的适用除外类型是否与案文一致；QR 跨境网络的清算能否类比'国际卡组织清算'获豁免；INSPAY 日本实体做技术/营业支持而不碰资金是否安全
+- 境外网络运营方（Alipay+/HIVEX/INSPAY 境外实体）与日本资金移动业者合作时是否需要日本牌照，有无金融庁事务指南、无异议函或先例
+- JPYC 发行余额（扣除赎回）、资金移动业类型、企业间大额结算是否可行（每次100万日元发行上限与禁止短时连发对 B2B 的影响）
+- 三大行与 Progmat 信托型日元稳定币的官方新闻稿、上线时间（2027-03目标）、是否向非银行企业（如 PayPay、INSPAY）开放、跨境使用条件
+- JPQR MPM ID26 的子字段定义（Sub-ID 01以后、统一店铺识别码位置）及其他 tag 约束，需打开总务省所载 JPQR 指南原文 PDF
+- PayPay 自有店铺码的格式（URL 型还是 EMVCo），与 JPQR 码在店头的并存情况
+- 外為法：用稳定币链上直接转移、不经银行时的支払等報告方式（自行报告、期限）及3,000万日元按笔还是合计计算
+- 新加坡、印尼、菲律宾、马来西亚、柬埔寨、老挝2024/2025年日本人入境数（各国官方统计）；泰国、越南2025全年日本人入境数
+- PayPay×Visa（2026-02）合作是否覆盖东南亚 NFC/QR 受理，是否会挤压国家 QR 互联路线
+- 犯収法 Travel Rule 的金额门槛与对境外钱包的确认义务细则
+
+</details>
+
 ## Alipay+（第一轮）
 
 事实 50 条（高 15 / 中 9 / 低 26）。
@@ -506,6 +638,79 @@
 - 我们的网络能否以 ACQP 等价角色直接接入各国国家码交换机？还是只能通过已是交换机参与者的银行或钱包？哪些国家只允许央行间双边安排？
 - 日本侧：作为 MPP 的 PayPay 与我们网络之间，谁是“为替取引”主体？JPY→稳定币的兑换由谁完成？需与 JP-PAYPAY 报告交叉确认。
 - 商户登记与 MPP 审批（Alipay+ 有此流程）在我们网络里如何实现，才能满足日本钱包对境外商户的 KYC 和制裁筛查要求？
+
+</details>
+
+## Alipay+ 与竞品（核实轮）
+
+事实 49 条（高 22 / 中 25 / 低 2）。
+
+| # | 事实 | 置信度 | 来源 | 日期 | 备注 |
+|---|---|---|---|---|---|
+| 1 | 韩国 ZeroPay 运营方 Korea Easy Payment Foundation 于 2023-08-31 宣布在 170 万以上商户引入 Alipay+；首批 6 个 Alipay+ 钱包（摘要列出 Alipay、AlipayHK、MPay、TrueMoney、Touch 'n Go）用户在柜台扫 ZeroPay QR、自输金额完成支付（MPM） | 高 | [链接](https://www.businesswire.com/news/home/20230831026956/en/ZeroPay-Introduces-Alipay-at-1.7-Million-Merchants-in-South-Korea-Promoting-Convenient-Experience-for-Asian-Tourists) | 2023-08-31 | 核实：原 low→high。第 6 个钱包名称未在摘要中出现；济州推广期为 11 个钱包（日期未查到） |
+| 2 | PayPay 海外支付模式（2025-09-30 起）经 Alipay+ 可在韩国贴 Alipay+ 与 zero pay 标识的 200 万家以上店铺使用，ZeroPay 店铺仅支持 MPM | 高 | [链接](https://about.paypay.ne.jp/en/pr/20250916/01/) | 2025-09-16 | 引自 JP-PAYPAY 种子（high），未重复检索 |
+| 3 | 柬埔寨 NBC（Bakong/KHQR）与 Alipay+ 于 2024-10 正式上线跨境 QR：12 个 Alipay+ 合作 App（含 Alipay、GCash、TnG、Kakao Pay、Toss Pay）用户可扫 KHQR 在 100 万以上商户付款；出境方向为完成全 KYC、持瑞尔账户的 Bakong 用户在 Alipay+ 全球商户付款；此前 2023 年 SFF 期间 NBC 与 Alipay+ 签 MoU | 高 | [链接](https://www.ttgasia.com/2024/10/18/alipay-facilitates-cross-border-mobile-payments-in-cambodia/) | 2024-10-18 | 核实：原 low→high。各来源的 App 数与日期略有出入；NBC 与 Ant International 另签 MoU 的日期未查到 |
+| 4 | 菲律宾 PPMI（QR Ph 管理方）与 Ant International 的 Alipay+ 于 2026-09 初连通：海外游客用 Alipay+ 合作钱包扫商户现有 QR Ph 码付款，走本地银行和 EMI 共用的国家 QR 基础设施，无需本地账户，商户无需新码或新硬件 | 高 | [链接](https://fintech.global/2026/09/01/alipay-opens-philippine-merchants-to-global-shoppers/) | 2026-09-01 | 推翻种子“未查到”。开放钱包名单、是否经 InstaPay、结算行均未查到 |
+| 5 | NITMX–Ant International–Krungthai 的 PromptPay 联通（2025-10-26 宣布）一期只覆盖中国内地 Alipay 用户扫 PromptPay 码，Krungthai 为结算行；截至检索未查到扩展到 Kakao Pay、TnG 等其他 Alipay+ 钱包 | 高 | [链接](https://www.businesswire.com/news/home/20251026429360/en/NITMX-Ant-International-and-Krungthai-Bank-Expand-Payment-Connectivity-Between-Thailand-and-China-via-PromptPay) | 2025-10-26 | 回答任务问题：仅 Alipay。“未扩展”属于检索未检出（medium）；另有 Nation Thailand 报道称 NITMX 与 UnionPay International、Ant（via Alipay under Alipay+）、Tenpay 建立战略合作 |
+| 6 | 越南 NAPAS、Vietcombank 与 Ant International 于 2026-04-03 宣布：中国游客可在 Alipay App 中扫 VietQR Global 码，在 NAPAS 网络商户付款；Vietcombank 为结算行；CNY 与 VND 直接兑换，无中间货币；反向（越南人在中国）规划中 | 高 | [链接](https://vietnamnews.vn/economy/1778741/napas-expands-cross-border-qr-payment-connectivity-between-viet-nam-and-china.html) | 2026-04-03 | 推翻种子“未查到”。报道未提 Alipay+ 字样；未查到对其他 Alipay+ 钱包开放 |
+| 7 | 印尼央行 BI 于 2026-04-30 启动 QRIS–中国双向联通：Alipay 与 UnionPay 用户可在 4,000 万以上 QRIS 商户付款，印尼用户可扫中国 8,000 万以上 Alipay/UnionPay 码；Alipay+ 为连接两个生态的技术层；在 BI 与 PBOC 指导下，由 BI、ASPI 与印尼银行/支付业界合作；WeChat Pay 仍在技术评审；中国是第 6 个接入 QRIS 的国家（另 5 个为泰、新、马、日、韩） | 高 | [链接](https://secure.businesswire.com/news/home/20260507883208/en/IndonesiaChina-Launch-Cross-Border-Payments-Connectivity-Connecting-Millions-of-Merchants-via-Ant-Internationals-Alipay) | 2026-04-30 / 2026-05-07 | 核实：原 low→high。商户数为 medium；未查到非中国 Alipay+ 钱包可扫 QRIS |
+| 8 | Alipay+ ACQP 的 pay 请求含 settlementStrategy，用于指定 ACQP 希望结算的币种（settlementCurrency）；不填或为 null 时，以 paymentAmount.currency 作为 settlementCurrency；结算金额按支付金额和结算币种与支付币种之间的汇率计算 | 高 | [链接](https://docs.alipayplus.com/alipayplus/alipayplus/api_acq_ns/pay_auto_debit) | 未查到 | 官方文档原文片段（搜索摘要），未打开全文 |
+| 9 | Alipay+ ACQP 清结算：每 T+1 日清算前一 UTC+8 自然日（含节假日）；结算默认 T+2（结算日须为 Common Business Day）；一个结算周期可包含多个清算周期 | 高 | [链接](https://docs.alipayplus.com/alipayplus/alipayplus/reconcile_acq/reconcile_overview) | 未查到 | 推翻种子“T+1 至 T+N”：ACQP 默认 T+2。来源为文档原文片段；WebFetch 打开该页失败（ENOTFOUND） |
+| 10 | Alipay+ MPP 结算默认 T+1（结算日须为 Local Business Day）；Settlement Report 在约定结算日的 08:00（UTC+8）生成，仅在 Local Business Day 生成 | 高 | [链接](https://docs.alipayplus.com/alipayplus/alipayplus/reconcile_mpp/reconcile_overview) | 未查到 | 文档片段 |
+| 11 | 2024-10-28 HSBC 与 Ant International 在 HKMA Ensemble Sandbox 完成 HKD 跨行区块链测试交易；Ant 的 Whale 平台连通 HSBC 与恒生银行网络，实现 24/7 实时跨行转账 | 高 | [链接](https://www.about.hsbc.com.hk/news-and-media/hsbc-and-ant-international-complete-hkd-denominated-cross-bank-blockchain-test-transactions) | 2024-10-28 | 新增 |
+| 12 | Ant International 是 HSBC 香港 Tokenised Deposit Service 的首个企业客户（2025-05）：区块链账本上的公司账户间实时 HKD/USD 支付；首笔集团内即时调拨由 Whale 发起，Ant 存在 HSBC 的 USD 存款在 HSBC 的 DLT 上代币化 | 高 | [链接](https://www.businesswire.com/news/home/20250522743088/en) | 2025-05-22 | 核实：原 low→high |
+| 13 | 卢森堡 CSSF 于 2025-09-16 向 Alipay (Europe) Limited 授予 MiCA EMT 授权（该公司 2018-12 起持 EMI 牌照）；代币为 Bettr Settlement Token（BREUR），锚定欧元，仅限获批的 Ant International 关联方之间批发使用，不上公开交易所、不对零售 | 高 | [链接](https://en.paperjam.lu/article/cssf-grants-alipay-e-money-licence-paving-way-for-euro-stablecoin) | 2025-09-16 | 新增，重要。BREUR 细节来自代币文件转载（MEXC），为 medium |
+| 14 | FT（2025-10）报道 PBOC 与国家网信办指示 Ant Group 与京东暂停香港稳定币计划，理由是担心科技集团和券商发行任何形式的货币；Reuters 转述但未能独立核实；两家公司未回应；HKMA 不评论传闻 | 高 | [链接](https://fintechnews.hk/35975/blockchain/ant-group-jd-com-china-stablecoins-pause/) | 2025-10 | 核实：原 low→high（报道层面）；报道点名的是 Ant Group，未明确是否涵盖 Ant International |
+| 15 | MAS BLOOM（2025-10-16）参与者含 Ant International | 高 | [链接](https://www.mas.gov.sg/news/media-releases/2025/mas-launches-bloom-initiative-to-extend-settlement-capabilities) | 2025-10-16 | 引自 SG-MY/STABLECOIN-INFRA 种子 |
+| 16 | Bitget Wallet 于 2025-09-19 宣布接入巴西 Pix，与本地持牌伙伴 AEON 合作；用户用 USDT/USDC（多链）支付，商户收 BRL | 高 | [链接](https://www.pymnts.com/cryptocurrency/2025/bitget-wallet-integrates-pix-enable-crypto-payments-brazil/) | 2025-09-19 | 核实：原 low→high |
+| 17 | Binance Pay 于 2025-05 接入巴西 Pix（首次接入国家支付基础设施）：用户可把 100 多种加密资产换成 BRL，经 Pix 付给任何银行账户或 Pix 商户；2023-08 已在巴西推出商户 Binance Pay | 高 | [链接](https://www.crowdfundinsider.com/2025/05/239838-binance-pay-introduces-instant-crypto-payments-to-brazil-via-pix/) | 2025-05 | 核实：原 low→high；本地出款方未查到 |
+| 18 | HIVEX 是区块链驱动、面向移动支付业者的互操作跨境 QR 支付网络：允许不同 QR 格式互操作，钱包方无需采用新码格式，商户无需改 POS 或既有码；以分布式账本传输数据、建立互信 | 高 | [链接](https://fintechnews.sg/?p=117407) | 2025 | 链类型、共识机制、节点运营方、清算资产均未查到 |
+| 19 | HIVEX 于 2023-08 在台湾首发，与街口支付、全支付、玉山银行合作；2023-10 上线后，台湾钱包可在日本 PayPay 商户扫码付款；2024-02 底启用日本反扫（CPM） | 高 | [链接](https://www.cna.com.tw/news/firstnews/202308230196.aspx) | 2023-08-23 | 上线与反扫时间来自 managertoday、technews，为 medium |
+| 20 | 台湾财金资讯（FISC）TWQR Inbound 于 2026-04-14 开通，首波串接 PayPay，清算银行为玉山；PayPay 用户 2026-04-27 起经 HIVEX 在台湾贴 TWQR 标识的 40 万处以上店铺付款 | 高 | [链接](https://paypay.ne.jp/notice/20260427/f-overseaspayment/) | 2026-04-27 | 引自 JP-PAYPAY 种子 |
+| 21 | TBCASoft 与 StraitsX（新加坡 MPI，发行 XSGD/XUSD）签署 Project HIVEX StableLink MOU：用受监管稳定币实现即时 FX 与结算终局，目标连通日本、台湾、香港、泰国、美国等法域的受监管稳定币发行方；称 HIVEX 自 2023 年起已用稳定币技术做跨境清算 | 高 | [链接](https://technode.global/2025/09/03/straitsx-partners-tbcasoft-for-multi-currency-stablecoin-driven-cross-border-payments/) | 2025-08-31 / 2025-09-03 | MOU 存在为 high；“2023 起用稳定币清算”为自述（medium）；2026 年上线或获批情况未查到 |
+| 22 | JPQR Global（NETSTARS 运营）自 2025-08-17 起支持印尼 QRIS 入境（BI、ASPI、METI、PJA、Netstars 合作），日本成为首个接入 QRIS 的东盟外国家；与 Alipay+ 无关 | 高 | [链接](https://www.bi.go.id/en/publikasi/ruang-media/news-release/Pages/sp_2719325.aspx) | 2025-08-17 | 引自 ASEAN-LINK 种子；可作为“日本 ↔ 东南亚国家码”的官方框架先例 |
+| 23 | Alipay+ 于 2023-04 经 NETS 接入 SGQR，覆盖约 11,000 个熟食摊，首批 6 个钱包（Alipay、AlipayHK、TnG、GCash、TrueMoney、Kakao Pay），游客直接扫 SGQR 标签 | 中 | [链接](https://fintechnews.sg/71856/payments/alipay-integrates-with-sgqr-to-enable-qr-payments-at-11000-hawkers/) | 2023-04 | 核实：原 low→medium（引自 SG-MY 种子，本次未复检） |
+| 24 | PayNet × Ant：2023-10-31 起 Alipay+ 钱包（Alipay、AlipayHK、HelloMoney、Hipay、MPay、Naver Pay、Toss Pay、TrueMoney 等）可扫 DuitNow QR；Alipay+ 占 DuitNow 入境跨境 QR 支付的 80% 以上 | 中 | [链接](https://paynet.my/press-release/2023/Travellers-from-7-Key-Asian-Travel-Corridors-Can-Now-Enjoy-Seamless-Digital-Payments-in-Malaysia-More-Travel-Corridors-in-the-Pipeline.pdf) | 2023-10 | 核实：原 low→medium（引自 SG-MY 种子，本次未复检） |
+| 25 | Ant International 2026-09 口径：Alipay+ 连接超过 20 亿消费者账户、50 家以上移动支付提供方、10 个以上国家支付交换机 | 中 | [链接](https://www.crowdfundinsider.com/2026/09/304558-alipay-connects-with-philippines-qr-ph-for-cross-border-payments/) | 2026-09 | 公司自述数字 |
+| 26 | PayPay 作为 Alipay+ ACQP 受理入境钱包（2026-06-29 合计 17 个国家/地区 35 项服务），作为 MPP 出境（韩国经 Alipay+、台湾经 HIVEX）；PayPay 最早受理 Alipay 的年份未核实 | 中 | [链接](https://about.paypay.ne.jp/en/pr/20260629/01/) | 2026-06-29 | 入境与出境事实引自 JP-PAYPAY 种子（high）；“始于 2018–2019”仍为 low，未核实 |
+| 27 | Alipay+ UPM pay 中的 settlementQuote 表示结算币种与支付币种之间的汇率 | 中 | [链接](https://docs.alipayplus.com/alipayplus/alipayplus/api_acq_ns/pay_user_presented_mode) | 未查到 | 部分核实：种子 low 条目“paymentQuote/settlementQuote”中，settlementQuote 已核实存在，子字段未读到；paymentQuote、quoteId、quoteExpiryTime 仍未查到 |
+| 28 | Alipay+ MPP 侧非 SDK API inquiryForeignExchangeQuote（POST /aps/v1/payments/inquiryForeignExchangeQuote）用于查询两种货币之间的汇率，必填 sellCurrency、buyCurrency（ISO 4217），可选 paymentFactor；返回汇率仅供参考 | 中 | [链接](https://docs.alipayplus.com/alipayplus/alipayplus/api_non_sdk_mpp/inquiry_quote) | 未查到 | 推翻种子“consultExchangeRate/inquiryExchangeRate 未查到”：实际接口名为 inquiryForeignExchangeQuote。路径前缀 /aps/v1 与其他接口的 /aps/api/v1 不一致，待核 |
+| 29 | Alipay+ 结算币种按合同约定；Settlement Report 给出净额，USD 以分表示；结算为扣费后净额，ACQP 承担 wallet interchange fee 与 Alipay+ service fee，从结算款中扣除；Settlement Report 不含汇率，跨币种时使用与原交易相同的汇率 | 中 | [链接](https://docs.alipayplus.com/alipayplus/alipayplus/reconcile_acq) | 未查到 | 修正种子 low 条目“结算币种多为 USD 或当地币”。文件交付方式（SFTP/API）与字段表仍未查到 |
+| 30 | Ant International 称 2024 年其 treasury 转账中超过三分之一经 Whale 在链上执行；WhaleRTP 有 20 家以上银行伙伴（含 HSBC），支持 17 种以上货币实时调拨 | 中 | [链接](https://ibsintelligence.com/ibsi-news/ant-international-expands-hsbc-partnership-for-tokenised-treasury-services/) | 2026-10 | 核实：原 low→medium（公司自述数据） |
+| 31 | 2026-10-06 Ant International 与 HSBC 将实时 treasury 服务扩展至中东：完成 UAE↔香港两条走廊试点，其中一条是 USD 代币化存款在 UAE 与香港、新加坡等市场之间转账，经 WhaleRTP 在 HSBC TDS 基础设施上实时执行；Ant 为 HSBC 中东首个 TDS 客户 | 中 | [链接](https://www.sttinfo.fi/tiedote/72389235/ant-international-and-hsbc-expand-real-time-treasury-management-services-to-the-middle-east) | 2026-10-06 | 新增；新闻稿级，规模未独立核实 |
+| 32 | Bloomberg（2025-06）报道 Ant International 计划在香港、新加坡、卢森堡申请稳定币发行牌照 | 中 | [链接](https://www.theblock.co/post/361951/jack-ma-ant-international-circle-usdc-stablecoin) | 2025-06 / 2025-07-10 | 核实：原 low→medium（经 The Block 转述 Bloomberg） |
+| 33 | Bloomberg/The Block（2025-07-10）：Ant International 与 Circle 合作，待 USDC 满足美国监管要求后接入其区块链，用于商户与银行的资金管理与结算 | 中 | [链接](https://www.theblock.co/news/business/2025-07-10-jack-ma-ant-international-circle-usdc-stablecoin-361951) | 2025-07-10 | 双方未正式证实 |
+| 34 | CSSF 于 2025-05 因反洗钱缺陷对 Alipay (Europe) 罚款 €214,000 | 中 | [链接](https://en.paperjam.lu/article/alipay-bets-on-eu-stablecoin-and-why-luxembourg-matters) | 2025-05 | 新增 |
+| 35 | Bitget Wallet 帮助中心列出支持的国家 QR：越南 VietQR、菲律宾 QR Ph、巴西 Pix；仅支持 Base、BNB Chain、Ethereum、Solana、Tron 上的 USDT/USDC；QR 付款为链上交易，需付 gas | 中 | [链接](https://web3.bitget.com/pt/helpCenter/193) | 未查到 | 帮助中心摘要；越南、菲律宾的上线日期与本地出款方未查到 |
+| 36 | Bitget 交易所 App 的 Scan to Pay 只支持 USDT；越南最低 0.2 USD、菲律宾最低 0.05 USD，单笔上限 500 USD；需 L1 身份认证；页面声明 Bitget 在上述法域不作为支付服务提供商运营；按市场标注 VietQR (NAPAS)、QR Ph (InstaPay) | 中 | [链接](https://www.bitget.com/support/articles/12560603881473) | 未查到 | WebFetch 失败（ENOTFOUND），仅凭搜索摘要 |
+| 37 | Binance Pay 于 2025-12 允许阿根廷用户在巴西用 Pix 进行加密支付（跨境扫本地码） | 中 | [链接](https://www.crowdfundinsider.com/2025/12/256097-binance-pay-allows-argentinians-to-use-pix-for-making-crypto-payments-in-brazil/) | 2025-12 | 仅凭标题与摘要 |
+| 38 | RedotPay Scan to Pay 支持各国国家 QR：越南 VietQR、菲律宾 QR PH、巴西 Pix、哥伦比亚 Bre-B、秘鲁 QR Perú、坦桑尼亚 TANQR、肯尼亚 KE-QR；从加密余额支付，需 KYC；例：菲律宾单笔 ≤50,000 PHP，Pix 单笔 ≤22,000 BRL | 中 | [链接](https://helpcenter.redotpay.com/pt/articles/14133264-comece-a-usar-pagamentos-instantaneos-por-qr-code) | 未查到 | 核实：原 low→medium；上线日期与本地出款方未查到 |
+| 39 | RedotPay 2026-08 招聘信息显示，海外 Scan to Pay 业务计划连接 SGQR、UPI、PromptPay、DuitNow 等国家 QR 标准（尚未上线） | 中 | [链接](https://jobs.accel.com/companies/redotpay-2/jobs/90481068-product-lead-scan-to-pay) | 2026-08 | 招聘信息只反映计划 |
+| 40 | OKX SG 于 2025-09 在新加坡 GrabPay 商户推出 USDC/USDT 支付，先兑换成 XSGD，商户收 SGD | 中 | [链接](https://www.nst.com.my/amp/business/corporate/2025/09/1284336/okx-singapore-launches-stablecoin-payments-local-grabpay) | 2025-09 | 引自 SG-MY 种子 |
+| 41 | TBCASoft 为美国公司，2016 年由吴陵（Ling Wu）创立；股东或战略投资方包括软银、Naver、富士康、远传电信 | 中 | [链接](https://www.gvm.com.tw/article/116425) | 未查到 | 多来源一致（fintechnews、managertoday、gvm），未读原文 |
+| 42 | 2026-02-03 台新 Pay+ 与全盈+PAY 开通日本 PayPay 服务（经 HIVEX）；HIVEX 台湾参与方另有一卡通 iPASS MONEY | 中 | [链接](https://www.ctee.com.tw/news/20260203701784-430303) | 2026-02-03 | 工商时报摘要 |
+| 43 | 2025-09 起 Weixin Pay（微信支付）用户可经 HIVEX 在日本 PayPay 商户扫码付款 | 中 | [链接](https://finance.technews.tw/2025/09/07/paypay/) | 2025-09-07 | 台湾媒体摘要 |
+| 44 | 全支付与韩国 ZeroPay、ICB 合作，经 HIVEX 系统推出跨境支付（2025） | 中 | [链接](https://www.managertoday.com.tw/topic/view/198/post/70566) | 2025 | 方向与上线细节未查到 |
+| 45 | TBCASoft 与 RCBC 及本地网关 Novus Technologies 合作，把 HIVEX 跨境 QR 连接引入菲律宾 | 中 | [链接](https://www.digitimes.com/news/a20231128PR200.html?chid=9) | 2023-11-28 | 是否覆盖 QR Ph、是否已上线未查到 |
+| 46 | StraitsX × Ant International（Alipay+）× Grab（2024-11-05）：后台以 XSGD + Purpose Bound Money 在 Avalanche 上清结算，商户实时收 SGD | 中 | [链接](https://www.straitsx.com/case-study/alipay-grab) | 2024-11-05 | 引自 SG-MY 种子；StraitsX 同时是 Alipay+ 与 HIVEX 的稳定币伙伴 |
+| 47 | Alipay+ 在“全钱包开放”的国家（韩、新、马、柬、菲）以国家交换机或码运营方作为受理侧接入；在泰、越、印尼则只开放中国 Alipay（央行间双边框架、本币直接兑换、本地结算行） | 中 | [链接](https://www.businesswire.com/news/home/20251026429360/en/NITMX-Ant-International-and-Krungthai-Bank-Expand-Payment-Connectivity-Between-Thailand-and-China-via-PromptPay) | 2026-10-18（归纳） | 根据本表各条已核实事实归纳；“泰、越、印尼不对其他钱包开放”属于未检出，不是官方否定 |
+| 48 | HKMA 预期 2026 年发出首批稳定币牌照；有报道标题称香港错过 3 月目标；Ant 是否获香港牌照未查到 | 低 | [链接](https://cointelegraph.com/news/hong-kong-missed-march-target-stablecoin-licenses) | 2026 | 仅凭搜索结果标题，未读到正文 |
+| 49 | Alipay+ 于 2026-04 推出 AI agent 支付协议 AMP，一期 10 个钱包、7 个收单方支持 | 低 | [链接](https://www.finextra.com/company-news/4979/ant-group) | 2026-04 | 来自搜索综述片段，原文未读到，未核实 |
+
+<details><summary>待确认问题</summary>
+
+- 泰国 NITMX、越南 NAPAS、印尼 QRIS 的中国 Alipay 走廊，是否计划对非中国的 Alipay+ 钱包（Kakao Pay、TnG、GCash、PayPay 等）开放？央行间框架是否允许第三国钱包借道？
+- 菲律宾 QR Ph × Alipay+（2026-09）：开放哪些钱包？是否经 InstaPay 清算？PPMI 侧的结算行是谁？是否有单笔或每日限额？
+- Alipay+ 报价对象的完整字段（settlementQuote 子字段、是否有 paymentQuote/quoteId/有效期）、汇率由谁锁定、在哪个时点锁定、FX 风险由谁承担。
+- Alipay+ 结算文件的交付方式（SFTP 还是 API）、字段表、预付或保证金安排；wallet interchange fee 的典型费率区间。
+- inquiryForeignExchangeQuote 的路径前缀（/aps/v1 还是 /aps/api/v1）及完整响应字段。
+- PayPay 作为 Alipay+ MPP 为何目前只在韩国开通出境？新加坡、马来西亚、柬埔寨、菲律宾（技术上 Alipay+ 全钱包可达）是否在计划中？
+- HIVEX 的链类型、共识机制、节点运营方、清算资产（2023 年起使用的“稳定币技术”具体是什么？）；Project HIVEX StableLink 在 2026 年是否上线或获批；HIVEX 在泰国及其他东南亚国家的布局。
+- HIVEX 在 PayPay 出境（台湾）中的结算币种与周期，以及与 FISC、玉山的分工。
+- Ant International 是否获得香港或新加坡稳定币牌照？北京 2025-10 的叫停是否涵盖 Ant International？BREUR 是否会扩展到非关联方或 Alipay+ 合作方结算？
+- Bitget Wallet 在越南、菲律宾，以及 RedotPay、Binance Pay 在各国的实际本地出款方是谁？当地监管（越南 SBV、菲律宾 BSP、巴西 BCB）是否对“加密钱包扫国家码”有执法或表态？
+- 巴西央行 2025 年 VASP 规则是否把稳定币支付或转账纳入外汇监管？对 Pix 扫码类产品有何影响（仍为 low，未核实）？
+- PayPay 最早受理 Alipay 的日期，以及作为 Alipay+ ACQP 的起始日期（仍未核实）。
 
 </details>
 

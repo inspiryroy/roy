@@ -115,4 +115,18 @@
 
 ## 5.9 菲律宾
 
-（菲律宾调研完成后补充。）
+| 项 | 内容 |
+|---|---|
+| 码 / 轨道 | QR Ph（PPMI）；InstaPay（BancNet 运营的 ACH，实时、单笔 ≤ ₱50,000）、PESONet（批量）；PhilPaSSplus 结算 |
+| 规模 | 2025 年 24.7 亿笔、₱1.16 万亿；数字支付占零售笔数 64.69% |
+| 跨境现状 | **Alipay+ × PPMI（2026-09-01）**，全国 QR Ph 商户可被 Alipay+ 钱包扫；DuitNow 线计划 2026 年内；Nexus 2027 年年中；HIVEX × RCBC × Novus MOU |
+| 日本 | 无（反方向：GCash、HelloMoney 经 Alipay+ 在 PayPay 商户付款） |
+| 监管 | BSP VASP 新牌照无限期暂停（2025-09 起）；SEC CASP 规则（2025-07-05 生效）；**PHPC 已出 BSP 沙盒（2025-06）**；BPI × Meridian 以稳定币为入境汇款结算层（2026-07，与本方案同模式）；2026-09 征求意见拟暂停新 OPS 注册 12 个月、收单机构只能与持牌 VASP 合作 |
+| 候选伙伴 | **Coins.ph**（VASP + EMI，InstaPay/PESONet 双参与者，PHPC 发行方，CPN 收款机构——"收稳定币 → 付 QR Ph 商户"可在一家内闭环）、PDAX、BPI、UnionBank / Security Bank；注意日资银行马尼拉分行只参与 PESONet、不在 InstaPay |
+| 推荐路径 | 短期 **issuer-sponsor**：与一家 InstaPay 发送方参与者（Coins.ph 等）签约，由其向任意 QR Ph 商户发起贷记——需确认 PPMI 规则是否允许"境外发起"及 BSP 定性；中期与 PPMI 谈对标 Alipay+ 的跨境平台接入 |
+| 稳定币位置 | **可以落地**：USDC → Coins.ph（CPN）→ PHP |
+| 技术要点 | 只接 tag 28 P2M；参与机构代码 ≠ SWIFT BIC，需维护映射表；`62` 字段 `***` 时需付款人填写；退款靠收单方反向贷记 |
+
+## 5.10 缅甸（不建议进入第一期）
+
+MMQR（CBM，2025-02 正式推出，基于 EMVCo，GUID 与子字段未查到）；缅甸自 2022-10 起被 FATF 列入"call for action"黑名单（2026-06 全会继续保留），加上制裁筛查、代理行去风险与严格外汇管制，日本持牌机构可行性很低。

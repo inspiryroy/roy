@@ -168,3 +168,30 @@ test('Cambodia: merchant KHQR in USD keeps confidence but flags the KHR-only cha
   assert.equal(m!.confidence, 0.9);
   assert.match(m!.notes.join(), /KHR only/);
 });
+
+// ---------------------------------------------------------------------------
+// Philippines
+
+import { qrPh, sampleQrPhMerchant } from '../src/schemes/ph.ts';
+
+test('Philippines: QR Ph P2M routes on the InstaPay participant code; P2P GUID is recognised', () => {
+  const [m] = identify(sampleQrPhMerchant({ amount: '450.00' }));
+  assert.equal(m!.schemeId, 'PH.QRPH');
+  assert.equal(m!.paymentType, 'P2M');
+  assert.equal(m!.routing.acquirerId, 'EXMPPHM2XXX');
+  assert.equal(m!.routing.account, '217000000000123456');
+  assert.deepEqual(m!.altRoutingKeys, ['PH:BIC:EXMPPHM2XXX']);
+  const p2p = buildMpm({
+    initiation: 'static',
+    accounts: [{ tag: '27', fields: [['00', 'com.p2pqrpay'], ['01', 'EXMPPHM2XXX'], ['03', '000000000000001'], ['04', 'PROXY0000000001']] }],
+    mcc: '6016', currencyNumeric: '608', countryCode: 'PH', merchantName: 'J****N D.', merchantCity: 'MANILA',
+  });
+  const [q] = new SchemeRegistry().register(qrPh).identify(decodeMpm(p2p));
+  assert.equal(q!.paymentType, 'P2P');
+  assert.equal(q!.routing.account, 'PROXY0000000001');
+});
+
+test('Philippines: amounts above the InstaPay ceiling are flagged', () => {
+  const [m] = identify(sampleQrPhMerchant({ amount: '60000.00' }));
+  assert.match(m!.notes.join(), /InstaPay ceiling/);
+});
