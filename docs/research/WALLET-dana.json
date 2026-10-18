@@ -1,0 +1,369 @@
+{
+  "summary": "DANA（印尼）调研，日期 2026-10-18。方法与局限：WebSearch 用满 12 次；WebFetch 对 kabarbursa.com、knowledge.antom.com、en.wikipedia.org 均失败（getaddrinfo ENOTFOUND），所以本文只依据 WebSearch 摘要和 docs/research 下已核实的种子（ID、ALIPAY-VERIFY、JP-PAYPAY、ASEAN-LINK、STABLECOIN-INFRA、JP-VERIFY）。DANA 未上市，本轮没找到它单独的收入、利润、TPV、MAU，也没找到 BI 对 DANA 的处罚、数据泄露或重大故障报道（没检索到不等于不存在）。\n\n【它是谁】运营主体为 PT Espay Debit Indonesia Koe，由 Emtek 与蚂蚁（Ant Group）早期投资，成立年份 2018 年为记忆，未核实。DANA 自称是 BI 登记并监管的“第一类支付服务商”（PJP Kategori I），并称持有电子货币、数字钱包、汇款等许可（公司说法）。股权数据都停在 2022 年，2024–2026 年的比例没查到。DANA 的母公司是 PT Elang Andalan Nusantara（EAN）。2022-06-30，Emtek 经 PT Kreatif Media Karya（KMK）持有 EAN 49%。2022-08-10，KMK 把部分股份卖给 Lazadapay Holdings（阿里系 Lazada），作价 Rp4.53 万亿（约 US$3.045 亿）；据 DealStreetAsia，KMK 的持股由此降到 6.7%。同月，Sinar Mas 旗下 DSSA 经 PT DSST Dana Gemilang 投资 US$2 亿（约 Rp2.95 万亿），DSSA 称 DSST 已是 DANA 最大股东之一。蚂蚁经 API Investment 持 EAN 约 45%，是 2021 年前后的报道（low）。由此推断，现在的主要股东是 Sinar Mas、Lazada 和蚂蚁，Emtek 已成小股东；这是基于 2022 年数据的推断。用户数都是公司说法，口径为注册：2022-08 约 1.15 亿，2025-02 称“超过 2 亿用户”，一篇学术文献引 2026 年数据称注册账户超过 1.9 亿（OVO 超过 1.1 亿）。MAU 没查到。商户：2022 年报道称有 5,000 家线上商户，DANA 可在 700 万 QRIS 线下商户使用。后者是 QRIS 互通带来的受理面，不是 DANA 自己收单的商户数；DANA 自己收单的商户数没查到。全国 QRIS（BI，2026-06）：商户 4,486 万，96.68% 为 UMKM；用户 6,577 万。财务：没查到。Emtek 2025 年收入 Rp19.1 万亿（+56.3%），净利约 Rp6.78 万亿（+361.75%），增长靠投资收益和联营公司利润，但报道没有拆出 DANA 的贡献。近期动作：2024 年与 STAR Asset Management 在 App 内上线基金；2024-03 试点 QRIS Soundbox；2024-04 蚂蚁国际称正与 Bank Mandiri 和 DANA 洽谈在印尼运营 Alipay+；2025-08-17 上线日本 QRIS 跨境付款，自称第一家做到的非银行 PJP；2026-08 表态支持 0% MDR 扩大，但称在等细则。CEO 为 Vince Iswara（LinkedIn）。\n\n【商户侧】商户可在 DANA App 内生成静态 QRIS（教程类来源）。QRIS Soundbox 于 2024-03 初先向 UMKM 试点，是静态 QRIS 加语音播报到账金额。detikInet（2025-11）称 DANA、BCA、BRI、Mandiri、OVO 的音箱一般经 WiFi 或 4G SIM 联网、按月租，但没给 DANA 的金额。以下都没查到：动态码设备、卡机、Android POS、装机量、设备收入，以及拓展方式（地推、代理还是银行）。MDR：UMI 单笔 ≤Rp500,000 为 0%，>Rp500,000 为 0.3%，其他类别 0.7%。据 Kontan、Bisnis 报道（BI 原文未读），2026-10-01 起所有类别单笔 ≤Rp100,000 为 0%。BI 规定商户不得把 MDR 转嫁给消费者。推断：小额 MDR 归零后，钱包要靠设备月租、沉淀资金和金融服务赚钱，补贴设备的空间变小。\n\n【监管】非银行 PJP 外资上限 85%，本国持股至少 15%，有表决权股份的 51% 须由本国持有（PBI 22/23/2020）。DANA 的股东里 Sinar Mas、Emtek 是本国方，与这条规定相符（推断）。境内交易须经 GPN 处理；QRIS 由 BI 和 ASPI 制定标准。BI 处罚和数据泄露没查到；有法学论文讨论用户余额丢失时 DANA 应承担侵权责任。\n\n【跨境】(1) QRIS 跨境：自 2025-08-17 起，DANA 用户可在日本扫 JPQR Global 码（Netstars 运营，属 BI–ASPI–METI–PJA 框架），App 内自动换算成 IDR。QRIS 跨境目前覆盖泰、马、新、日、韩（2026-04-01）、中（2026-04-30）；DANA 是否参与韩国线和中国线，没有逐条核实。(2) Alipay+：据 Antom 的 DANA FAQ（只有搜索摘要），DANA 用户可在马、泰、新、日、韩“支持 Alipay+ 的境外商户”扫码付款，按 IDR 结算。如果属实，DANA 就是 Alipay+ 的钱包方（MPP），可以在挂 Alipay+ 标识的 PayPay 商户付款。但 PayPay 受理的 35 项钱包服务里有没有 DANA 没核实，Antom 页面也可能把 QRIS 跨境和 Alipay+ 混在一起写（medium/low）。Antom 也把 DANA 作为线上支付方式提供给境外商户：单笔 Rp300 到 Rp1,000 万，每日上限 Rp2,000 万，支持退款，不支持拒付。(3) 入境：DANA 允许外国手机号注册，并可绑定 Visa/MC/Amex/JCB 卡付 QRIS（厂商说法）。外国钱包扫 QRIS 走 BI 的双边线（中国线经 Alipay+ 和银联）。日本游客在印尼扫 QRIS 尚未上线：BI 于 2026-04 称已获日本 FSA 许可，之后没查到上线公告。\n\n【稳定币/加密】本轮没查到 DANA 的加密产品。投资功能有两项：与 Pluang 合作的 DANA eMAS（约 2020–21 年），以及 2024 年起与 STAR AM 合作的基金。印尼规则：数字金融资产的监管于 2025-01-10 由 Bappebti 移交 OJK 和 BI；稳定币可以作为交易资产，不能作为支付工具（Chambers 2026，medium）；《货币法》要求境内支付使用卢比；BI 禁止 PJP 处理虚拟货币（low，凭记忆）；OJK 的稳定币 POJK 预计 2027-01 发布。所以在印尼，DANA 和 INSCREEN 都不能让商户收稳定币。\n\n【对 INSPAY 的意义（推断）】(a) 参考模型：印尼钱包的音箱按月租卖，GoPay Spiker Rp49,000/月可作对标，作用是防假截图和留住商户。但 0% MDR 扩大以后，设备只能靠月租和交叉销售回本；INSCREEN 屏幕终端在印尼小微商户那里没有 MDR 可分。(b) 伙伴：2025 年访日印尼游客 640,577 人（+23.7%，JNTO）。DANA 是印尼最大的钱包之一，但 INSPAY 接到这批付款不一定要和 DANA 签约：最短的路是让 INSCREEN 在日本显示 JPQR Global（Netstars）码，或经 Alipay+ ACQP 受理。(c) 网络：印尼的跨境 QR 由央行主导、本币直接结算，DANA 的股东里又有 Alipay+ 的运营方蚂蚁，所以 DANA 加入 INSPAY 稳定币结算网络的可能性低。印尼方向更现实的是接 QRIS 跨境或 Alipay+。(d) 竞争：DANA 只做印尼，也没有查到它做屏幕终端。INSCREEN 如果进印尼，只能当 PJSP（DANA、BRI 等）的设备伙伴。",
+  "facts": [
+    {
+      "id": "DANA-01",
+      "claim": "DANA 的运营主体是 PT Espay Debit Indonesia Koe。DANA 自称是 BI 登记并监管的“第一类支付服务商”（Penyedia Jasa Pembayaran Kategori I），同时在 Kominfo 登记。",
+      "confidence": "medium",
+      "source": "https://www.dana.id/corporate/biz-group（WebSearch 摘要）",
+      "date": "页面未注明日期（2026-10 检索）",
+      "notes": "公司说法。BI 是否把 DANA 列为 PJP Kategori I，没有在 BI 的持牌名单上核对。"
+    },
+    {
+      "id": "DANA-02",
+      "claim": "维基百科摘要称 DANA 持有四项许可：电子货币、数字钱包、汇款、“数字金融流动性”（digital financial liquidity）。",
+      "confidence": "low",
+      "source": "https://en.wikipedia.org/wiki/DANA_(payment_service)（WebSearch 摘要；WebFetch 失败）",
+      "date": "未注明（维基当前版本）",
+      "notes": "二手百科。PBI 22/23/2020 已于 2021 年把单项许可并入 PJP 分类，“四项许可”可能是旧说法（推断）。第四项的译名含义不清。"
+    },
+    {
+      "id": "DANA-03",
+      "claim": "一篇学位论文称 DANA 于 2018-11-05 获得 BI 运营许可，并引用了 BI 的决定函编号。",
+      "confidence": "low",
+      "source": "https://eprints.umm.ac.id/id/eprint/28923/2/BAB%201.pdf（WebSearch 摘要，具体是哪篇论文不确定）",
+      "date": "2018-11-05（许可日期）",
+      "notes": "学位论文转述，函号没在 BI 记录里核对。DANA 2018 年成立为记忆。"
+    },
+    {
+      "id": "DANA-04",
+      "claim": "2022-06-30，Emtek（EMTK）经 99.99% 控股的子公司 PT Kreatif Media Karya（KMK）持有 DANA 母公司 PT Elang Andalan Nusantara（EAN）49%。2022-08-10，KMK 把部分 EAN 股份卖给 Lazadapay Holdings Pte Ltd，作价 Rp4.53 万亿（约 US$3.045 亿，按当时 JISDOR 汇率）。Lazada 由此成为 DANA 的间接股东。",
+      "confidence": "high",
+      "source": "https://market.bisnis.com/read/20220811/192/1565601/grup-emtek-emtk-jual-saham-dana-rp45-triliun-ke-lazada",
+      "date": "2022-08-10/11",
+      "notes": "已核实。多源一致（Bisnis、Kompas TV、Kontan Insight），依据是 IDX 信息披露。"
+    },
+    {
+      "id": "DANA-05",
+      "claim": "DealStreetAsia 称交易后 KMK 在 EAN 的持股由 49% 降到 6.7%；Sinar Mas 与 Lazada 合计投入 US$5.545 亿。",
+      "confidence": "medium",
+      "source": "https://dealstreetasia.com/?p=303979（WebSearch 摘要）",
+      "date": "2022-08",
+      "notes": "单一媒体，仅见摘要。2023–2026 年 Emtek 是否再增持或减持没查到。"
+    },
+    {
+      "id": "DANA-06",
+      "claim": "Sinar Mas 旗下 PT Dian Swastatika Sentosa（DSSA）经间接子公司 PT DSST Dana Gemilang 向 DANA 投资 US$2 亿，2022-08 完成（Bisnis 报 Rp2.95 万亿）。DSSA 称 DSST 已是 DANA 最大股东之一。",
+      "confidence": "high",
+      "source": "https://market.bisnis.com/read/20220811/192/1565693/grup-sinarmas-dssa-rampungkan-akuisisi-dana-rp295-triliun",
+      "date": "2022-08-11",
+      "notes": "已核实（依据 DSSA 披露）。Fortune IDN 引 Bloomberg 报 US$2.5 亿，与此不一致；以 DSSA 披露为准。DSST 的具体持股比例没查到。"
+    },
+    {
+      "id": "DANA-07",
+      "claim": "较早的报道称蚂蚁经 API Investment Ltd 持有 EAN 约 45%。2022 年后的蚂蚁持股比例，以及在蚂蚁集团重组后股份是否转到 Ant International，都没查到。",
+      "confidence": "low",
+      "source": "https://dinsights.katadata.co.id/read/2021/08/10/will-dana-acquisition-give-birth-to-sinarmas-ant-joint-venture（WebSearch 摘要，不确定 45% 出自哪篇）",
+      "date": "约 2021",
+      "notes": "未核实。2022 年各报道都写“蚂蚁继续是股东”。持股归属蚂蚁集团还是 Ant International，关系到它和 Alipay+ 的利益关联。"
+    },
+    {
+      "id": "DANA-08",
+      "claim": "2022 年交易后，DSSA 披露列出的 DANA 股东有 DSST（Sinar Mas）、Lazada Group、EMTEK Group、Ant Group。2024–2026 年的持股比例在本轮没查到。",
+      "confidence": "medium",
+      "source": "https://investasi.kontan.co.id/news/dian-swastatika-dssa-kembali-menyuntikkan-investasi-us-200-juta-ke-dana",
+      "date": "2022-08",
+      "notes": "没检索到不等于没有变化。推断：现在的主要股东是 Sinar Mas、Lazada（阿里）和蚂蚁，Emtek 为小股东。DSSA 和 EMTK 的 2025 年报附注可以核实。"
+    },
+    {
+      "id": "DANA-09",
+      "claim": "用户数（公司说法，注册口径）：2022-08 约 1.15 亿用户；2025-02 称“超过 2 亿用户”，同时称巴厘岛交易增长 132%；KabarBursa 报 1.8 亿用户（日期不明），其中 60% 来自三、四线城市。",
+      "confidence": "medium",
+      "source": "https://gizmologi.id/news/fintech/dana-raih-kucuran-sinar-mas-lazada/ ；https://rri.co.id/denpasar/ekonomi/bisnis/1332968/dana-catat-transaksi-di-bali-tumbuh-132-persen ；https://www.kabarbursa.com/market-hari-ini/bos-dana-potensi-pertumbuhan-perusahaan-masih-sangat-besar",
+      "date": "2022-08；2025-02；日期不明",
+      "notes": "公司说法，没有说明是注册还是活跃，按累计注册处理。KabarBursa 的 WebFetch 失败。MAU 和 DAU 没查到。"
+    },
+    {
+      "id": "DANA-10",
+      "claim": "一篇学术文献引用 2026 年数据称，DANA 的注册账户最多，超过 1.9 亿；OVO 超过 1.1 亿。",
+      "confidence": "low",
+      "source": "https://repository.nusamandiri.ac.id/repo/files/246756/download/3418-Article-Text-12153-1-10-20240203.pdf（WebSearch 摘要，具体出自哪份文献不确定）",
+      "date": "2026（文献所引数据）",
+      "notes": "二手转引，原始数据来源不明。注册账户比 2025-02 的“2 亿以上用户”还少，说明两者口径不同。"
+    },
+    {
+      "id": "DANA-11",
+      "claim": "2022 年报道：DANA 有 5,000 家线上商户，可在 700 万家 QRIS 线下商户使用。",
+      "confidence": "medium",
+      "source": "https://teknologi.bisnis.com/read/20220326/266/1515269/dana-kenalkan-4-produk-dan-layanan-terbaru-salah-satunya-pembayaran-stnk（WebSearch 摘要）",
+      "date": "2022",
+      "notes": "公司说法。“700 万 QRIS 商户”是 QRIS 互通后的受理面，不是 DANA 自己收单的商户数（推断）。DANA 自己收单的商户数、TPV、交易笔数在 2025–2026 年都没查到。"
+    },
+    {
+      "id": "DANA-12",
+      "claim": "全国 QRIS（BI 数据，Kontan 引用）：2026-06 商户 4,486 万，其中 96.68% 为 UMKM；用户 6,577 万。",
+      "confidence": "medium",
+      "source": "https://keuangan.kontan.co.id/news/ini-respons-dana-soal-perluasan-kebijakan-mdr-qris-0-mulai-oktober-2026",
+      "date": "2026-06（数据）/2026-08（报道）",
+      "notes": "与 docs/research/ID.json 一致。是全国数，不是 DANA 的数。"
+    },
+    {
+      "id": "DANA-13",
+      "claim": "Emtek（EMTK）2025 年收入 Rp19.1 万亿（+56.3%），净利约 Rp6.78 万亿（+361.75%）。利润增长靠其他收入，包括金融和投资收益以及联营公司利润；报道没有拆出 DANA 的贡献。",
+      "confidence": "medium",
+      "source": "https://databoks.katadata.co.id/en/market/statistics/69c626d28b42b/emteks-emtk-profit-surged-by-361-to-rp678-trillion-in-2025 ；https://www.idnfinancials.com/news/62483/emtk-profit-jumps-4-6-fold-as-digital-business-drives-gains",
+      "date": "2026（发布 2025 年报数据）",
+      "notes": "Investortrust 报 Rp8.88 万亿，与此冲突。DANA 单独的收入和利润没查到。Emtek 2022 年后持股已小（DANA-05），它的报表很难反映 DANA 的损益（推断）；DSSA 年报可能更有用。"
+    },
+    {
+      "id": "DANA-14",
+      "claim": "DANA 自 2024 年起与 STAR Asset Management 在 App 的 Finance 类目下提供基金。据 DANA 内部数据（2025-07），75% 的基金用户在 35 岁以下，89% 在 Jabodetabek 以外。",
+      "confidence": "medium",
+      "source": "https://infobanknews.com/didominasi-milenial-begini-profil-investor-reksa-dana-besutan-star-am-di-aplikasi-dana/",
+      "date": "2025-07（数据）",
+      "notes": "公司说法。"
+    },
+    {
+      "id": "DANA-15",
+      "claim": "DANA 的 CEO 是 Vince Iswara（LinkedIn 自述）。",
+      "confidence": "medium",
+      "source": "https://id.linkedin.com/in/vinceiswara（WebSearch 摘要）",
+      "date": "2026（检索）",
+      "notes": "没有查到 2026 年 CEO 关于战略、MAU 或交易量的表态。"
+    },
+    {
+      "id": "DANA-16",
+      "claim": "商户可在 DANA App 内为 UMKM 生成 QRIS（教程类文章），说明 DANA 是 QRIS 收单方（PJSP）。",
+      "confidence": "medium",
+      "source": "https://selular.id/2023/01/berikut-cara-buat-qris-di-aplikasi-dana-untuk-umkm/2/",
+      "date": "2023-01",
+      "notes": "“DANA 是 QRIS 收单方”是推断，依据是商户能直接拿到 DANA 发的 QRIS 码。任务中的“DANA Bisnis”品牌名没有直接核实，只查到 dana.id 的 Business Group 页面。"
+    },
+    {
+      "id": "DANA-17",
+      "claim": "DANA 于 3 月初推出 QRIS Soundbox，先向 UMKM 试点。它是静态 QRIS 码加扬声器，播报付款成功和金额，咖啡店 Burno Coffee 在用。",
+      "confidence": "medium",
+      "source": "https://keuangan.kontan.co.id/news/tingakatkan-kepercayaan-pelaku-usaha-dana-luncurkan-soundbox-qris ；https://selular.id/2024/04/teknologi-qris-soundbox-dana-beraksi-di-kedai-kopi/",
+      "date": "2024-03（据 Selular.ID 2024-04 推断年份）",
+      "notes": "公司宣传和媒体报道。没有说能出动态码。装机量没查到。"
+    },
+    {
+      "id": "DANA-18",
+      "claim": "detikInet（2025-11）称 BCA、BRI、Mandiri、DANA、OVO 都推出了自己的 Soundbox，一般经 WiFi 或 4G SIM 联网，按“实惠的”月租提供。",
+      "confidence": "medium",
+      "source": "https://inet.detik.com/business/d-8207135/cara-kerja-qris-soundbox-lindungi-pedagang-dari-bukti-transfer-palsu/amp",
+      "date": "2025-11",
+      "notes": "泛称，没给 DANA 的月租或售价。对标：GoPay Spiker 月租 Rp49,000（约 USD 3），开通费 Rp100,000（docs/12 [10]，推广性质来源）。"
+    },
+    {
+      "id": "DANA-19",
+      "claim": "以下都没查到：DANA 的动态码设备（带屏音箱、动态 QR 显示屏）、卡机/EDC、Android POS、设备装机量、设备收入，以及商户拓展方式（地推、代理、银行）。",
+      "confidence": "medium",
+      "source": "本轮 WebSearch 未检出（2026-10-18）",
+      "date": "2026-10-18",
+      "notes": "没检索到不等于没有。docs/12 记录印尼的带屏动态码音箱有 Telkomsel（2025-08，B2B）和白牌，没有 DANA。"
+    },
+    {
+      "id": "DANA-20",
+      "claim": "QRIS MDR：UMI 单笔 ≤Rp500,000 为 0%，>Rp500,000 为 0.3%；UKE、UME、UBE 为 0.7%。2026-10-01 起 BI 把 0% 扩大到所有类别单笔 ≤Rp100,000 的交易，UMI ≤Rp500,000 为 0% 的规定不变。",
+      "confidence": "medium",
+      "source": "https://keuangan.kontan.co.id/news/ini-respons-dana-soal-perluasan-kebijakan-mdr-qris-0-mulai-oktober-2026 ；https://finansial.bisnis.com/read/20260909/90/2002552/opini-efek-berganda-mdr-qris-0",
+      "date": "2026-08/09（报道）；2026-10-01（生效）",
+      "notes": "媒体和银行通知，BI 原文没读到。与 docs/12 一致。MDR 不区分静态码和动态码。"
+    },
+    {
+      "id": "DANA-21",
+      "claim": "DANA 传播总监 Olavina Harahap 表示支持 0% MDR 的扩大，认为有利于普惠和数字经济增长，但称还在等 BI 的细则。",
+      "confidence": "medium",
+      "source": "https://keuangan.kontan.co.id/news/ini-respons-dana-soal-perluasan-kebijakan-mdr-qris-0-mulai-oktober-2026",
+      "date": "2026-08",
+      "notes": "公司表态。没有披露对 DANA 收单收入的影响。"
+    },
+    {
+      "id": "DANA-22",
+      "claim": "BI 重申商户不得把 QRIS MDR（例如 UMI 的 0.3%）转嫁给消费者。",
+      "confidence": "medium",
+      "source": "https://finansial.bisnis.com/read/20240430/11/1761523/biaya-qris-usaha-mikro-03-bi-tegaskan-merchant-tak-tarik-tarif-ke-konsumen",
+      "date": "2024-04-30",
+      "notes": "媒体转述 BI。"
+    },
+    {
+      "id": "DANA-23",
+      "claim": "推断：小额交易 MDR 归零后，DANA 这类钱包从小微商户那里几乎拿不到 MDR，商户侧的收入要靠设备月租、沉淀资金、贷款和理财等交叉销售；补贴设备的空间也会变小。",
+      "confidence": "medium",
+      "source": "推断（依据 DANA-20、docs/12 的 MDR 测算）",
+      "date": "2026-10-18",
+      "notes": "推断，不是 DANA 披露。DANA 的设备收入没查到。"
+    },
+    {
+      "id": "DANA-24",
+      "claim": "非银行 PJP 外资上限 85%，本国持股至少 15%，有表决权股份的 51% 须由本国持有（PBI 22/23/2020，细则 PBI 23/6/PBI/2021），外资按直接加间接穿透计算。DANA 有本国股东 Sinar Mas（DSSA）和 Emtek，外国股东蚂蚁和 Lazada，与这条规定相符。",
+      "confidence": "medium",
+      "source": "https://www.makarim.com/storage/uploads/4337a0d3-c9a0-430a-bf01-c9c571ceb63f/653871_Feb-2021---Issue-1---The-New-Indonesian-Umbrella-Regulation-on-Payment-Systems.pdf（docs/research/ID.json）",
+      "date": "2021-02",
+      "notes": "规定本身为 medium（律所摘要）；“DANA 的股权结构是为了满足这条规定”是推断。"
+    },
+    {
+      "id": "DANA-25",
+      "claim": "本轮没查到 BI 或 OJK 对 DANA 的处罚、DANA 的数据泄露事件或重大服务中断。有法学论文主张用户余额丢失时 PT Espay Debit Indonesia Koe 应承担侵权责任；DANA 自称持有 ISO 27001 认证。",
+      "confidence": "low",
+      "source": "https://journal.unram.ac.id/index.php/privatelaw/en/article/download/8390/4844/34706（WebSearch 摘要）",
+      "date": "未注明",
+      "notes": "没检索到不等于没有。论文讨论的是责任原则，不是具体事件。"
+    },
+    {
+      "id": "DANA-26",
+      "claim": "影响 DANA 业务的其他规则：境内交易须经 GPN 处理（PBI 19/8/PBI/2017，switching 机构本国持股 ≥80%）；QRIS 由 BI 和 ASPI 制定标准；QRIS 单笔上限 Rp1,000 万（2022-03）；QRIS Tap（NFC）2025-03-14 上线。",
+      "confidence": "medium",
+      "source": "docs/research/ID.json（Makarim 2017 GPN 摘要；detik 2022；CNBC Indonesia 2025-03-14）",
+      "date": "2017–2025",
+      "notes": "引自种子，本轮没有复检。"
+    },
+    {
+      "id": "DANA-27",
+      "claim": "自 2025-08-17 起，DANA 用户可在日本用 QRIS 扫码付款，App 内自动换算成卢比。DANA 自称是第一家在日本提供跨境支付的非银行 PJP。",
+      "confidence": "medium",
+      "source": "https://www.indotelko.com/read/1755732009/kini-bayar-qris-di-jepang-bisa-pakai-dana",
+      "date": "2025-08-17（上线）/2025-08-21（报道）",
+      "notes": "“第一家非银行 PJP”是公司说法。框架是 BI、ASPI、METI、PJA 与 Netstars 的 JPQR Global，与 Alipay+ 无关（ID.json、ALIPAY-VERIFY high）。日本可用 DANA 的商户数没查到。"
+    },
+    {
+      "id": "DANA-28",
+      "claim": "BI 页面列出的 QRIS 跨境国家：泰国、马来西亚、新加坡、日本、韩国（2026-04-01 运营）、中国（2026-04-30 软启动，经 Alipay+ 和银联，印尼方 24 家 PJP 参与：16 家银行、8 家非银行）。",
+      "confidence": "medium",
+      "source": "https://www.bi.go.id/id/fungsi-utama/sistem-pembayaran/ritel/kanal-layanan/QRIS/QRIS-Antarnegara/default.aspx ；https://investortrust.id/macro/101858/bi-luncurkan-qris-antarnegara-china-dapat-digunakan-mulai-30-april-2026",
+      "date": "2026",
+      "notes": "BI 页面只有搜索摘要。DANA 是否在中国线的 8 家非银行 PJP 里、是否参与韩国线，没有逐条核实（推断很可能参与）。"
+    },
+    {
+      "id": "DANA-29",
+      "claim": "Antom 的 DANA FAQ（摘要）称，DANA 用户可在马来西亚、泰国、新加坡、日本、韩国等旅游地“支持 Alipay+ 的境外商户”扫码付款，按 IDR 结算。",
+      "confidence": "medium",
+      "source": "https://knowledge.antom.com/dana（WebSearch 摘要；WebFetch 失败）",
+      "date": "未注明",
+      "notes": "合作方说法。这条与 ALIPAY-VERIFY 的结论（Alipay+ 在印尼只开了中国 Alipay 的入境线）不矛盾，因为说的是 DANA 用户出境。页面可能把 QRIS 跨境和 Alipay+ 混写，DANA 是不是 Alipay+ MPP 仍要看 Alipay+ 官方钱包名单。"
+    },
+    {
+      "id": "DANA-30",
+      "claim": "推断：如果 DANA 是 Alipay+ MPP，DANA 用户就能在挂 Alipay+ 标识的 PayPay 商户付款（PayPay 是 Alipay+ ACQP，2026-06-29 受理 17 个国家和地区的 35 项钱包服务）。但 PayPay 名单里有没有 DANA，本轮没核实。",
+      "confidence": "low",
+      "source": "https://about.paypay.ne.jp/en/pr/20260629/01/（docs/research/ALIPAY-VERIFY.json）",
+      "date": "2026-06-29",
+      "notes": "推断。在日本，DANA 用户已确认能用的路径只有 JPQR Global（DANA-27）。"
+    },
+    {
+      "id": "DANA-31",
+      "claim": "Antom 把 DANA 作为 Alipay+ 支付方式提供给境外商户：最低 Rp300，单笔上限 Rp1,000 万，每日上限 Rp2,000 万；支持退款和部分退款，不支持拒付（chargeback）。",
+      "confidence": "medium",
+      "source": "https://global.alipay.com/docs/ac/payment_method/DANA（WebSearch 摘要）",
+      "date": "未注明",
+      "notes": "Antom 文档。主要用于线上，说明 DANA 已接入 Ant 的收单网络。"
+    },
+    {
+      "id": "DANA-32",
+      "claim": "2024-04，Ant International CEO 称正与 PT Bank Mandiri 和 DANA 洽谈在印尼运营 Alipay+；Reuters 称蚂蚁在征求 BI 的指导。",
+      "confidence": "medium",
+      "source": "https://www.freemalaysiatoday.com/category/business/2024/04/19/chinas-ant-group-in-talks-to-launch-alipay-in-indonesia",
+      "date": "2024-04-19",
+      "notes": "当时是计划。最后落地的是 2026-04-30 的 QRIS–中国线（经 Alipay+ 和银联），DANA 在其中的角色没查到。"
+    },
+    {
+      "id": "DANA-33",
+      "claim": "入境：DANA 允许外国手机号注册，并可绑定 Visa、Mastercard、Amex、JCB 卡在印尼付 QRIS。",
+      "confidence": "medium",
+      "source": "https://www.dana.id/blog/can-tourist-use-qris-in-indonesia/",
+      "date": "2025–2026",
+      "notes": "厂商宣传，没有监管确认。对访印尼的日本游客是一条“装 DANA 绑卡”的路径（推断）。"
+    },
+    {
+      "id": "DANA-34",
+      "claim": "日本钱包在印尼扫 QRIS（日本游客入境）尚未上线：BI 副行长 Filianingsih 于 2026-04-22 称已获日本 FSA 许可，“很快”上线；截至 2026-10 没查到正式上线公告。",
+      "confidence": "medium",
+      "source": "https://www.metrotvnews.com/read/N6GCVl8e-turis-jepang-bisa-iscani-qr-saat-belanja-di-ri-qris-segera-berlaku（docs/research/ASEAN-LINK.json）",
+      "date": "2026-04-22",
+      "notes": "引自种子。上线后 DANA 作为 QRIS 收单方的商户会自动受理（推断）。"
+    },
+    {
+      "id": "DANA-35",
+      "claim": "2025 年访日印尼游客 640,577 人，同比 +23.7%（JNTO 确定值）。",
+      "confidence": "high",
+      "source": "https://asset.japan.travel/image/upload/v1769050010/pdf/Number_of_visitor_arrivals_to_Japan_in_December_2025.pdf（docs/research/JP-VERIFY.json）",
+      "date": "2026-01",
+      "notes": "引自种子。"
+    },
+    {
+      "id": "DANA-36",
+      "claim": "本轮没查到 DANA 的加密资产或稳定币产品，也没查到相关合作或官方立场。DANA 的投资功能有：与 Pluang 合作的 DANA eMAS（最低 0.01 克，不到 Rp10,000，仅限 DANA Premium 用户，约 2020–21 年上线）；2024 年起与 STAR AM 合作的基金。",
+      "confidence": "medium",
+      "source": "https://keuangan.kontan.co.id/news/gandeng-pluang-dana-beri-layanan-investasi-emas-lewat-fitur-dana-emas ；https://infobanknews.com/didominasi-milenial-begini-profil-investor-reksa-dana-besutan-star-am-di-aplikasi-dana/",
+      "date": "约 2020–2021；2024–2025",
+      "notes": "没检索到不等于没有。Pluang 也做加密交易，但没查到 DANA 内有加密入口。"
+    },
+    {
+      "id": "DANA-37",
+      "claim": "印尼的加密资产（数字金融资产）监管于 2025-01-10 由 Bappebti 移交 OJK 和 BI（PP 49/2024、POJK 27/2024）。",
+      "confidence": "medium",
+      "source": "https://ojk.go.id/en/berita-dan-kegiatan/siaran-pers/Pages/Bappebti-Transfers-Regulation-and-Supervision-Duties-on-Digital-Financial-Assets-Crypto-Assets-and-Derivatives-to-OJK-BI.aspx（docs/research/ID.json）",
+      "date": "2025-01-10",
+      "notes": "OJK 官方新闻稿，内容来自搜索摘要。"
+    },
+    {
+      "id": "DANA-38",
+      "claim": "在印尼，稳定币可以作为 OJK 监管的数字金融资产交易，但受 BI 支付系统规则限制，不能作为支付工具；《货币法》（UU 7/2011）要求境内支付使用卢比；BI 禁止 PJP 处理虚拟货币交易。",
+      "confidence": "medium",
+      "source": "https://gpg-pdf.chambers.com/fintech-2026/401/（docs/research/STABLECOIN-INFRA.json）；docs/research/ID.json",
+      "date": "2026",
+      "notes": "前半句为 medium（Chambers 2026）；“BI 禁止 PJP 处理虚拟货币”在 ID.json 中为 low（凭记忆）。推断：DANA 作为 PJP 不能让商户收稳定币。"
+    },
+    {
+      "id": "DANA-39",
+      "claim": "OJK 称稳定币不能成为创造“私人卢比”的后门，稳定币 POJK 预计 2027-01 发布；卢比稳定币 IDRP 于 2026-06 从 OJK 沙盒毕业。",
+      "confidence": "medium",
+      "source": "https://investortrust.id/market/118744/pojk-stablecoin-terbit-januari-2027-begini-kabar-terbaru-dari-ojk-termasuk-soal-rupiah-digital（docs/research/ID.json）",
+      "date": "2026",
+      "notes": "引自种子。即使 POJK 出台，稳定币作为支付工具仍要过 BI 这一关（推断）。"
+    },
+    {
+      "id": "DANA-40",
+      "claim": "推断（参考模型）：DANA 和印尼钱包的音箱是“静态码 + 播报 + 月租”的模式，用来防假截图和留住商户，不靠动态码。INSCREEN 在印尼小微段的价格要对标约 USD 3/月的音箱月租；0% MDR 扩大后，收单方没有 MDR 可以分给屏幕终端。",
+      "confidence": "medium",
+      "source": "推断（依据 DANA-17 至 DANA-23、docs/12）",
+      "date": "2026-10-18",
+      "notes": "推断。DANA 的设备价格、装机量和设备收入都没查到，不能用来做单位经济测算。"
+    },
+    {
+      "id": "DANA-41",
+      "claim": "推断（伙伴：访日游客）：印尼游客在日本付款，已确认的路径是 QRIS→JPQR Global（Netstars），可能的路径是 Alipay+→PayPay 等 ACQP。INSCREEN 要接这批付款，更现实的做法是接入 Netstars 或 Alipay+ 收单方，而不是和 DANA 单独签约。",
+      "confidence": "medium",
+      "source": "推断（依据 DANA-27、DANA-29、DANA-30、DANA-35）",
+      "date": "2026-10-18",
+      "notes": "推断。DANA 在日本的交易量没查到；全国 QRIS 出境 2025 年为 168 万笔（ID.json），量还小。"
+    },
+    {
+      "id": "DANA-42",
+      "claim": "推断（伙伴：跨境网络）：印尼跨境 QR 由 BI 主导、在 LCS 框架下本币直接结算，稳定币又不能作为支付工具；DANA 的股东里有 Alipay+ 的运营方蚂蚁。所以 DANA 加入 INSPAY 稳定币结算网络的可能性低。INSPAY 在印尼方向更现实的是接 QRIS 跨境（经 Netstars）或 Alipay+。",
+      "confidence": "medium",
+      "source": "推断（依据 DANA-07、DANA-28、DANA-38）",
+      "date": "2026-10-18",
+      "notes": "推断。"
+    },
+    {
+      "id": "DANA-43",
+      "claim": "推断（竞争）：DANA 只做印尼，商户设备只查到静态码音箱，在日本和印尼以外的东南亚都不是 INSCREEN 的直接竞争者。在印尼，INSCREEN 只能当 PJSP（DANA、BRI、Midtrans 等）的设备或技术伙伴，DANA 可以是潜在的 B2B 采购方。",
+      "confidence": "medium",
+      "source": "推断（依据 DANA-16、DANA-19、DANA-24、docs/12）",
+      "date": "2026-10-18",
+      "notes": "推断。DANA 是否采购第三方带屏终端没查到。"
+    }
+  ],
+  "key_claims": [
+    "DANA（PT Espay Debit Indonesia Koe）自称是 BI 监管的第一类支付服务商（PJP Kategori I），既是电子钱包，也通过 App 给商户发 QRIS 码收单。",
+    "股东（2022 年数据）：Sinar Mas（DSSA 经 DSST 投资 US$2 亿）、Lazada（2022-08 以 Rp4.53 万亿买入 Emtek 的大部分股份）、蚂蚁（较早报道约 45%）、Emtek（降到约 6.7%）。2024–2026 年的持股比例没查到。",
+    "用户数都是公司的注册口径：2022 年约 1.15 亿，2025-02 称 2 亿以上，2026 年文献引注册账户超过 1.9 亿。MAU、TPV、收入、利润都没公开或没查到。",
+    "商户设备：2024-03 推出静态 QRIS Soundbox（语音播报），按月租提供（金额没查到）。没查到 DANA 有动态码设备、EDC 或 Android POS。",
+    "QRIS MDR：2026-10-01 起所有类别单笔 ≤Rp100,000 为 0%（UMI ≤Rp500,000 为 0% 不变），小额收单的 MDR 收入基本归零；DANA 表态支持。",
+    "跨境：自 2025-08-17 起，DANA 用户可在日本经 JPQR Global（Netstars）扫码付款，DANA 自称是第一家做到的非银行 PJP。Antom FAQ 称 DANA 用户可在“支持 Alipay+ 的境外商户”付款，但能否在 PayPay 商户使用没核实。",
+    "稳定币/加密：DANA 没有加密产品（未检出）。印尼稳定币只能作为 OJK 监管的交易资产，不能作为支付工具；稳定币 POJK 预计 2027-01。",
+    "对 INSPAY（推断）：DANA 适合作为印尼音箱月租模式的参照，以及印尼 PJSP 设备伙伴的候选；接访日印尼游客，应经 Netstars/JPQR Global 或 Alipay+ 收单方；DANA 加入稳定币结算网络的可能性低。"
+  ],
+  "open_questions": [
+    "DANA 2024–2026 年的股权结构：DSST、Lazadapay、蚂蚁（蚂蚁集团还是 Ant International）、KMK 各持多少？（查 DSSA 和 EMTK 的 2025 年报关于投资和联营公司的附注）",
+    "DANA 的 MAU、TPV、收入和净利润：DSSA 或 EMTK 的报表里有没有 EAN 的汇总财务信息？",
+    "DANA Soundbox 的月租或售价、装机量、供应商（是否为中国白牌 ODM），有没有带屏或动态码的型号？商户靠地推、代理还是线上开通？",
+    "DANA 是不是 Alipay+ 官方名单里的 MPP？PayPay 受理的 35 项钱包服务里有没有 DANA？DANA 用户在日本到底能在 PayPay 商户付款，还是只能在 JPQR Global 商户付款？",
+    "DANA 是否参与 QRIS–中国线（8 家非银行 PJP）和 QRIS–韩国线？DANA 在日本的跨境交易量是多少？",
+    "BI 的 0% MDR 扩大（2026-10-01）的正式 PADG 或函件编号和原文；它对 DANA 收单收入的影响。",
+    "日本游客入境方向（日本钱包扫 QRIS）的上线日期，以及哪些日本钱包参与；DANA 收单的商户能否自动受理。",
+    "BI 或 OJK 对 DANA 是否有过处罚、DANA 是否发生过数据泄露（本轮未检出）。"
+  ]
+}

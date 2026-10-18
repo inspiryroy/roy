@@ -1,0 +1,348 @@
+{
+  "summary": "TrueMoney（泰国）调研，日期 2026-10-18。方法与局限：WebFetch 对所有域名都失败（getaddrinfo ENOTFOUND，包括 truemoney.com、fintechnews.sg、technode.global、crowdfundinsider.com），所以本文只依据 WebSearch 摘要和 docs/research 下已核实的种子（TH-LA、ALIPAY-VERIFY、JP-PAYPAY、SG-MY、STABLECOIN-INFRA）。WebSearch 实际用了 13 次，比 12 次预算多 1 次。Ascend Money 不是上市公司，本轮没找到经审计的收入和利润，也没找到 BOT 对 TrueMoney 的处罚记录（没检索到不等于不存在）。\n\n【它是谁】TrueMoney 由 Ascend Money 运营。Ascend Money 属于正大集团（CP Group）旗下的 Ascend Group，有报道称其背后有 Ant International（蚂蚁）。具体持股比例本轮没查到，凭记忆约 20%，未核实。融资：2021-09 融资 1.5 亿美元，估值 15 亿美元，成为泰国首家金融科技独角兽；2024 年 MUFG 与 Krungsri Finnovate 旗下基金投资 1.95 亿美元。用户口径不统一：公司 2024-01 称钱包“用户”3,000 万（推断为注册口径）、月活 1,900 万、年底目标 3,500 万；同年另有“泰国约 3,200 万活跃客户”的说法；LinkedIn 上有未注明日期的“泰国注册用户 3,400 万以上”。两者定义不同，不能混用。2024 年公司称两年内在 Nasdaq 上市，2026 年的进展没查到。\n\n【海外市场】菲律宾已于 2026-04-30 停止商业运营（公司声明，十年服务过 500 万以上客户）。官网仍列柬埔寨、缅甸、印尼、越南、菲律宾等 6 国，但页面较旧，这四国的现状本轮未核实。\n\n【虚拟银行】BOT 于 2025 年从 5 家申请者中选出 3 家：Krungthai 牵头（伙伴 Gulf、AIS、PTT OR，银行名 Clicx Bank）、SCB X 牵头（Bank X）、CP 旗下 ACM Holding（即 Ascend Money 一方，银行名 Ascend Bank）。Clicx Bank 于 2026-05-14 首家拿到牌照，2026-06-19 对公众开业。Ascend Bank 原计划 2026-06 底开业，2026-06 时 CP 的谢吉人仍称 7 月开业，之后推迟到“今年晚些时候”；True Corp CEO Sigve Brekke 称仍会在 2026 年底前开业。推迟的原因之一：BOT 要求金融业务单独组成金融集团，而 CP All 股东于 2026-05-29 以 96.4% 反对票否决把 Counter Service、Thai Smart Card、CP Axtra 并入 ACM Holding 的金融业务集团。截至 2026-10-18 是否已开业未查到。\n\n【商户侧】有 TrueMoney Box 音箱（True Business 的 IoT 设备，配合 QR 收款并语音播报金额），价格、月租、装机量都没查到。TrueMoney QR 也能经 Omise/Opn、Adyen、HitPay、ecommpay 等网关受理。线下流程是商户出示 QR、顾客用 TrueMoney App 扫。TrueMoney 自己的商户 MDR 没查到。参照：Bangkok Bank 对法人商户 Thai QR 收 0.35% 或每笔 ฿5，个人商户 PromptPay 收款“暂免费”（2025-07-01 起的条款）。所以泰国小微商户的 QR 收款基本没有 MDR 可分（推断）。\n\n【跨境】TrueMoney 是 Alipay+ 钱包。2023-06 起，泰国用户可在同时接入 Alipay+ 的日本 PayPay 商户付款（PayPay 官方新闻稿）。Alipay+ 2024-03 称日本受理 16 个钱包，并把 TrueMoney 列为访日游客最常用的钱包之一（公司说法）。韩国 ZeroPay（2023-08）、新加坡 SGQR 经 NETS（2023-04）、马来西亚 DuitNow（2023-10）也受理 TrueMoney。2026-06-29 PayPay 新接入 ShopeePay（泰国）和 SCB PLANET PLUS，TrueMoney 在日本已不是唯一的泰国钱包。JPQR Global 与 TrueMoney 的连接没查到。TrueMoney 在泰国是否作为 Alipay+ 收单方（ACQP）受理外国钱包，也没查到。\n\n【稳定币和加密】这是与 INSPAY 最相关的一块。TrueMoney 于 2025-08 在 BOT 的 Enhanced Regulatory Sandbox 内试点泰铢代币 THBT。2026-08 进入第二阶段：最多 2 万名泰国及外国参与者，钱包由 Fireblocks 提供、嵌在 TrueMoney App 里，用户不用自己管私钥，可用 THBT 买数字券，或与 6 种数字资产互换；兑换服务由 Ascend Bit 在 SEC 的 Digital Asset Regulatory Sandbox 内提供。公司把与 StraitsX 合作、把 THBT 换成新元出金列为路线图，前提是 THBT 走出沙盒，目前不是已上线服务。TrueMoney 是否是 TouristDigiPay 的获批运营方未查到。泰国规则：SEC 自 2022-04-01 禁止数字资产业者为加密支付提供便利；泰铢稳定币按 e-money 管，用作支付还可能触犯 Currency Act；BOT 2026-06 表示第一阶段的泰铢稳定币只给持牌金融机构用于结算；2026 Q4 起管控稳定币资金流。\n\n【对 INSPAY 的意义（推断）】(1) 作为设备模式的参照，价值有限：TrueMoney 的设备收入、订阅价格都不公开，泰国小微商户 MDR 接近 0，它的变现靠钱包内的贷款和即将开业的虚拟银行，也就是“用支付数据放贷”，不是卖设备。(2) 作为日本入境的伙伴：TrueMoney 用户已经能经 Alipay+ 在 PayPay 商户付款，INSCREEN 在日本受理 TrueMoney 的最短路径，是接 Alipay+ 收单方（或 PayPay），不必直连 TrueMoney。(3) 作为稳定币网络的伙伴：THBT + Fireblocks + StraitsX 路线说明 TrueMoney 是泰国最可能理解“机构间稳定币结算”的钱包。但它仍在沙盒里，蚂蚁是股东（与 Alipay+ 有利益关系），BOT 第一阶段只许持牌金融机构用泰铢稳定币，所以近期只适合做 PoC/沙盒层面的对话。(4) 作为竞争者：在泰国，TrueMoney 加上 CP 零售（7-Eleven 等）和 Ascend Bank 是垂直一体的生态，INSCREEN 不宜在泰国小微商户层与它正面竞争。",
+  "facts": [
+    {
+      "id": "TRUEMONEY-01",
+      "claim": "TrueMoney 由 Ascend Money 运营。Ascend Money 属于 Ascend Group（正大集团 CP Group 旗下），Ascend Group 分为 Ascend Commerce、Ascend Money、Ascend Capital 三大子业务。",
+      "confidence": "medium",
+      "source": "https://en.wikipedia.org/wiki/Ascend_Group",
+      "date": "未注明（Wikipedia 当前版本）",
+      "notes": "已核实（二手百科，摘要读取）。Ascend Group 与 True Corporation 在 2022–23 年 True–DTAC 合并后的持股关系本轮未查清。"
+    },
+    {
+      "id": "TRUEMONEY-02",
+      "claim": "报道称 Ascend Money（TrueMoney App 运营方）背后有 Ant International（蚂蚁）。蚂蚁的持股比例本轮未查到；凭记忆，2016 年入股约 20%，未核实。",
+      "confidence": "medium",
+      "source": "https://www.crowdfundinsider.com/?p=238662（WebSearch 摘要：Thailand picks Krungthai, SCBX and Ascend Money for Digital Banking）",
+      "date": "2025",
+      "notes": "“背后有蚂蚁”为 medium；“约 20%”为 low，凭记忆。蚂蚁同时是 Alipay+ 运营方，与 INSPAY 网络存在利益冲突（推断）。"
+    },
+    {
+      "id": "TRUEMONEY-03",
+      "claim": "Ascend Money 于 2021-09 融资 1.5 亿美元，估值 15 亿美元，成为泰国首家金融科技独角兽。",
+      "confidence": "high",
+      "source": "https://techcrunch.com/2021/09/26/thailands-fintech-startup-ascend-money-lands-150m-at-a-1-5b-valuation/",
+      "date": "2021-09-26",
+      "notes": "已核实，多源一致（TechCrunch、Fintech Futures、THE BRIDGE）。投资方（凭记忆为 Bow Wave Capital）本轮未核实。"
+    },
+    {
+      "id": "TRUEMONEY-04",
+      "claim": "MUFG Bank 与 Krungsri Finnovate 管理的 Finnoventure Private Equity Trust I 投资 Ascend Money，合计 1.95 亿美元。第三方数据库把这笔记为 2024-06-26 的 Series D。",
+      "confidence": "medium",
+      "source": "https://www.financemagnates.com/fintech/ascend-money-soars-with-195-million-from-mufg-and-finnoventure/",
+      "date": "2024-06",
+      "notes": "媒体报道，摘要读取。投后估值和 MUFG 持股比例没查到。日本 MUFG 是股东，这是 INSPAY 接触 Ascend 时的一个日本侧切入点（推断）。"
+    },
+    {
+      "id": "TRUEMONEY-05",
+      "claim": "公司说法：截至 2024-01，TrueMoney 钱包有 3,000 万用户（推断为注册口径），2024 年底目标 3,500 万；月活跃用户（MAU）1,900 万。",
+      "confidence": "medium",
+      "source": "https://www.bangkokpost.com/business/general/2762969/ascend-money-targets-nasdaq-listing",
+      "date": "2024（引用 2024-01 数据）",
+      "notes": "公司说法（联席总裁 Monsinee Nakapanant），摘要读取。“用户”与“MAU”口径不同，不能相加或互换。"
+    },
+    {
+      "id": "TRUEMONEY-06",
+      "claim": "其他用户口径：Bangkok Post《CEO of the Year 2024》称泰国约 3,200 万“活跃客户”；Finance Magnates（2024）称泰国 3,000 万“活跃用户”；另一份报道（虚拟银行入选时）称 TrueMoney 覆盖 3,200 万用户；LinkedIn 帖子称泰国注册用户 3,400 万以上（未注明日期）。",
+      "confidence": "low",
+      "source": "https://bangkokpost-xkgxtn.cdn.byteark.com/specials/ceo-of-the-year-2024/monsinee ; https://www.financemagnates.com/fintech/ascend-money-soars-with-195-million-from-mufg-and-finnoventure/ ; https://th.linkedin.com/in/tanarat",
+      "date": "2024–未注明",
+      "notes": "与 TRUEMONEY-05 的 MAU 1,900 万冲突，“活跃”定义不明。建议对外只用 05 的“注册约 3,000 万+ / MAU 约 1,900 万（2024-01，公司说法）”。2025–2026 年的官方用户数本轮没查到。"
+    },
+    {
+      "id": "TRUEMONEY-07",
+      "claim": "商业模板网站声称 TrueMoney 每月 1.5 亿笔交易、FY2025 日 GTV ฿1,200 亿、约 98,700 个代理点。",
+      "confidence": "low",
+      "source": "https://businessmodelcanvastemplate.com/products/ascend-money-business-model-canvas",
+      "date": "未注明（声称 FY2025）",
+      "notes": "不可采用：这是商业模板网站，不是披露文件，日 GTV ฿1,200 亿明显不合理。列出只是为了防止被误引。较早的 Fintech News 说法为：泰国及另外 5 个东南亚市场合计约 5 万个代理点。"
+    },
+    {
+      "id": "TRUEMONEY-08",
+      "claim": "公司说法：创始人兼董事长谢吉人（Suphachai Chearavanont）称 Ascend Money 目标两年内在 Nasdaq 上市；同期称将再融资以扩大贷款业务（小额信贷、个人贷款、BNPL）。",
+      "confidence": "medium",
+      "source": "https://www.bangkokpost.com/business/general/2762969/ascend-money-targets-nasdaq-listing",
+      "date": "2024",
+      "notes": "公司说法。截至 2026-10 没查到上市申请（F-1）或新进展。"
+    },
+    {
+      "id": "TRUEMONEY-09",
+      "claim": "Ascend Money / True Money Co., Ltd. 的收入、净利润（2024、2025 年度）本轮未查到。第三方聚合站估计年收入约 1.74 亿美元（未核实）；Bangkok Post 2022 年报道称公司目标当年实现盈利，是否达成没查到。",
+      "confidence": "low",
+      "source": "https://getlatka.com/companies/ascend-money-1/competitors ; https://www.bangkokpost.com/business/2306174/",
+      "date": "2022–2026",
+      "notes": "没查到不等于不存在：可向泰国商业发展厅（DBD）调取 True Money Co., Ltd. 的法定财报，或看 True Corporation 年报的关联方披露。泰文搜索（ทรูมันนี่ กำไรสุทธิ 2567/2568）没有命中。"
+    },
+    {
+      "id": "TRUEMONEY-10",
+      "claim": "TrueMoney 菲律宾于 2026-04-30 停止商业运营，退出菲律宾市场；公司称十年来服务过 500 万以上客户，关停后继续支持伙伴和用户。",
+      "confidence": "medium",
+      "source": "https://fintechnews.ph/71228/lending/truemoney-philippines-operations-exit/",
+      "date": "2026-04/05",
+      "notes": "媒体转述公司声明，Tech in Asia 也有报道；摘要读取。"
+    },
+    {
+      "id": "TRUEMONEY-11",
+      "claim": "TrueMoney 官网称在泰国、柬埔寨、缅甸、印尼、越南、菲律宾 6 国提供金融服务；缅甸站点 truemoney.com.mm 仍在线。越南、柬埔寨、缅甸、印尼的当前状态（是否仍持牌、是否收缩）本轮未核实。",
+      "confidence": "low",
+      "source": "https://www.truemoney.com.mm/en/ ; https://en.wikipedia.org/wiki/TrueMoney",
+      "date": "未注明（页面较旧）",
+      "notes": "菲律宾已退出（TRUEMONEY-10），6 国说法已过时。缅甸自 2022-10 起在 FATF 黑名单上（05 章），日本持牌机构基本不可能与那里合作。各国状态须另行查证。"
+    },
+    {
+      "id": "TRUEMONEY-12",
+      "claim": "TrueMoney 在泰国持有 Payment Systems Act B.E.2560 下的 e-money 牌照（凭记忆，本轮未核实）。该法下 e-money、收单、支付便利等业务须由财政部根据 BOT 的建议发牌。",
+      "confidence": "low",
+      "source": "https://kpmg.com/th/en/home/insights/2023/03/legal-news-update-issue-23.html（PSA 框架，来自 TH-LA 种子）",
+      "date": "2023-03（框架）",
+      "notes": "牌照本身凭记忆，BOT 持牌名单未打开。PSA 框架见 TH-LA 种子（medium）。TrueMoney 的贷款类牌照（nano finance、数字个人贷款）同样凭记忆。"
+    },
+    {
+      "id": "TRUEMONEY-13",
+      "claim": "PromptPay 是自愿加入的系统，参与者有 28 家银行和 6 家非银行 e-wallet（2022 年口径）。TrueMoney 是否在其中、钱包能否扫所有 Thai QR / PromptPay 码，本轮未核实（凭记忆：可以扫）。",
+      "confidence": "low",
+      "source": "https://bfaglobal.com/wp-content/uploads/2022/08/Highlights-emerging-from-Thailand.pdf",
+      "date": "2022-08",
+      "notes": "28+6 的数字是 medium（TH-LA 种子）。TrueMoney 的参与情况和扫码互通是推断或记忆，须到 ITMX/BOT 的 PromptPay 参与者名单核对。"
+    },
+    {
+      "id": "TRUEMONEY-14",
+      "claim": "BOT 于 2025 年从 5 家申请者中选出 3 家虚拟银行：Krungthai 牵头（伙伴 Gulf Energy、AIS、PTT Oil and Retail）、SCB X 牵头、CP Group 旗下 ACM Holding 牵头（媒体多称为 Ascend Money 一方）。",
+      "confidence": "high",
+      "source": "https://www.nationthailand.com/business/banking-finance/40048844 ; https://www.theasset.com/article/54344/",
+      "date": "2025（凭记忆为 2025-06-18 公布，具体日期未核实）",
+      "notes": "多源一致。ACM Holding 的完整股东构成（是否有其他伙伴）本轮没查到。"
+    },
+    {
+      "id": "TRUEMONEY-15",
+      "claim": "Krungthai 一方的 Clicx Bank 于 2026-05-14 首家获 BOT 牌照，2026-06-19 起通过 App 对公众开业；SCB X 一方的 Bank X 正在完成剩余合规工作，目标年底前开业。",
+      "confidence": "medium",
+      "source": "https://fintechnews.sg/134596/thailand/ascend-bank-launch-delay/",
+      "date": "2026-06/07",
+      "notes": "媒体，摘要读取（WebFetch 失败）。说明 Ascend Bank 已落后于对手。"
+    },
+    {
+      "id": "TRUEMONEY-16",
+      "claim": "Ascend Bank 的开业时间一再推迟：2026-04 的目标是 6 月底前；2026-06 谢吉人称 7 月开业；之后改为“今年晚些时候”，True Corporation 集团 CEO Sigve Brekke 称仍会在 2026 年底前开业。截至 2026-10-18 是否已开业未查到。",
+      "confidence": "medium",
+      "source": "https://fintechnews.sg/134596/thailand/ascend-bank-launch-delay/ ; https://www.crowdfundinsider.com/2026/06/282790-thailand-ascend-bank-july-launch/",
+      "date": "2026-06/07",
+      "notes": "媒体转述 Bangkok Post，公司说法。由 True Corp CEO 出面谈 Ascend Bank，说明 True Corp 与 Ascend 仍关系紧密（推断）。"
+    },
+    {
+      "id": "TRUEMONEY-17",
+      "claim": "BOT 要求虚拟银行申请方把控制的金融业务放进与非金融业务分开的金融集团。CP All 股东于 2026-05-29 以 96.4% 反对票否决原则性议案：把 Counter Service、Thai Smart Card、CP Axtra 并入 ACM Holding 的金融业务集团；CP All 独立董事已于 4-17 表示反对。Ascend Bank 的开业仍取决于 BOT 对该结构的评估。",
+      "confidence": "medium",
+      "source": "https://fintechnews.sg/134596/thailand/ascend-bank-launch-delay/ ; https://www.inkl.com/news/ascend-bank-delays-launch",
+      "date": "2026-05-29（表决）",
+      "notes": "媒体，摘要读取。推断：Counter Service（7-Eleven 柜台代收）和 Thai Smart Card（凭记忆运营 Smart Purse 储值卡）是 CP 线下支付资产，留在 CP All 体系内，意味着 TrueMoney、Ascend Bank 与 7-Eleven 支付资产不会在法律上合并。"
+    },
+    {
+      "id": "TRUEMONEY-18",
+      "claim": "公司说法：Ascend Bank 面向得不到充分服务的个人和小企业，先用数据发放初始信用额度，再逐步开放更多功能；Ascend 称计划 2026 年中开业。",
+      "confidence": "medium",
+      "source": "https://kapronasia.com/insight/blogs/payments-research/asia-payments-research/truemoney-eyes-cross-border-and-digital-banking-expansion ; https://www.ascendcorp.com/?p=3736",
+      "date": "2025",
+      "notes": "公司说法。推断：TrueMoney 的变现重心是“支付数据 → 信贷”，商户设备只是获客和数据入口。"
+    },
+    {
+      "id": "TRUEMONEY-19",
+      "claim": "TrueMoney Box 是 True Business 推出的 IoT 设备，配合 QR 收款和线上交易使用，到账时语音播报金额并提醒商户（即音箱 / soundbox）。",
+      "confidence": "medium",
+      "source": "https://business.true.th/en/solutions/true-money-box",
+      "date": "未注明",
+      "notes": "官方产品页摘要。设备价格、月租、是否带屏、能否出动态码、装机量、设备收入都没查到。它挂在 True 的企业业务（电信）下销售，推断其分销借助 True 门店和企业客户经理，而不是独立的设备订阅业务。"
+    },
+    {
+      "id": "TRUEMONEY-20",
+      "claim": "TrueMoney QR 可经 Omise/Opn 等网关受理。线下流程：商户屏幕显示 QR，顾客在 TrueMoney App 扫码付款；商户须单独申请开通并接受条款。Adyen、HitPay、ecommpay 也把 TrueMoney 列为支付方式，HitPay 的费率写“联系销售”。",
+      "confidence": "medium",
+      "source": "https://docs.omise.co/truemoney-qr ; https://docs.opn.ooo/truemoney-qr ; https://docs.adyen.com/payment-methods/truemoney.md ; https://docs.hitpayapp.com/payments/cross-border/truemoney",
+      "date": "未注明（2025–2026 文档）",
+      "notes": "开发者文档摘要。Opn 另有日文页面 docs.opn.ooo/ja/truemoney-qr/japan，Opn 是否向日本商户提供 TrueMoney 受理未核实（low）。推断：这类码是网关按单生成的动态码，INSCREEN 可经网关 API 取码串显示。"
+    },
+    {
+      "id": "TRUEMONEY-21",
+      "claim": "TrueMoney 自己的商户 MDR、设备价格和订阅费本轮未查到。参照（Bangkok Bank，不是 TrueMoney）：法人商户 Thai QR 每笔 0.35% 或 ฿5；个人商户 PromptPay 收款“暂免费，直至另行通知”；EDC 押金与月费条款自 2025-07-01 起生效。",
+      "confidence": "medium",
+      "source": "https://www.bangkokbank.com/en/Business-Banking/Manage-My-Business/Merchant-Services/Payments-on-EDC",
+      "date": "2025-07-01（条款生效）",
+      "notes": "银行官方页摘要。TrueMoney 公开的 rates 页（2024-01-22 更新）只列充值和购买费用，没有商户 MDR。推断：泰国小微商户的 QR 收款基本没有 MDR 可分，设备只能由钱包或银行补贴。"
+    },
+    {
+      "id": "TRUEMONEY-22",
+      "claim": "2023-06 起，同时接入 Alipay+ 的日本 PayPay 商户开始受理泰国 TrueMoney 付款。",
+      "confidence": "high",
+      "source": "https://about.paypay.ne.jp/en/pr/20230615/01/",
+      "date": "2023-06-15",
+      "notes": "PayPay 官方新闻稿（摘要）。付款方向：TrueMoney 用户扫 PayPay 商户码，或由商户扫用户码；具体模式没查到。"
+    },
+    {
+      "id": "TRUEMONEY-23",
+      "claim": "Ant International 2024-03-27 称 Alipay 在日本连接约 200 万商户，日本经 Alipay+ 受理 16 个电子钱包和银行 App；Alipay、AlipayHK、Kakao Pay、Touch 'n Go、GCash、TrueMoney 是访日游客最常用的钱包。",
+      "confidence": "medium",
+      "source": "https://www.businesswire.com/news/home/20240327604903/en/Alipay-Connects-2-Million-Merchants-in-Japan-as-Global-Tourists-Travel-to-the-Country-for-Cherry-Blossom-Season",
+      "date": "2024-03-27",
+      "notes": "官方新闻稿。“最常用”是公司说法，没有交易数据。"
+    },
+    {
+      "id": "TRUEMONEY-24",
+      "claim": "公司说法（Ascend Money）：日本是泰国人最热门的目的地之一，每年约 100 万泰国游客。",
+      "confidence": "low",
+      "source": "WebSearch 摘要，可能出自 https://about.paypay.ne.jp/en/pr/20230615/01/ 或 https://www.travelvoice.jp/20241106-156621",
+      "date": "2023–2024",
+      "notes": "引语出处未能精确对应。JNTO 2024 年泰国访日人数约 110 万（凭记忆，未核实），量级一致。"
+    },
+    {
+      "id": "TRUEMONEY-25",
+      "claim": "日本媒体报道：PayPay 商户加开 Alipay+ 不收初始费用，Alipay+ 的决済システム利用料为交易额的 1.98%（不含税）。",
+      "confidence": "medium",
+      "source": "https://www.watch.impress.co.jp/docs/news/1508823.html",
+      "date": "约 2023（文章编号推断）",
+      "notes": "旧费率，现行条款须核对。这是 INSCREEN 在日本受理 TrueMoney 等入境钱包的费率基准（推断）。"
+    },
+    {
+      "id": "TRUEMONEY-26",
+      "claim": "PayPay 2026-06-29 经 Alipay+ 新接入 ShopeePay（新加坡、泰国）和 SCB PLANET PLUS（泰国），合计受理 17 个国家地区的 35 项服务，覆盖约 8 成访日游客的来源国。",
+      "confidence": "high",
+      "source": "https://about.paypay.ne.jp/en/pr/20260629/01/",
+      "date": "2026-06-29",
+      "notes": "引自 TH-LA / JP-PAYPAY 种子（high）。在日本受理的泰国钱包已有 TrueMoney、ShopeePay TH、SCB PLANET PLUS 三家；另有泰国银行的 MyPrompt QR（CPM）经 NETSTARS/NTT DATA 在日本使用（TH-LA 种子，high）。"
+    },
+    {
+      "id": "TRUEMONEY-27",
+      "claim": "TrueMoney 作为 Alipay+ 钱包，还可在韩国 ZeroPay（2023-08-31，170 万以上商户，MPM）、新加坡 SGQR 经 NETS（2023-04，约 11,000 个熟食摊）、马来西亚 DuitNow QR（2023-10-31 起）付款。",
+      "confidence": "high",
+      "source": "https://www.businesswire.com/news/home/20230831026956/en/ZeroPay-Introduces-Alipay-at-1.7-Million-Merchants-in-South-Korea-Promoting-Convenient-Experience-for-Asian-Tourists ; https://fintechnews.sg/71856/payments/alipay-integrates-with-sgqr-to-enable-qr-payments-at-11000-hawkers/ ; https://paynet.my/press-release/2023/Travellers-from-7-Key-Asian-Travel-Corridors-Can-Now-Enjoy-Seamless-Digital-Payments-in-Malaysia-More-Travel-Corridors-in-the-Pipeline.pdf",
+      "date": "2023-04 至 2023-10",
+      "notes": "引自 ALIPAY-VERIFY 种子：ZeroPay 为 high，SGQR 和 DuitNow 为 medium。说明 TrueMoney 的出境能力全部经 Alipay+ 实现，自建双边通道没查到。"
+    },
+    {
+      "id": "TRUEMONEY-28",
+      "claim": "入境泰国：其他 Alipay+ 钱包只能扫 KTC、2C2P、Antom 等收单方的码；PromptPay–Alipay 国家码联通（2025-10-26，Krungthai 为结算行）一期只对中国 Alipay 用户开放。TrueMoney 是否作为 Alipay+ 收单方（ACQP）在其商户受理外国钱包，本轮未查到。",
+      "confidence": "medium",
+      "source": "https://techwireasia.com/2023/05/chinas-ant-group-expands-alipay-integrations-in-thailand/ ; https://www.businesswire.com/news/home/20251026429360/en/NITMX-Ant-International-and-Krungthai-Bank-Expand-Payment-Connectivity-Between-Thailand-and-China-via-PromptPay",
+      "date": "2023-05 / 2025-10-26",
+      "notes": "前两点引自 TH-LA 种子。TrueMoney 的入境受理角色是“未查到”，不等于没有。"
+    },
+    {
+      "id": "TRUEMONEY-29",
+      "claim": "TrueMoney 与 JPQR Global（NETSTARS）、日本钱包扫 PromptPay 码等泰日双边通道的连接，本轮未查到；目前已知的泰日通道只有泰国人出境方向（Alipay+ 钱包在 PayPay 商户付款、泰国银行 MyPrompt QR）。",
+      "confidence": "medium",
+      "source": "https://www.bot.or.th/en/financial-innovation/digital-finance/digital-payment/cross-border-payment.html（TH-LA 种子）",
+      "date": "2026-05",
+      "notes": "“日本钱包扫 PromptPay 尚无通道”来自 TH-LA / 05 章。TrueMoney 未参与 MyPrompt QR（推断，它是钱包，不是银行）。"
+    },
+    {
+      "id": "TRUEMONEY-30",
+      "claim": "TrueMoney 于 2025-08 在 BOT 的 Enhanced Regulatory Sandbox 内推出泰铢代币 THBT，作为试点，用户范围有限。",
+      "confidence": "medium",
+      "source": "https://www.brandbuffet.in.th/2025/08/truemoney-launched-thbt-as-a-pilot-test-in-the-enhanced-regulatory-sandbox/",
+      "date": "2025-08",
+      "notes": "媒体，摘要读取。THBT 的发行方实体、储备安排、所用公链本轮没查到。按 BOT 2021 指引，泰铢锚定稳定币属 e-money，须经 BOT（见 TRUEMONEY-34）。"
+    },
+    {
+      "id": "TRUEMONEY-31",
+      "claim": "THBT 第二阶段（2026-08 公布）：最多 2 万名泰国及外国参与者；钱包由 Fireblocks 提供、嵌在 TrueMoney App 里，用户不用自己管私钥；可用 THBT 买数字券，或与 6 种数字资产互换；兑换服务由 Ascend Bit 在 SEC 的 Digital Asset Regulatory Sandbox 内提供。",
+      "confidence": "medium",
+      "source": "https://technode.global/2026/09/15/truemoney-fireblocks-thbt-thailand-blockchain-payments/ ; https://e27.co/truemoney-and-fireblocks-want-thai-users-on-blockchain-rails-without-them-noticing-20260915/ ; https://cryptobriefing.com/truemoney-fireblocks-thbt-embedded-wallet/",
+      "date": "2026-08（公布）/ 2026-09-15（Fireblocks 报道）",
+      "notes": "多家媒体一致，摘要读取（WebFetch 失败）。6 种资产的名单没查到，是否含 USDT/USDC/XSGD 未确认。“对外国参与者开放”与游客场景相关。"
+    },
+    {
+      "id": "TRUEMONEY-32",
+      "claim": "公司说法（Ascend Money 的 Apinand Dabpetch）：与新加坡 StraitsX 合作，未来可把 THBT 换成新元并出金，链上兑换成本很低；这是路线图项目，前提是 THBT 走出沙盒。他还提到，团队曾把 THBT 钱包接到一个基于 Claude 的 AI 代理上，由它在一个月内买入黄金支持的稳定币。",
+      "confidence": "low",
+      "source": "https://www.asiatechreview.com/p/thailands-true-money-wants-to-use",
+      "date": "2025–2026（文章日期未确认）",
+      "notes": "公司说法，不是已上线服务。StraitsX 的 XSGD 可分配给消费者钱包或商户地址（StraitsX 方说法）。这与 INSPAY 的“机构间稳定币结算”设计方向一致，是潜在的对话切入点（推断）。"
+    },
+    {
+      "id": "TRUEMONEY-33",
+      "claim": "TouristDigiPay：SEC 2025-08-18 宣布 18 个月沙盒，外国游客可把加密资产或稳定币换成泰铢消费；运营方须为 SEC 持牌数字资产业者，并与 BOT 持牌 e-money 机构合作；不可提现。TrueMoney 或 Ascend Bit 是否是获批运营方，本轮未查到。",
+      "confidence": "high",
+      "source": "https://www.sec.or.th/EN/Pages/Shortcut/TouristDigiPay.aspx ; https://www.tilleke.com/insights/thailand-launches-initiative-supporting-digital-asset-use-in-tourism/34/",
+      "date": "2025-08-18",
+      "notes": "制度部分为 high（TH-LA 种子 + 本轮摘要）。推断：Ascend 集团同时有 e-money（TrueMoney）和数字资产（Ascend Bit）两类主体，结构上符合 TouristDigiPay 的运营方要求，但参与情况没查到。"
+    },
+    {
+      "id": "TRUEMONEY-34",
+      "claim": "泰国加密和稳定币支付规则：SEC 自 2022-04-01 禁止数字资产业者为加密支付提供便利（high）；BOT 2021 年指引把泰铢锚定稳定币按 e-money 管，发行前须与 BOT 沟通（medium）；律所认为泰铢稳定币用作支付等同模仿法币，可能违反 Currency Act（medium）；SEC 2025-03-16 起把 USDT、USDC 列为核准加密货币（medium）。",
+      "confidence": "high",
+      "source": "https://blockchain.bakermckenzie.com/2022/03/27/thai-sec-bans-cryptocurrency-as-a-means-of-payment ; https://www.tilleke.com/insights/stablecoin-policy-guidelines-issued-by-bank-of-thailand ; https://technode.global/2025/03/10/thai-sec-adds-usdc-and-usdt-to-the-cryptocurrencies-list/",
+      "date": "2021-03 至 2025-03",
+      "notes": "整体 high 是指 SEC 2022 禁令，其余各条为 medium。来自 TH-LA 种子和本轮摘要。"
+    },
+    {
+      "id": "TRUEMONEY-35",
+      "claim": "BOT 最新动向：2026-06-26 行长 Vitai 称将推出 1:1 泰铢储备稳定币框架，第一阶段只给持牌金融机构用于结算，2026 年内征求意见；2026-06 称持牌 PSP 只能处理泰铢交易；2026-07-11 宣布对大额现金、黄金和稳定币资金流的管控，2026 Q4 生效。",
+      "confidence": "medium",
+      "source": "https://www.thestar.com.my/aseanplus/aseanplus-news/2026/06/27/bank-of-thailand-to-unveil-thai-baht-stablecoin-rules ; https://www.nationthailand.com/business/banking-finance/40067830 ; https://www.tilleke.com/insights/bank-of-thailands-cash-gold-and-digital-asset-controls-combating-the-grey-economy",
+      "date": "2026-06 至 2026-07",
+      "notes": "引自 TH-LA / STABLECOIN-INFRA 种子，都是二手报道。推断：THBT 走出沙盒、面向零售大规模使用，须等 BOT 正式规则，第一阶段可能只许机构间使用。"
+    },
+    {
+      "id": "TRUEMONEY-36",
+      "claim": "BOT、SEC 或 AMLO 对 TrueMoney 的处罚或执法记录，本轮未检索到；BOT 对 e-wallet 的防诈骗措施（转账限额、开户核验）本轮未核实。",
+      "confidence": "low",
+      "source": "未查到（本轮没有为此单独检索）",
+      "date": "2026-10-18",
+      "notes": "没查到不等于不存在。须在 BOT 新闻或执法公告中按 True Money Co., Ltd. 查询。"
+    },
+    {
+      "id": "TRUEMONEY-37",
+      "claim": "推断（参照价值）：TrueMoney 不是“设备订阅”模式的好样本。设备价格、订阅、装机量和设备收入都不公开；泰国小微商户 QR MDR 接近 0；它的变现方向是钱包内贷款和虚拟银行（数据驱动授信），分销依托 CP 零售和 True 电信的网点、企业客户和代理网络。",
+      "confidence": "low",
+      "source": "推断，依据 TRUEMONEY-08、18、19、21",
+      "date": "2026-10-18",
+      "notes": "如果 INSCREEN 要在东南亚卖设备，泰国可借鉴的是“设备给银行或钱包做获客和数据入口、由它们补贴”的 B2B2M 结构（与 12 章结论一致），不是向商户收月费。"
+    },
+    {
+      "id": "TRUEMONEY-38",
+      "claim": "推断（日本入境伙伴）：TrueMoney 用户已能经 Alipay+ 在 PayPay 商户付款，INSCREEN 在日本受理 TrueMoney 的最短路径是接 Alipay+ 收单方（或 PayPay），不必与 TrueMoney 直连。只有当 INSPAY 网络能给出比 Alipay+ 更低的商户费率（基准 1.98% 不含税，旧口径）或更好的汇率时，TrueMoney 才有动力接第二张网络；而蚂蚁是其股东，这一动力有限。",
+      "confidence": "low",
+      "source": "推断，依据 TRUEMONEY-02、22、25、26",
+      "date": "2026-10-18",
+      "notes": "在日本受理的泰国钱包已有 3 家，入境竞争会压低单个钱包的议价力。"
+    },
+    {
+      "id": "TRUEMONEY-39",
+      "claim": "推断（稳定币网络伙伴）：THBT + Fireblocks 托管 + StraitsX 新元出金路线，使 TrueMoney 成为泰国最可能理解“机构间稳定币结算”的钱包，适合作为 INSPAY 跨境网络泰国侧的 PoC 对象，例如 THBT ↔ 日元稳定币（JPYC 等）的机构间结算试验。限制有三：THBT 仍在沙盒；BOT 第一阶段只许持牌金融机构用泰铢稳定币；SEC 禁止为加密支付提供便利。",
+      "confidence": "low",
+      "source": "推断，依据 TRUEMONEY-30–35",
+      "date": "2026-10-18",
+      "notes": "近期合作形态只能是沙盒或 PoC 层面的对话，不是商业上线。日本侧的接触点可考虑 MUFG（股东，见 TRUEMONEY-04）。"
+    },
+    {
+      "id": "TRUEMONEY-40",
+      "claim": "推断（竞争者）：在泰国，TrueMoney 钱包加 CP 零售（7-Eleven 等）、True 电信和即将开业的 Ascend Bank，是垂直一体的生态，自带音箱和网关受理。INSCREEN 不宜在泰国小微商户层与它正面竞争；在日本，TrueMoney 不是 INSCREEN 的竞争者，而是需要受理的入境钱包之一。",
+      "confidence": "low",
+      "source": "推断，依据 TRUEMONEY-01、16、17、19、22",
+      "date": "2026-10-18",
+      "notes": "CP All 拒绝把 Counter Service 等并入金融集团（TRUEMONEY-17），说明 CP 内部的零售支付资产和 TrueMoney 并非完全一体，这里的“生态”是业务协同，不是法律合并。"
+    }
+  ],
+  "key_claims": [
+    "TrueMoney 由 CP 集团旗下的 Ascend Money 运营，蚂蚁（Ant International）是背后股东，MUFG 与 Krungsri 基金于 2024 年投资 1.95 亿美元；2021 年估值 15 亿美元。",
+    "用户（公司说法，2024-01）：钱包用户约 3,000 万（推断为注册口径）、MAU 1,900 万；另有 3,200 万“活跃客户”等口径，定义不一致。2025–2026 年的官方数字和经审计财务都没查到。",
+    "海外收缩：TrueMoney 菲律宾已于 2026-04-30 停止商业运营；柬、缅、印尼、越的现状未核实。",
+    "虚拟银行：CP 旗下 ACM Holding（Ascend）是 BOT 2025 年选中的 3 家之一；对手 Clicx Bank 已于 2026-06-19 开业，Ascend Bank 从 7 月推迟到 2026 年底前（公司说法），原因之一是 CP All 股东 2026-05-29 以 96.4% 反对票否决把 Counter Service 等并入其金融集团。截至 2026-10-18 是否开业未查到。",
+    "商户侧：有 TrueMoney Box 音箱，TrueMoney QR 可经 Omise/Opn、Adyen 等网关受理；设备价格、订阅、MDR、装机量都没查到。参照 Bangkok Bank，个人商户 PromptPay 收款暂免费，法人商户 0.35% 或 ฿5。",
+    "日本：2023-06 起 TrueMoney 用户可经 Alipay+ 在 PayPay 商户付款；2026-06 起 ShopeePay TH、SCB PLANET PLUS 也已加入；与 JPQR Global 的连接没查到。",
+    "稳定币：TrueMoney 于 2025-08 在 BOT 沙盒试点泰铢代币 THBT；2026-08 第二阶段扩到 2 万名参与者（含外国人），钱包由 Fireblocks 提供，兑换由 Ascend Bit 在 SEC 沙盒内提供；StraitsX 新元出金只是路线图。它是否是 TouristDigiPay 运营方未查到。",
+    "对 INSPAY：在日本，经 Alipay+ 或 PayPay 受理 TrueMoney 是最短路径；在稳定币网络上，TrueMoney 适合作为沙盒或 PoC 的对话对象，不是近期商业伙伴；在泰国小微商户层，它是不宜正面竞争的垂直生态。"
+  ],
+  "open_questions": [
+    "Ascend Bank 在 2026-07 至 2026-10 之间是否已获正式牌照并开业？BOT 对 ACM Holding 金融集团结构的结论是什么？",
+    "Ascend Money / True Money Co., Ltd. 2024、2025 年的收入、净利润和 TPV（可向 DBD 调取法定财报）；2025–2026 年的注册用户和 MAU 官方数字。",
+    "蚂蚁、CP、MUFG、True Corp 在 Ascend Money 的确切持股比例；Nasdaq 上市计划是否仍在推进。",
+    "TrueMoney 柬埔寨、缅甸、印尼、越南业务的当前状态（是否持牌、是否已出售或收缩）。",
+    "TrueMoney Box 的价格、月租、是否带屏或能出动态码、装机量；TrueMoney 商户 MDR；商户获取方式（True 门店、代理、7-Eleven、网关）各占多少。",
+    "TrueMoney 钱包是否作为 PromptPay 参与者扫所有 Thai QR 码；TrueMoney 是否作为 Alipay+ 收单方（ACQP）在泰国受理外国钱包。",
+    "Opn 的日文页面 docs.opn.ooo/ja/truemoney-qr/japan 是否意味着日本商户可经 Opn 直接受理 TrueMoney（Alipay+ 之外的第二条通道）？",
+    "THBT 的发行实体、储备托管、所用公链、第二阶段 6 种可互换资产的名单（是否含 USDT、USDC、XSGD）；走出沙盒的时间表。",
+    "TrueMoney 或 Ascend Bit 是否是 TouristDigiPay 的获批运营方，以及截至 2026-10 的使用数据。",
+    "BOT、AMLO 对 TrueMoney 的执法记录，以及 e-wallet 防诈骗规则（转账限额、开户核验）对其商户业务的影响。",
+    "Alipay+ 向日本 PayPay 商户收取的现行费率（1.98% 不含税是旧口径），以及 TrueMoney 在日本的交易量。"
+  ]
+}

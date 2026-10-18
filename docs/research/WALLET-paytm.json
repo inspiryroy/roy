@@ -1,0 +1,324 @@
+{
+  "summary": "Paytm（One 97 Communications）是印度第三大 UPI 应用：2026-08 按笔数约 8%，前两名是 PhonePe 约 46% 和 Google Pay 约 33%。它也是印度最大的 QR 音箱（Soundbox）订阅商户网络，截至 2026-06-30 有 1.57 crore（1,570 万）订阅商户，月交易用户 8 crore。2024-01 RBI 禁止 Paytm Payments Bank（PPBL）吸收存款和充值，2026-04-24 吊销其银行牌照。Paytm 已转为 TPAP 模式：UPI 经 Axis、HDFC、SBI、YES 四家 PSP 银行接入；支付子公司 PPSL 在 2025-11 和 2025-12 先后拿到在线、线下和跨境支付聚合商牌照，钱包（PPI）牌照仍在申请中。财务上，2026 财年首次全年盈利（净利润约 ₹552 crore，含大量利息收入）；2027 财年第一季度收入 ₹2,448 crore，EBITDA ₹203 crore，PAT ₹220 crore。UPI 商户零 MDR，所以 Paytm 靠设备订阅（历史上每月约 ₹78–100）、卡和在线 MDR、贷款分发变现，金融服务收入已超过支付净收入。跨境方面，2024-11 起 Paytm 用户可在阿联酋、新加坡、法国等地扫码付款；未查到可在日本使用，也未查到加入 Alipay+。Paytm 曾为 PayPay 提供技术并持有约 7.2% 的新股预约权（SAR），2024-12 以 ₹2,364 crore 售予 SoftBank Vision Fund 2。未查到 Paytm 有加密或稳定币业务；RBI 2026-07 再次表态反对加密和稳定币合法化。对 INSPAY：Paytm 是'低价订阅设备 + 地推 + 金融服务变现'的参照，也说明监管集中度是重大风险；印度游客入境应对接 NIPL 方案层，而不是 Paytm 单家；印度不适合稳定币结算环节。关于 TrueMoney 和 DANA：本任务只覆盖 Paytm，二者由其他子任务调研。",
+  "facts": [
+    {
+      "id": "PAYTM-01",
+      "claim": "【事实】Paytm 的上市主体是 One 97 Communications Ltd（NSE: PAYTM）。支付业务现在由全资子公司 Paytm Payments Services Ltd（PPSL）持牌开展。消费者 UPI 由 One97 以第三方应用（TPAP）身份接入，银行侧由合作 PSP 银行承担。",
+      "confidence": "high",
+      "source": "https://www.business-standard.com/amp/companies/news/rbi-clears-paytm-arm-ppsl-as-payment-aggregator-for-offline-transactions-125121800385_1.html",
+      "date": "2025-12-18",
+      "notes": "PPSL 为 One97 全资子公司，依据公司向交易所的披露（经媒体转述）"
+    },
+    {
+      "id": "PAYTM-02",
+      "claim": "【公司口径】2027 财年第一季度（截至 2026-06-30）：营业收入 ₹2,448 crore，同比增长 28%；EBITDA ₹203 crore，为历史最高，利润率 8%（上年同期 4%）；税后利润 ₹220 crore，同比增长 79%。",
+      "confidence": "high",
+      "source": "https://paytm.com/support/investor-relations/paytm-q1-fy27-results-revenue-grows-28-to-2448-crore-highest-ever-quarterly-ebitda-at-203-crore",
+      "date": "2026-07",
+      "notes": "Paytm IR 页面与 ANI 转述一致（另见 https://www.indiagazette.com/news/279200240/paytm-reports-highest-ever-quarterly-ebitda-of-203-crore-in-q1-fy27-revenue-rises-28-to-2448-crore）。IndiaInfoline 标题写增长 20%，应是环比口径。WebFetch 无法解析 paytm.com 域名，数字来自搜索摘要。1 crore = 1,000 万"
+    },
+    {
+      "id": "PAYTM-03",
+      "claim": "【公司口径】2027 财年第一季度：支付净收入 ₹601 crore，报告口径同比增长 13%。剔除 PIDF 激励停发的可比口径同比增长 25%。支付处理利润率（payment processing margin）高于 4 bps（占 GMV）。金融服务分销收入 ₹814 crore，同比增长 45%，已超过支付净收入。",
+      "confidence": "medium",
+      "source": "https://paytm.com/document/ir/financial-results/Paytm_Earning-Release_Q1-FY-2027.pdf",
+      "date": "2026-07",
+      "notes": "来自搜索摘要，未打开 PDF 原文。PIDF 即 RBI 的 Payments Infrastructure Development Fund，用于补贴二三线城市受理设备部署；'>4 bps'的确切口径待核对原文"
+    },
+    {
+      "id": "PAYTM-04",
+      "claim": "【公司口径】2027 财年第一季度：月交易用户（MTU）8 crore（8,000 万），同比增加 60 lakh（约 +8%）；订阅商户 1.57 crore（1,570 万，含设备商户），同比增长 21%；消费者 UPI 交易额（GTV）₹5.9 lakh crore，同比增长 45%，公司称增速为行业的 2.2 倍；总交易笔数 1,989 crore，商户交易 1,669 crore。",
+      "confidence": "medium",
+      "source": "https://www.medianama.com/2026/07/223-wallet-licence-paytm-q1-fy27-earnings/",
+      "date": "2026-07",
+      "notes": "口径：MTU 指当月至少完成一笔交易的用户，不是注册用户。本轮未查到最新注册用户数和注册商户总数。'订阅商户'指为 Soundbox/卡机/POS 等设备付订阅费的商户。另见 Paytm 季度业绩新闻稿 PDF"
+    },
+    {
+      "id": "PAYTM-05",
+      "claim": "【公司口径】2026 财年（截至 2026-03-31）是首个全年盈利年：合并净利润 ₹552 crore（上年亏损 ₹663 crore），营业收入 ₹8,437 crore，同比增长 22%。但当年其他收入约 ₹854 crore，税前利润只有 ₹582 crore，利润在相当程度上依赖约 ₹13,315 crore 现金的投资收益。",
+      "confidence": "medium",
+      "source": "https://scanx.trade/stock-market-news/companies/one-97-communications-reports-fy26-consolidated-net-profit-of-552-crores-reverses-prior-year-loss/39636517",
+      "date": "2026-05-06",
+      "notes": "二手来源，另一来源给出 PAT ₹554 crore、收入 ₹9,291 crore（含其他收入）。Inc42 评论文章标题为'Profitability Milestone Comes With Caveats'（https://inc42.com/features/paytms-profitability-milestone-comes-with-caveats/）。公司称 2027 财年收入增速将高于 22%"
+    },
+    {
+      "id": "PAYTM-06",
+      "claim": "【事实】盈利走势：2026 财年第一季度（2025-06 季度）PAT ₹123 crore，是 2024-09 季度（该季含一次性出售收益）之后首个盈利季度。随后连续盈利到 2027 财年第一季度的 ₹220 crore。媒体把 2026 财年第一季度扭亏主要归因于压缩成本。",
+      "confidence": "high",
+      "source": "https://paytm.com/blog/investor-relations/paytm-turns-profitable-with-rs123cr-pat-in-q1fy26/",
+      "date": "2025-07-22",
+      "notes": "另见 Business Standard 2025-07-25。2024-09 季度含出售票务业务给 Zomato（₹2,048 crore）的收益"
+    },
+    {
+      "id": "PAYTM-07",
+      "claim": "【事实，部分为记忆】股东结构：蚂蚁集团旗下 Antfin 原为大股东。2023-08，Vijay Shekhar Sharma 通过 Resilient Asset Management 受让 Antfin 10.3% 股份，成为最大股东。据 2025-08 报道，Antfin 将出售剩余 5.84%（约 4.34 亿美元）。Paytm 宣布成为由印度人拥有并控制的公司（Indian-owned and controlled company）。SoftBank 已退出 Paytm 股权。",
+      "confidence": "medium",
+      "source": "WebSearch 摘要（2025-08 报道；原文链接未定位）；SoftBank 退出见 https://cwv.yourstory.com/2024/12/softbank-fully-exits-paytm-at-higher-than-expected-net-loss-of-2648-million",
+      "date": "2025-08",
+      "notes": "2023-08 转让为记忆，本轮未核实。Antfin 是否已完成全部出售，以及 VSS 当前持股比例，都需核对 NSE 最新股权结构文件。蚂蚁持股曾是 PA 牌照受阻的原因之一（Press Note 3）"
+    },
+    {
+      "id": "PAYTM-08",
+      "claim": "【事实】Paytm 与 PayPay 的历史关系：PayPay 2018 年上线时由 Paytm 提供技术服务，Paytm Singapore 以技术服务换得 PayPay 的新股预约权（SAR），完全稀释后相当于 7.2%（159,012 股）。2024-12-06 董事会批准将 SAR 售予 SoftBank Vision Fund 2，作价约 ₹2,364 crore（约 JPY 419 亿，约 2.792 亿美元），对应 PayPay 估值约 JPY 1.06 兆。",
+      "confidence": "high",
+      "source": "https://www.medianama.com/2024/12/223-paytm-singapore-offloads-paypay-japan-stake-softbank-rs-2364-cr/",
+      "date": "2024-12-06",
+      "notes": "另见 YourStory 2024-12。出售后 Paytm 与 PayPay 已无股权联系；是否仍保留技术服务合同，本轮未查到"
+    },
+    {
+      "id": "PAYTM-09",
+      "claim": "【公司口径】战略转向：2026 财年第四季度业绩会上，管理层称新投入将'只投 AI'，把 Soundbox 定位为'小商户操作系统'；2027 财年第一季度提出'AI 作为软件服务'。2026 财年第二季度业绩材料提到通过 Paytm Cloud Technologies 推进国际化战略框架，但摘要被截断，市场和时间表未查到。",
+      "confidence": "medium",
+      "source": "https://www.medianama.com/2026/05/223-paytm-agentic-ai-wealthtech-growth-q4-fy26/",
+      "date": "2026-05",
+      "notes": "国际化部分只有截断的摘要，置信度 low。下一次业绩会据 Screener 为 2026-10-27（2027 财年第二季度），可能更新"
+    },
+    {
+      "id": "PAYTM-10",
+      "claim": "【公司口径】设备装机：2026 财年第四季度（截至 2026-03-31）订阅商户 1.51 crore，同比 +22%（上年 1.24 crore）；2027 财年第一季度（截至 2026-06-30）1.57 crore，同比 +21%。历史值：2024-03-31 约 1,070 万，2025-03-31 约 1,240 万。",
+      "confidence": "medium",
+      "source": "https://nsearchives.nseindia.com/corporate/PAYTM_06052026202426_EarningsRelease.pdf",
+      "date": "2026-05-06",
+      "notes": "2026 年数据来自搜索摘要转述的业绩新闻稿（NSE 文件无法下载，代理 403）。2024-03 的数据来自二手站点转述年报，未核实。'订阅商户'含 Soundbox、Card Soundbox、POS 等，各设备的分项数量未披露或未查到"
+    },
+    {
+      "id": "PAYTM-11",
+      "claim": "【事实，较旧数据】Soundbox 定价：2023 年 Business Standard 报道商户每月约付 ₹100 订阅费；Rest of World 报道德里一商户 2021 年每月付 ₹125，PhonePe 推出竞品后 Paytm 降到 ₹78。2026 年现价未公开，第三方站点称价格按机型和活动而定，只在 Paytm for Business App 下单前显示。",
+      "confidence": "medium",
+      "source": "https://www.business-standard.com/companies/news/paytm-can-add-15-million-new-customers-for-soundbox-in-next-2-3-years-123062500361_1.html",
+      "date": "2023-06-25",
+      "notes": "另见 https://restofworld.org/2023/india-sound-boxes-paytm-phonepe/ 和 https://upimdrcalculator.com/soundbox-charges/（二手）。一次性押金或激活费是否存在、具体多少，本轮未核实"
+    },
+    {
+      "id": "PAYTM-12",
+      "claim": "【推断】按订阅费量级估算：1.57 crore 订阅商户 × 每月约 ₹78–100 × 12，年化订阅收入上限约 ₹1,470–1,880 crore（约 1.7–2.2 亿美元），约占年化营业收入（约 ₹9,800 crore）的 15–19%。实际值应更低，因为有优惠、免费期和流失。",
+      "confidence": "low",
+      "source": "推断，基于 PAYTM-10、PAYTM-11、PAYTM-02",
+      "date": "2026-10-18",
+      "notes": "Paytm 把设备订阅收入并入支付服务收入，本轮未查到单独披露的'设备收入'；设备回本期也未查到"
+    },
+    {
+      "id": "PAYTM-13",
+      "claim": "【事实】设备形态：Paytm 产品线包括静态 QR（立牌和贴纸）、Soundbox（语音播报到账的 QR 音箱，依托 4G 和 SIM 卡）、Card Soundbox（Soundbox 加 NFC 刷卡受理，2023 年推出）和 Android POS（EDC）。Card Soundbox 推出后，Soundbox 市场竞争转向'QR + 卡'一体机。",
+      "confidence": "medium",
+      "source": "https://www.businessworld.in/article/paytm-soundbox-vs-the-rest-battle-heats-up-with-card-payment-introduction-490024",
+      "date": "2023",
+      "notes": "带屏动态 QR 机型（类似 INSCREEN）的规格与价格本轮未查到。Pocket/Music/Solar 等子型号依记忆，未写入"
+    },
+    {
+      "id": "PAYTM-14",
+      "claim": "【事实】获客与竞争：2024 年 PPBL 危机期间，银行和金融科技公司以更便宜的订阅价在街头挖 Paytm 商户（Inc42 称 'Loot On Streets'）。说明设备订阅模式的商户转换成本低，地推铺设、维护和服务网络本身就是护城河。",
+      "confidence": "medium",
+      "source": "https://inc42.com/buzz/paytm-crisis-chaos-on-streets-as-banks-fintechs-lure-merchants-with-cheaper-subscriptions/",
+      "date": "2024-02",
+      "notes": "Paytm 地推团队的人数、渠道结构（自营地推、代理、银行）和获客成本，本轮未查到"
+    },
+    {
+      "id": "PAYTM-15",
+      "claim": "【事实】UPI 商户 MDR：印度自 2020-01-01 起对 RuPay 借记卡和 BHIM-UPI 的 P2M 交易实行零 MDR。政府按年度推出激励方案，补贴小额（≤₹2,000）UPI P2M 交易，二手来源称补贴率 0.15%，付给收单行/PSP，已延续到 2025-26 财年。",
+      "confidence": "medium",
+      "source": "https://www.insightsonindia.com/2026/09/16/upi-merchant-discount-rate-mdr-framework-2026/",
+      "date": "2026-09-16",
+      "notes": "零 MDR 的起始日期依记忆，相应修法为《所得税法》第 269SU 条加《支付与结算系统法》修订。激励比例来自二手来源。这就是 Paytm 不能靠 UPI 交易费赚钱、改靠设备订阅、卡类 MDR、在线网关费和贷款分发变现的原因"
+    },
+    {
+      "id": "PAYTM-16",
+      "claim": "【未核实传闻】多家二手博客称 NPCI 于 2026-09-15 通知，自 2026-10-15 起对 ₹2,000 以上的 UPI P2M 交易收 0.4% MDR（上限 ₹300），月收款 ₹1 lakh 以下的小商户继续零 MDR。",
+      "confidence": "low",
+      "source": "https://payu.in/blog/upi-mdr-2026-what-the-new-charge-means-for-businesses/",
+      "date": "2026-09",
+      "notes": "全部来自非官方博客，细节彼此不一致。2025 年也有类似传闻，被财政部否认。必须核对 NPCI 通函或财政部公告原文后才能使用。若属实，Paytm 的商户变现逻辑会改变"
+    },
+    {
+      "id": "PAYTM-17",
+      "claim": "【推断】Paytm 的商户变现结构：UPI 零 MDR，所以支付净收入（₹601 crore/季）主要来自卡类和在线网关的 MDR、设备订阅和政府激励。金融服务分销（₹814 crore/季，主要是向商户和消费者分销贷款）已成为更大的利润来源。'QR 设备做获客入口，金融服务变现'是核心模式。",
+      "confidence": "medium",
+      "source": "推断，基于 PAYTM-03 和 PAYTM-15",
+      "date": "2026-10-18",
+      "notes": "各收入来源占比未查到"
+    },
+    {
+      "id": "PAYTM-18",
+      "claim": "【事实】RBI 对 Paytm Payments Bank（PPBL）的行动：2024-01-31 RBI 宣布，PPBL 在 2024-02-29 之后（后延至 2024-03-15）不得再接受存款、充值和贷记交易，理由是持续违规。PPBL 自 2022-03-11 起已被禁止新增客户。",
+      "confidence": "high",
+      "source": "https://theprint.in/economy/rbi-cancels-paytm-payments-bank-licence-citing-rule-violations/2914153/",
+      "date": "2024-01-31",
+      "notes": "具体日期依记忆和多方报道，本轮未打开 RBI 新闻稿原文。PPBL 由 One97 持股 49%，Vijay Shekhar Sharma 持股 51%"
+    },
+    {
+      "id": "PAYTM-19",
+      "claim": "【事实】RBI 于 2026-04-24 营业结束时，依据《银行监管法》（1949）第 22(4) 条吊销 PPBL 银行牌照，理由包括治理缺陷和违反该法多项条款，并将向高等法院申请清盘。RBI 称 PPBL 流动性足以全额兑付存款人。",
+      "confidence": "high",
+      "source": "https://www.business-standard.com/companies/news/paytm-payments-bank-licence-cancellation-impact-one97-strategy-126042800606_1.html",
+      "date": "2026-04-24",
+      "notes": "另见 ThePrint 和 Goodreturns：2026-04-27 Paytm 股价跌约 6.65%。One97 称已于 2024-03-31 对 PPBL 投资全额减值，无直接财务影响，UPI、Soundbox 和支付网关均不依赖 PPBL。高等法院清盘进度本轮未查到"
+    },
+    {
+      "id": "PAYTM-20",
+      "claim": "【事实】改为 TPAP 多银行模式：2024-03-14 NPCI 批准 One97 以第三方应用（TPAP）身份按多 PSP 银行模式接入 UPI，合作 PSP 银行为 Axis Bank、HDFC Bank、State Bank of India 和 YES Bank；2024-04-16/17 NPCI 批准把 '@paytm' 用户迁移到这些银行。",
+      "confidence": "high",
+      "source": "https://www.medianama.com/2024/04/223-paytm-user-migration-psp-banks-npci-approval/",
+      "date": "2024-04-17",
+      "notes": "另见 Business Today 2024-04-17。商户 '@paytm' 句柄迁到 YES Bank 依记忆，未在本轮核实"
+    },
+    {
+      "id": "PAYTM-21",
+      "claim": "【公司口径，依记忆】NPCI 于 2024-10 批准 Paytm 重新获取新 UPI 用户。此前 PPBL 事件后 NPCI 的批准条件是暂停新增用户。",
+      "confidence": "medium",
+      "source": "记忆（Paytm 2024-10-23 交易所公告）；本轮搜索未返回原文",
+      "date": "2024-10-22",
+      "notes": "本轮搜索只返回 2024-03/04 的 TPAP 和迁移批准，没有返回 2024-10 新用户批准的原文，需补核"
+    },
+    {
+      "id": "PAYTM-22",
+      "claim": "【事实】支付聚合商（PA）牌照：PPSL 2020-11 申请，2022-11 被 RBI 以外资合规（Press Note 3，与蚂蚁持股有关）为由驳回，2024-09 重新申请。RBI 2025-08 给予在线 PA 原则性批准，在线 PA 授权证书 2025-11-26 生效；2025-12-17 又授权其做线下（实体）PA 和双向跨境 PA。PPSL 由此持有全部主要类别的 PA 牌照。",
+      "confidence": "high",
+      "source": "https://www.angelone.in/news/stocks/rbi-authorises-paytm-payments-services-to-operate-as-payment-aggregator-for-offline-and-cross-border-transactions",
+      "date": "2025-12-17",
+      "notes": "另见 https://www.medianama.com/2025/11/223-paytm-rbi-approval-online-payment-aggregator/ 和 Business Standard 2025-12-18。2025-11 的报道说 Paytm 只有在线 PA，已被 2025-12 的批准取代"
+    },
+    {
+      "id": "PAYTM-23",
+      "claim": "【公司口径】钱包牌照：PPSL 已向 RBI 申请预付支付工具（PPI，即钱包）牌照，在 2027 财年第一季度投资者材料中披露。业绩会上未给出监管进展。PPBL 被吊销后，原 Paytm Wallet 业务需另有持牌主体。",
+      "confidence": "medium",
+      "source": "https://x.com/REDBOXINDIA/status/2075137178200629470",
+      "date": "2026-07",
+      "notes": "另见 Medianama 2026-07 业绩会要点。截至 2026-10-18 是否获批，未查到"
+    },
+    {
+      "id": "PAYTM-24",
+      "claim": "【事实】UPI 市场份额（NPCI 分 App 数据，经媒体整理）：2026-05 Paytm 按笔数 7.91%、按金额 6.66%，PhonePe 46.26%/49.06%，Google Pay 32.75%/33.54%；2026-08 Paytm 8.03%/6.87%，前三名合计 85.93%（笔数）。",
+      "confidence": "medium",
+      "source": "https://www.oxigenwallet.com/upi/apps-market-share/",
+      "date": "2026-08",
+      "notes": "二手整理，不同来源的月份标签有出入，应以 NPCI 官网分 App 数据为准。Paytm 份额从 PPBL 事件前的约 13%（依记忆）降到约 8%，仍是第三名"
+    },
+    {
+      "id": "PAYTM-25",
+      "claim": "【事实，依记忆】NPCI 规定单个 UPI 应用份额上限 30%。2024-12-31 NPCI 把合规期限延至 2026-12-31。这条上限对 PhonePe 和 Google Pay 有约束，对 Paytm 有利。",
+      "confidence": "medium",
+      "source": "记忆（NPCI 2024-12-31 通函）；搜索摘要表述含混",
+      "date": "2024-12-31",
+      "notes": "需核对 NPCI 通函原文，以及 2026 年底是否再次延期"
+    },
+    {
+      "id": "PAYTM-26",
+      "claim": "【事实】UPI 整体规模：2026-06 共 227.2 亿笔、₹28.92 lakh crore；2026-09 共 240.7 亿笔，日均首次超过 8 亿笔。",
+      "confidence": "medium",
+      "source": "https://entrackr.com/news/upi-clocks-2272-bn-transactions-worth-rs-2892-lakh-cr-in-june-12122397",
+      "date": "2026-09",
+      "notes": "2026-09 数据见 https://startuptalky.com/india-upi-transactions-september-2026/。数据源头是 NPCI 月报"
+    },
+    {
+      "id": "PAYTM-27",
+      "claim": "【事实】Paytm 2024-11 上线 UPI International：印度用户在阿联酋、新加坡、法国、毛里求斯、不丹、尼泊尔（部分报道还列斯里兰卡）可扫当地 UPI 受理 QR 付款，需一次性激活，有效期 1–90 天，从印度银行账户扣卢比。",
+      "confidence": "high",
+      "source": "https://www.dtnext.in/news/business/paytm-users-can-now-make-international-upi-payments-in-uae-sri-lanka-singapore-france-mauritius-bhutan-and-nepal-812803",
+      "date": "2024-11-21",
+      "notes": "另见 https://ibsintelligence.com/?p=565131。这是方案层能力（NIPL 连接），不是 Paytm 自建网络"
+    },
+    {
+      "id": "PAYTM-28",
+      "claim": "【未查到】未查到 Paytm 用户能在日本付款（PayPay 商户、JPQR Global 或其他途径）的证据，也未查到 UPI 与日本的 QR 联通。未查到 Paytm 是 Alipay+ 合作钱包。",
+      "confidence": "medium",
+      "source": "本轮搜索未返回相关结果；参见 /home/user/roy/docs/research/ALIPAYPLUS.json、JP-PAYPAY.json",
+      "date": "2026-10-18",
+      "notes": "'未查到'不等于'不存在'。推断：即使 Paytm 与 PayPay 有历史技术渊源，现在的跨境路径也应走 NPCI International（NIPL）方案层，而不是 Paytm 单独对接"
+    },
+    {
+      "id": "PAYTM-29",
+      "claim": "【事实（引用已有研究）】UPI 与东盟的联通：UPI–柬埔寨 KHQR 2026-06-02 上线（NIPL × ACLEDA，一期为印度用户扫 KHQR）；PayNet × NIPL 2026-02 签约（一期为印度游客扫 DuitNow），上线未确认；PayNow–UPI 为 P2P 走廊；印尼 QRIS–UPI 原定 2026 年底完成，2026-10 报道称仍受阻。",
+      "confidence": "high",
+      "source": "https://rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=62857",
+      "date": "2026-06",
+      "notes": "引自 /home/user/roy/docs/research/ASEAN-LINK.json、SG-MY.json、ID.json。这些走廊对所有开通 UPI International 的 UPI App 生效，Paytm 并非独家"
+    },
+    {
+      "id": "PAYTM-30",
+      "claim": "【事实】入境受理：NPCI 推出 UPI One World（面向外国游客的 PPI 钱包），2024-07 有相关公告。RBI 早先提议先在部分机场让 G20 国家居民入境后用 UPI 付款。Paytm 在入境游客受理中的角色未查到。",
+      "confidence": "medium",
+      "source": "https://www.taiwannews.com.tw/news/5906807",
+      "date": "2024-07",
+      "notes": "另见 https://inc42.com/?p=383328。Paytm 商户能否受理外国钱包（如 Alipay+）：未查到。有转述称 2026-02 Reuters 报道印度当局正与 Alipay+ 磋商（low，见 09-sources #57）"
+    },
+    {
+      "id": "PAYTM-31",
+      "claim": "【未查到】未查到 Paytm 的任何加密资产或稳定币产品、合作或官方表态。",
+      "confidence": "medium",
+      "source": "本轮搜索（印度稳定币监管 + Paytm）未返回 Paytm 相关结果",
+      "date": "2026-10-18",
+      "notes": "'未查到'不等于'不存在'。考虑到 PPBL 被吊销、钱包牌照还在申请，主动碰加密业务的监管风险很高（推断）"
+    },
+    {
+      "id": "PAYTM-32",
+      "claim": "【事实】印度加密与稳定币规则：没有稳定币专门立法，稳定币按虚拟数字资产（VDA）处理，适用 30% 所得税、1% TDS 和反洗钱登记，不是法定货币，也不是 RBI 授权的支付工具。2026-07-02 RBI 向议会财政委员会表示 VDA 威胁货币稳定、不应获得合法地位；据 Reuters，RBI 内部文件把外币和卢比稳定币都列为对货币主权的威胁。RBI 力推 e-Rupee（CBDC）。",
+      "confidence": "medium",
+      "source": "https://www.cryptowire.in/blog/rbi-doubles-down-on-crypto-prohibition-as-parliamentary-panel-report-nears/",
+      "date": "2026-07-02",
+      "notes": "主要是加密媒体的二手转述，需核对 RBI 和议会委员会原文。30% 税率和 1% TDS 出自《2022 年财政法》，依记忆。另见 https://cryptodaily.co.uk/2026/07/rbi-crypto-ban-stablecoin-wall"
+    },
+    {
+      "id": "PAYTM-33",
+      "claim": "【事实】RBI 2026-06《金融稳定报告》提到美国 GENIUS Act、欧盟 MiCA 和英国的稳定币规则，称其为'迈向更清晰监管边界的重要一步'，但没有表态在印度采用类似制度。卢比稳定币 ARC（Polygon Labs 与 Anq）原计划 2026 年第一季度推出，以政府债券为储备，本轮未查到上线证据。",
+      "confidence": "low",
+      "source": "https://www.cryptotimes.io/2026/07/01/from-genius-act-to-mica-indias-rbi-notes-global-regulatory-steps-on-stablecoins/",
+      "date": "2026-07-01",
+      "notes": "ARC 见 https://tradebrains.in/crypto/will-india-finally-launch-its-own-stablecoin/。另有报道称 2026-06 执法局（ED）突击检查后，印度交易所 USDT 溢价约 8.5%（单一来源，low）"
+    },
+    {
+      "id": "PAYTM-34",
+      "claim": "【推断】作为商户设备业务的参照：Paytm 证明了'低价订阅 QR 音箱，地推大规模铺设，再交叉销售商户贷款'在零 MDR 市场可以规模化到约 1,570 万台订阅，并在 2025-26 年转为盈利。但单台订阅费只有每月约 ₹78–100（约 1 美元），设备和服务的毛利很薄，真正的利润来自金融服务分销。INSCREEN 在日本面对的是有 MDR 的市场（PayPay 等收费），订阅定价空间更大，但没有 Paytm 那样的贷款分发变现。",
+      "confidence": "medium",
+      "source": "推断，基于 PAYTM-03、PAYTM-10、PAYTM-11、PAYTM-17",
+      "date": "2026-10-18",
+      "notes": "日本 PayPay 费率见 /home/user/roy/docs/research/JP-PAYPAY.json"
+    },
+    {
+      "id": "PAYTM-35",
+      "claim": "【推断】监管集中度教训：Paytm 把钱包、账户和 UPI 句柄都放在关联银行 PPBL，2024 年被 RBI 一纸禁令打断，UPI 份额从约 13% 降到约 8%，最终 PPBL 于 2026-04 被吊销牌照。之后靠多家 PSP 银行的 TPAP 模式和 PPSL 全类 PA 牌照恢复。对 INSPAY 的含义：结算和资金托管应多银行冗余，避免单一持牌主体故障导致整网停摆。",
+      "confidence": "medium",
+      "source": "推断，基于 PAYTM-18、PAYTM-19、PAYTM-20、PAYTM-22、PAYTM-24",
+      "date": "2026-10-18",
+      "notes": ""
+    },
+    {
+      "id": "PAYTM-36",
+      "claim": "【推断】作为合作方：(a) 印度游客来日本的跨境入境，对手方应是 NPCI International（NIPL）方案层，而不是 Paytm 一家（UPI 走廊对所有 UPI App 生效）；(b) Paytm 与 PayPay 的技术渊源已因 2024-12 出售 SAR 而在股权上切断；(c) Paytm 自 2026 年起称经 Paytm Cloud 推进国际化并输出 AI 软件，可能成为东南亚商户设备和软件的潜在供应商或竞争者，但本轮未查到任何具体海外部署。",
+      "confidence": "low",
+      "source": "推断，基于 PAYTM-08、PAYTM-09、PAYTM-27、PAYTM-29",
+      "date": "2026-10-18",
+      "notes": "需核实 2026-10-27 业绩会（2027 财年第二季度）是否披露海外计划"
+    },
+    {
+      "id": "PAYTM-37",
+      "claim": "【推断】印度不适合稳定币结算环节：RBI 明确反对加密和稳定币合法化，没有稳定币支付框架。若 INSPAY 网络未来接入 UPI 走廊，应按'法币电汇 + 境内持牌银行'处理，与 README 中泰国、马来西亚、印尼等'稳定币不入境'国家的做法相同。",
+      "confidence": "medium",
+      "source": "推断，基于 PAYTM-32、PAYTM-33；/home/user/roy/README.md",
+      "date": "2026-10-18",
+      "notes": ""
+    }
+  ],
+  "key_claims": [
+    "PPBL 牌照已于 2026-04-24 被 RBI 吊销（Paytm 称已提前减值、无直接影响）；Paytm 现以 TPAP（4 家 PSP 银行）提供 UPI，以 PPSL 持在线、线下、跨境全类 PA 牌照，钱包牌照在申请中。",
+    "2027 财年第一季度：收入 ₹2,448 crore（+28%）、EBITDA ₹203 crore（8%）、PAT ₹220 crore；MTU 8 crore；订阅商户 1.57 crore（+21%）。2026 财年首个全年盈利，约 ₹552 crore。",
+    "UPI 商户零 MDR：Paytm 靠设备订阅、卡和在线 MDR、贷款分发变现，金融服务分销（₹814 crore/季）已超过支付净收入（₹601 crore/季）。",
+    "Soundbox 订阅费历史上每月约 ₹78–100；2026 年现价、设备收入和回本期均未查到。",
+    "UPI 份额约 8%（第三），NPCI 30% 份额上限（期限 2026-12-31，依记忆）对 Paytm 相对有利。",
+    "跨境：UPI International 可在阿联酋、新加坡、法国、毛里求斯、不丹、尼泊尔使用；未查到可在日本使用或加入 Alipay+；UPI–KHQR 2026-06 上线属于方案层能力。",
+    "PayPay 关系：Paytm 曾提供技术并持 7.2% SAR，2024-12 以 ₹2,364 crore 售予 SVF2，股权上已无联系。",
+    "印度不承认稳定币支付，RBI 2026-07 再次反对；未查到 Paytm 有加密或稳定币业务。",
+    "关于 '0.4% UPI MDR 自 2026-10-15 起征收' 的说法只有二手博客来源，未经核实，不可直接引用。"
+  ],
+  "open_questions": [
+    "NPCI/财政部是否真的于 2026-09-15 通知对 ₹2,000 以上 UPI P2M 交易收 0.4% MDR（2026-10-15 生效）？需核对官方通函原文。",
+    "Paytm 当前 Soundbox、Card Soundbox、POS 的价格（一次性费用 + 月费）、各设备装机量、设备收入、单台成本和回本期。",
+    "Paytm 的注册用户总数和注册商户总数（区别于 MTU 和订阅商户），以及地推团队规模和渠道结构。",
+    "PPSL 钱包（PPI）牌照是否获批；PPBL 高等法院清盘的进度；原 Paytm Wallet 余额和 FASTag 的处置。",
+    "Antfin 是否已全部退出，以及 Vijay Shekhar Sharma 和外资的最新持股比例（NSE 股权结构文件）。",
+    "Paytm Cloud Technologies 国际化框架（2026 财年第二季度提出）的目标市场、产品（设备、软件、AI）和时间表；是否进入东南亚或日本。",
+    "NPCI 是否在 2026 年底前执行 30% 份额上限，还是再次延期。",
+    "印度与日本之间是否有 UPI–JPQR 或 NIPL–日本的跨境 QR 计划；印度游客赴日人数；印度当局与 Alipay+ 磋商的进展（2026-02 Reuters 转述）。",
+    "2026-10-27（2027 财年第二季度）业绩会的新披露。",
+    "Paytm 支付处理利润率 '>4 bps' 的确切口径（是否含 UPI 激励和设备订阅）。"
+  ]
+}
