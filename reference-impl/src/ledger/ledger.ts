@@ -26,14 +26,20 @@ export interface Journal {
 export class Ledger {
   private readonly journals: Journal[] = [];
   private readonly balances = new Map<string, bigint>();
-  private readonly refs = new Set<string>();
+  private readonly byId = new Map<string, Journal>();
 
   post(j: Journal): void {
-    if (this.refs.has(j.id)) return; // idempotent replay
+    const prior = this.byId.get(j.id);
+    if (prior) {
+      // Idempotent replay only when the content is identical; a different journal reusing
+      // an id is a bug (e.g. a re-run settlement cycle) and must not be silently dropped.
+      if (sameContent(prior, j)) return;
+      throw new Error(`journal id ${j.id} already used with different postings`);
+    }
     const sums = new Map<string, bigint>();
     for (const p of j.postings) sums.set(p.asset, (sums.get(p.asset) ?? 0n) + p.amount);
     for (const [asset, s] of sums) if (s !== 0n) throw new Error(`journal ${j.id} unbalanced in ${asset}: ${s}`);
-    this.refs.add(j.id);
+    this.byId.set(j.id, j);
     this.journals.push(j);
     for (const p of j.postings) {
       const k = `${p.account}|${p.asset}`;
@@ -59,4 +65,9 @@ export class Ledger {
   entries(ref?: string): readonly Journal[] {
     return ref ? this.journals.filter(j => j.ref === ref) : this.journals;
   }
+}
+
+function sameContent(a: Journal, b: Journal): boolean {
+  const key = (j: Journal) => j.postings.map(p => `${p.account}|${p.asset}|${p.amount}`).sort().join(';');
+  return a.ref === b.ref && key(a) === key(b);
 }

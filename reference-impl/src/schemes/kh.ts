@@ -17,43 +17,44 @@ function expiry(p: MpmPayload): number | undefined {
   return v && /^\d{13}$/.test(v) ? Number(v) : undefined;
 }
 
-export function khqr(clock: () => number = () => Date.now()): SchemeDefinition {
-  return {
-    schemeId: 'KH.KHQR',
-    country: 'KH',
-    name: 'KHQR',
-    rail: 'Bakong (NBC)',
-    currency: 'KHR',
-    otherCurrencies: ['USD'],
-    guids: [],
-    templateTags: ['29', '30'],
-    matchTemplate: (acct: MerchantAccount) => BAKONG_ID.test(acct.fields.get('00') ?? ''),
-    routingKey: 'KH:BAKONG',
-    interpret(acct, p) {
-      const bakongId = acct.fields.get('00')!;
-      const exp = expiry(p);
-      if (p.initiation === 'dynamic' && exp !== undefined && exp < clock()) return null;
-      const domain = bakongId.split('@')[1]!;
-      const isMerchant = acct.tag === '30';
-      const notes: string[] = [];
-      if (p.initiation === 'dynamic' && exp === undefined) notes.push('dynamic KHQR without expiry timestamp (ID 99-01)');
-      if (p.currencyNumeric === '840') notes.push('USD-denominated KHQR: cross-border channels are reported to debit KHR only – confirm with NBC');
-      return {
-        paymentType: isMerchant ? 'P2M' : 'P2P',
-        routing: {
-          acquirerId: acct.fields.get('02') ?? domain,
-          merchantId: isMerchant ? acct.fields.get('01') : undefined,
-          account: bakongId,
-          proxyType: 'BAKONG_ID',
-          references: refs({ billNumber: p.additionalData?.billNumber }),
-        },
-        altRoutingKeys: [`KH:BANK:${domain}`],
-        confidence: 0.9,
-        notes,
-      };
-    },
-  };
-}
+export const khqr: SchemeDefinition = {
+  schemeId: 'KH.KHQR',
+  country: 'KH',
+  name: 'KHQR',
+  rail: 'Bakong (NBC)',
+  currency: 'KHR',
+  otherCurrencies: ['USD'],
+  // NBC SDK: KHR amounts are integers; USD keeps 2 decimals.
+  amountDecimals: { KHR: 0 },
+  guids: [],
+  templateTags: ['29', '30'],
+  matchTemplate: (acct: MerchantAccount) => BAKONG_ID.test(acct.fields.get('00') ?? ''),
+  routingKey: 'KH:BAKONG',
+  interpret(acct, p) {
+    const bakongId = acct.fields.get('00')!;
+    const exp = expiry(p);
+    const domain = bakongId.split('@')[1]!;
+    const isMerchant = acct.tag === '30';
+    const notes: string[] = [];
+    if (p.currencyNumeric === '840') notes.push('USD-denominated KHQR: cross-border channels are reported to debit KHR only – confirm with NBC');
+    return {
+      paymentType: isMerchant ? 'P2M' : 'P2P',
+      routing: {
+        acquirerId: acct.fields.get('02') ?? domain,
+        merchantId: isMerchant ? acct.fields.get('01') : undefined,
+        account: bakongId,
+        proxyType: 'BAKONG_ID',
+        references: refs({ billNumber: p.additionalData?.billNumber }),
+      },
+      altRoutingKeys: [`KH:BANK:${domain}`],
+      confidence: 0.9,
+      notes,
+      qrExpiresAt: exp,
+      // Like the NBC SDK (EXPIRATION_TIMESTAMP_REQUIRED): an amount-bearing code must expire.
+      declineReason: (p.initiation === 'dynamic' || p.amount) && exp === undefined ? 'KHQR with an amount must carry an expiry timestamp (ID 99-01)' : undefined,
+    };
+  },
+};
 
 export function sampleKhqrMerchant(o: { amount?: string; currency?: 'KHR' | 'USD'; createdAt?: number; ttlMs?: number } = {}): string {
   const created = o.createdAt ?? Date.parse('2026-10-18T09:00:00Z');

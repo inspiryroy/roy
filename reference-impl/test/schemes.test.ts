@@ -6,7 +6,8 @@ import { ALL_SCHEMES } from '../src/schemes/index.ts';
 import { sampleLaoQr } from '../src/schemes/la.ts';
 import { sampleDuitNowQr } from '../src/schemes/my.ts';
 import { SchemeRegistry } from '../src/schemes/registry.ts';
-import { payNow, sampleSgqr } from '../src/schemes/sg.ts';
+import { createNetwork } from '../src/network.ts';
+import { sampleSgqr } from '../src/schemes/sg.ts';
 import { samplePromptPayQr, sampleThaiMerchantQr } from '../src/schemes/th.ts';
 
 const registry = new SchemeRegistry();
@@ -76,14 +77,31 @@ test('Singapore: SGQR label yields one match per scheme, routed by GUID not tag'
   assert.equal(registry.route(p, new Set(['SG:NETS']))?.schemeId, 'SG.NETS');
 });
 
-test('Singapore: expired PayNow QR is not routable', () => {
-  const reg = new SchemeRegistry().register(payNow(() => Date.parse('2026-10-18T00:00:00Z')));
+test('Singapore: PayNow expiry (04) is reported and an expired code is not routable', () => {
   const qr = buildMpm({
     initiation: 'dynamic',
     accounts: [{ tag: '26', fields: [['00', 'SG.PAYNOW'], ['01', '2'], ['02', '201912345K'], ['03', '0'], ['04', '20261017']] }],
-    mcc: '0000', currencyNumeric: '702', amount: '10.00', countryCode: 'SG', merchantName: 'X', merchantCity: 'Singapore',
+    mcc: '5812', currencyNumeric: '702', amount: '10.00', countryCode: 'SG', merchantName: 'X', merchantCity: 'Singapore',
   });
-  assert.deepEqual(reg.identify(decodeMpm(qr)), []);
+  const p = decodeMpm(qr);
+  const [m] = registry.identify(p);
+  assert.equal(m!.qrExpiresAt, Date.parse('2026-10-17T23:59:59+08:00'));
+  assert.equal(registry.route(p, new Set(['SG:FAST']), Date.parse('2026-10-18T00:00:00Z')), undefined);
+  assert.equal(registry.route(p, new Set(['SG:FAST']), Date.parse('2026-10-17T00:00:00Z'))?.schemeId, 'SG.PAYNOW');
+});
+
+test('multi-scheme sticker: a P2P template never hides a payable merchant template', () => {
+  const qr = buildMpm({
+    initiation: 'static',
+    accounts: [
+      { tag: '26', fields: [['00', 'SG.PAYNOW'], ['01', '0'], ['02', '+6591234567'], ['03', '1']] },
+      { tag: '27', fields: [['00', 'COM.GRAB'], ['01', 'GRABMERCHANT0001']] },
+    ],
+    mcc: '5812', currencyNumeric: '702', countryCode: 'SG', merchantName: 'HAWKER', merchantCity: 'Singapore',
+  });
+  const ms = identify(qr);
+  assert.deepEqual(ms.map(m => m.schemeId), ['SG.GRABPAY', 'SG.PAYNOW'], 'P2M ranks before P2P');
+  assert.equal(registry.route(decodeMpm(qr), new Set(['SG:FAST', 'SG:GRABPAY']))?.schemeId, 'SG.GRABPAY');
 });
 
 test('Laos: LAO QR merchant code', () => {
@@ -94,12 +112,29 @@ test('Laos: LAO QR merchant code', () => {
   assert.deepEqual(m!.altRoutingKeys, ['LA:IIN:27710418']);
 });
 
-test('currency/country mismatch lowers confidence below the routing threshold', () => {
-  const qr = sampleDuitNowQr().replace('5303458', '5303702').slice(0, -4);
-  const p = decodeMpm(qr + crc(qr));
-  const [m] = registry.identify(p);
-  assert.ok(m!.confidence < 1);
-  assert.match(m!.notes.join(), /currency SGD differs/);
+test('currency or country mismatch declines the match and makes it unroutable', () => {
+  for (const [from, to, re] of [['5303458', '5303702', /currency SGD/], ['5303458', '5303999', /currency 999/], ['5802MY', '5802SG', /country SG/]] as const) {
+    const qr = sampleDuitNowQr({ amount: '18.50' }).replace(from, to).slice(0, -4);
+    const p = decodeMpm(qr + crc(qr));
+    const [m] = registry.identify(p);
+    assert.match(m!.declineReason ?? '', re);
+    assert.equal(registry.route(p, new Set(['MY:PAYNET'])), undefined);
+  }
+});
+
+test('QRIS with several acquirer templates exposes every on-us route', () => {
+  const qr = buildMpm({
+    initiation: 'static',
+    accounts: [
+      { tag: '26', fields: [['00', 'ID.CO.BANKA.WWW'], ['01', '936000141234567890'], ['03', 'UMI']] },
+      { tag: '27', fields: [['00', 'COM.NOBUBANK.WWW'], ['01', '936005030000080819'], ['03', 'UMI']] },
+      { tag: '51', fields: [['00', 'ID.CO.QRIS.WWW'], ['02', 'ID2026000000002'], ['03', 'UMI']] },
+    ],
+    mcc: '5812', currencyNumeric: '360', countryCode: 'ID', merchantName: 'WARUNG', merchantCity: 'BALI',
+  });
+  const [m] = identify(qr);
+  assert.deepEqual(m!.altRoutingKeys, ['ID:NNS:93600014', 'ID:NNS:93600503']);
+  assert.equal(registry.route(decodeMpm(qr), new Set(['ID:NNS:93600503']))?.schemeId, 'ID.QRIS');
 });
 
 test('registry refuses duplicate GUID registration', () => {
@@ -111,7 +146,7 @@ test('registry refuses duplicate GUID registration', () => {
 // Indonesia, Vietnam, Cambodia
 
 import { sampleQris } from '../src/schemes/id.ts';
-import { khqr, sampleKhqrMerchant } from '../src/schemes/kh.ts';
+import { sampleKhqrMerchant } from '../src/schemes/kh.ts';
 import { sampleVietQrMerchant } from '../src/schemes/vn.ts';
 import { encodeTlv } from '../src/emvco/tlv.ts';
 
@@ -145,25 +180,28 @@ test('Vietnam: VietQR nested beneficiary template; P2P when no merchant identity
 });
 
 test('Cambodia: KHQR matched structurally (Bakong ID, no GUID), tag 29 = individual', () => {
-  const reg = new SchemeRegistry().register(khqr(() => Date.parse('2025-08-13T09:05:00Z')));
   const p = decodeMpm(KHQR_SDK_DYNAMIC);
   assert.deepEqual(p.errors, []);
   assert.equal(p.language?.city, '金边');
-  const [m] = reg.identify(p);
+  const [m] = registry.identify(p);
   assert.equal(m!.schemeId, 'KH.KHQR');
   assert.equal(m!.paymentType, 'P2P');
   assert.equal(m!.routing.account, 'ishinvin@devb');
   assert.deepEqual(m!.altRoutingKeys, ['KH:BANK:devb']);
+  assert.equal(m!.qrExpiresAt, 1755076292336);
 });
 
-test('Cambodia: expired dynamic KHQR is not routable', () => {
-  const reg = new SchemeRegistry().register(khqr(() => Date.parse('2025-08-13T10:00:00Z')));
-  assert.deepEqual(reg.identify(decodeMpm(KHQR_SDK_DYNAMIC)), []);
+test('Cambodia: amount-bearing KHQR without expiry is declined (as in the NBC SDK)', () => {
+  const qr = buildMpm({
+    initiation: 'dynamic',
+    accounts: [{ tag: '30', fields: [['00', 'shop@exbk'], ['01', 'MID1'], ['02', 'Example Bank']] }],
+    mcc: '5812', currencyNumeric: '116', amount: '16000', countryCode: 'KH', merchantName: 'SHOP', merchantCity: 'SIEM REAP',
+  });
+  assert.match(identify(qr)[0]!.declineReason ?? '', /expiry/);
 });
 
 test('Cambodia: merchant KHQR in USD keeps confidence but flags the KHR-only channel', () => {
-  const reg = new SchemeRegistry().register(khqr(() => Date.parse('2026-10-18T09:01:00Z')));
-  const [m] = reg.identify(decodeMpm(sampleKhqrMerchant({ amount: '4.50', currency: 'USD' })));
+  const [m] = registry.identify(decodeMpm(sampleKhqrMerchant({ amount: '4.50', currency: 'USD' })));
   assert.equal(m!.paymentType, 'P2M');
   assert.equal(m!.confidence, 0.9);
   assert.match(m!.notes.join(), /KHR only/);
@@ -191,7 +229,43 @@ test('Philippines: QR Ph P2M routes on the InstaPay participant code; P2P GUID i
   assert.equal(q!.routing.account, 'PROXY0000000001');
 });
 
-test('Philippines: amounts above the InstaPay ceiling are flagged', () => {
-  const [m] = identify(sampleQrPhMerchant({ amount: '60000.00' }));
-  assert.match(m!.notes.join(), /InstaPay ceiling/);
+test('Philippines: the InstaPay ceiling is enforced on dynamic and static codes', () => {
+  const net = createNetwork({ clock: () => Date.parse('2026-10-18T09:00:00Z') });
+  assert.throws(() => net.payments.decode('PAYPAY', sampleQrPhMerchant({ amount: '60000.00' })), { code: 'AMOUNT_LIMIT' });
+  const d = net.payments.decode('PAYPAY', sampleQrPhMerchant());
+  assert.equal(d.maxAmountMinor, 5_000_000n);
+  assert.throws(() => net.payments.quote('PAYPAY', d.decodeId, { amountMinor: 6_000_000n }), { code: 'AMOUNT_LIMIT' });
+  assert.equal(net.payments.quote('PAYPAY', d.decodeId, { amountMinor: 4_500_000n }).merchant.amountMinor, 4_500_000n);
+});
+
+test('Indonesia / Cambodia: rupiah and riel amounts must be whole numbers', () => {
+  const net = createNetwork({ clock: () => Date.parse('2026-10-18T09:00:00Z') });
+  assert.throws(() => net.payments.decode('PAYPAY', sampleQris({ amount: '85000.50' })), { code: 'INVALID_QR' });
+  const d = net.payments.decode('PAYPAY', sampleQris());
+  assert.equal(d.amountStepMinor, 100n);
+  assert.throws(() => net.payments.quote('PAYPAY', d.decodeId, { amountMinor: 8_500_050n }), { code: 'AMOUNT_PRECISION' });
+});
+
+test('Cambodia: expired dynamic KHQR is refused end to end with QR_EXPIRED', () => {
+  const t0 = Date.parse('2026-10-18T09:00:00Z');
+  let now = t0;
+  const net = createNetwork({ clock: () => now });
+  const qr = sampleKhqrMerchant({ amount: '16000', createdAt: t0, ttlMs: 60_000 });
+  const d = net.payments.decode('PAYPAY', qr);
+  assert.ok(d.expiresAt <= t0 + 60_000);
+  const q = net.payments.quote('PAYPAY', d.decodeId);
+  assert.ok(q.expiresAt <= t0 + 60_000 - 5_000, 'quote never outlives the code');
+  now = t0 + 70_000;
+  assert.throws(() => net.payments.decode('PAYPAY', qr), { code: 'QR_EXPIRED' });
+});
+
+test('Philippines: variant P2M GUIDs are accepted with lower confidence', () => {
+  const qr = buildMpm({
+    initiation: 'static',
+    accounts: [{ tag: '28', fields: [['00', 'COM.BPI.QRPH'], ['01', 'BOPIPHMMXXX'], ['03', '240810000000001']] }],
+    mcc: '5812', currencyNumeric: '608', countryCode: 'PH', merchantName: 'SHOP', merchantCity: 'MANILA',
+  });
+  const [m] = identify(qr);
+  assert.equal(m!.paymentType, 'P2M');
+  assert.equal(m!.confidence, 0.7);
 });

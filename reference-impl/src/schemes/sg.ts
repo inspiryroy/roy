@@ -10,37 +10,36 @@ import type { SchemeDefinition } from './types.ts';
 export const SG_GUID = { PAYNOW: 'SG.PAYNOW', NETS: 'SG.COM.NETS', SGQR: 'SG.SGQR', GRAB: 'COM.GRAB' } as const;
 
 /** "YYYYMMDD" or "YYYYMMDDHHMMSS" (both forms seen in the field), interpreted in SGT. */
-function paynowExpired(v: string | undefined, now: number): boolean {
-  if (!v || !/^\d{8}(\d{6})?$/.test(v)) return false;
+function paynowExpiry(v: string | undefined): number | undefined {
+  if (!v || !/^\d{8}(\d{6})?$/.test(v)) return undefined;
   const iso = `${v.slice(0, 4)}-${v.slice(4, 6)}-${v.slice(6, 8)}T${v.length === 14 ? `${v.slice(8, 10)}:${v.slice(10, 12)}:${v.slice(12, 14)}` : '23:59:59'}+08:00`;
-  return Date.parse(iso) < now;
+  const t = Date.parse(iso);
+  return Number.isNaN(t) ? undefined : t;
 }
 
-export function payNow(clock: () => number = () => Date.now()): SchemeDefinition {
-  return {
-    schemeId: 'SG.PAYNOW',
-    country: 'SG',
-    name: 'PayNow (SGQR)',
-    rail: 'PayNow / FAST',
-    currency: 'SGD',
-    guids: [SG_GUID.PAYNOW],
-    routingKey: 'SG:FAST',
-    interpret(acct) {
-      const type = acct.fields.get('01');
-      const value = acct.fields.get('02');
-      if (!type || !value) return null;
-      if (paynowExpired(acct.fields.get('04'), clock())) return null;
-      const isUen = type === '2';
-      return {
-        // UEN proxies identify registered entities; mobile proxies are individuals.
-        paymentType: isUen ? 'P2M' : 'P2P',
-        routing: { account: value, proxyType: isUen ? 'UEN' : 'MOBILE', references: {} },
-        confidence: 0.9,
-        notes: acct.fields.get('03') === '0' ? ['amount not editable (PayNow 03=0)'] : [],
-      };
-    },
-  };
-}
+export const payNow: SchemeDefinition = {
+  schemeId: 'SG.PAYNOW',
+  country: 'SG',
+  name: 'PayNow (SGQR)',
+  rail: 'PayNow / FAST',
+  currency: 'SGD',
+  guids: [SG_GUID.PAYNOW],
+  routingKey: 'SG:FAST',
+  interpret(acct) {
+    const type = acct.fields.get('01');
+    const value = acct.fields.get('02');
+    if (!type || !value) return null;
+    const isUen = type === '2';
+    return {
+      // UEN proxies identify registered entities; mobile proxies are individuals.
+      paymentType: isUen ? 'P2M' : 'P2P',
+      routing: { account: value, proxyType: isUen ? 'UEN' : 'MOBILE', references: {} },
+      confidence: 0.9,
+      notes: acct.fields.get('03') === '0' ? ['amount not editable (PayNow 03=0)'] : [],
+      qrExpiresAt: paynowExpiry(acct.fields.get('04')),
+    };
+  },
+};
 
 export const netsQr: SchemeDefinition = {
   schemeId: 'SG.NETS',

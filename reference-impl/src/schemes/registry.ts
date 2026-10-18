@@ -31,8 +31,15 @@ export class SchemeRegistry {
     return this.defs;
   }
 
+  /**
+   * Every recognised template, best first: payable before declined, merchant (P2M/BILL)
+   * before person-to-person, then confidence. A template whose code carries a currency
+   * or country the scheme does not use is returned with `declineReason` – such codes are
+   * malformed or fraudulent and must never be priced in the foreign currency.
+   */
   identify(p: MpmPayload): SchemeMatch[] {
     const out: SchemeMatch[] = [];
+    const cur = p.currencyNumeric ? currencyByNumeric(p.currencyNumeric)?.alpha : undefined;
     for (const acct of p.merchantAccounts) {
       const def =
         (acct.guid && this.byGuid.get(acct.guid.toUpperCase())) ||
@@ -41,21 +48,17 @@ export class SchemeRegistry {
       const r = def.interpret(acct, p);
       if (!r) continue;
       const notes = [...r.notes, ...(def.validate?.(p) ?? [])];
-      let confidence = r.confidence;
-      const cur = p.currencyNumeric ? currencyByNumeric(p.currencyNumeric)?.alpha : undefined;
-      if (cur && cur !== def.currency && !def.otherCurrencies?.includes(cur)) {
-        notes.push(`currency ${cur} differs from scheme currency ${def.currency}`);
-        confidence *= 0.5;
-      }
-      if (p.countryCode && p.countryCode !== def.country) {
-        notes.push(`country ${p.countryCode} differs from scheme country ${def.country}`);
-        confidence *= 0.5;
-      }
+      let declineReason = r.declineReason;
+      if (!cur) declineReason ??= `currency ${p.currencyNumeric ?? '(none)'} is not supported`;
+      else if (cur !== def.currency && !def.otherCurrencies?.includes(cur)) declineReason ??= `currency ${cur} is not carried by ${def.name}`;
+      if (p.countryCode && p.countryCode !== def.country) declineReason ??= `country ${p.countryCode} does not match ${def.name} (${def.country})`;
       out.push({
         ...r,
         routingKey: r.routingKey ?? def.routingKey,
         notes,
-        confidence,
+        declineReason,
+        amountDecimals: def.amountDecimals,
+        maxAmountMinor: def.maxAmountMinor,
         schemeId: def.schemeId,
         country: def.country,
         name: def.name,
@@ -65,11 +68,19 @@ export class SchemeRegistry {
         guid: acct.guid ?? '',
       });
     }
-    return out.sort((a, b) => b.confidence - a.confidence || Number(a.template) - Number(b.template));
+    const rank = (m: SchemeMatch) => (m.declineReason ? 2 : 0) + (m.paymentType === 'P2P' ? 1 : 0);
+    return out.sort((a, b) => rank(a) - rank(b) || b.confidence - a.confidence || Number(a.template) - Number(b.template));
   }
 
-  /** Best match whose routing key has a connected settlement partner. */
-  route(p: MpmPayload, connected: ReadonlySet<string>): SchemeMatch | undefined {
-    return this.identify(p).find(m => m.confidence >= 0.5 && routeKeys(m).some(k => connected.has(k)));
+  /** Best payable merchant match whose routing key has a connected partner and that has not expired. */
+  route(p: MpmPayload, connected: ReadonlySet<string>, now?: number): SchemeMatch | undefined {
+    return this.identify(p).find(
+      m =>
+        !m.declineReason &&
+        m.paymentType !== 'P2P' &&
+        m.confidence >= 0.5 &&
+        (now === undefined || m.qrExpiresAt === undefined || m.qrExpiresAt > now) &&
+        routeKeys(m).some(k => connected.has(k)),
+    );
   }
 }

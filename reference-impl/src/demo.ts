@@ -13,7 +13,7 @@ console.log('=== 1. scan → decode → quote → pay ===\n');
 let i = 0;
 for (const s of SAMPLES) {
   const d = net.payments.decode('PAYPAY', s.qr);
-  const q = net.payments.quote(d.decodeId, d.amountEditable ? { amountMinor: s.enterAmountMinor } : {});
+  const q = net.payments.quote('PAYPAY', d.decodeId, d.amountEditable ? { amountMinor: s.enterAmountMinor } : {});
   const p = await net.payments.pay({ mppId: 'PAYPAY', paymentRequestId: `demo-${++i}`, quoteId: q.quoteId, payerRef: 'user-001' });
   console.log(`${d.scheme.schemeId.padEnd(16)} ${(d.merchant.name ?? '').padEnd(22)} ${d.amountEditable ? 'static ' : 'dynamic'}  ` +
     `${fmt(q.merchant.currency, q.merchant.amountMinor).padStart(16)}  ⇐ ${fmt('JPY', q.payer.amountMinor).padStart(10)}  ` +
@@ -30,10 +30,10 @@ for (const ins of r.instructions) {
   const via = ins.route === 'offramp-wire' ? `off-ramp → USD wire ${ins.wireRef}` : ins.route === 'onchain' ? `on-chain ${ins.txHash!.slice(0, 10)}…` : '';
   console.log(`  ${ins.instructionId} ${ins.direction.padEnd(7)} ${ins.participant.padEnd(16)} ${amt.padStart(18)}  ${ins.status.padEnd(9)} ${via}`);
 }
-for (const rb of r.rebalance) console.log(`  treasury rebalance: sell ${fmt(rb.sell, rb.sellAmount)} → buy back ${fromMinorUnits(rb.buyAmount, 6)} ${rb.buy}`);
+for (const rb of r.rebalance) console.log(`  open FX position ${rb.pair}: sell ${fmt(rb.sell, rb.sellAmount)} → buy back ${fromMinorUnits(rb.buyAmount, 6)} ${rb.buy}`);
 
 console.log('\n=== 3. ledger (non-zero balances) ===\n');
 for (const row of net.ledger.snapshot()) {
   const v = row.asset === 'USDC' ? `${fromMinorUnits(row.balance, 6)} USDC` : fmt(row.asset, row.balance);
-  console.log(`  ${row.account.padEnd(28)} ${v.padStart(22)}`);
+  console.log(`  ${row.account.padEnd(42)} ${v.padStart(22)}`);
 }

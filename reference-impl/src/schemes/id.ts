@@ -6,12 +6,10 @@
 // Layout from open-source implementations and CRC-valid sample payloads.
 
 import { buildMpm } from '../emvco/mpm.ts';
-import { refs, type SchemeDefinition } from './types.ts';
+import { QUASI_CASH_MCC, refs, type SchemeDefinition } from './types.ts';
 
 export const QRIS_GUID = 'ID.CO.QRIS.WWW';
 const CRITERIA = new Set(['UMI', 'UKE', 'UME', 'UBE', 'URE']);
-/** Money-transfer / quasi-cash MCCs that should not ride a merchant-payment route. */
-const TRANSFER_MCC = new Set(['4829', '6012', '6051']);
 
 export const qris: SchemeDefinition = {
   schemeId: 'ID.QRIS',
@@ -21,6 +19,9 @@ export const qris: SchemeDefinition = {
   currency: 'IDR',
   guids: [QRIS_GUID],
   routingKey: 'ID:QRIS-XB',
+  // Rupiah amounts are whole numbers in practice; domestic QRIS cap Rp10 juta (since 2022-03).
+  amountDecimals: { IDR: 0 },
+  maxAmountMinor: { IDR: 1_000_000_000n },
   interpret(acct, p) {
     const nmid = acct.fields.get('02');
     if (!nmid) return null;
@@ -33,7 +34,9 @@ export const qris: SchemeDefinition = {
     const primary = pjsp[0];
     const nns = primary?.fields.get('01')?.slice(0, 8);
     if (!primary) notes.push('no acquirer (PJSP) template with a Merchant PAN');
-    if (p.mcc && TRANSFER_MCC.has(p.mcc)) notes.push(`MCC ${p.mcc} is a money-transfer/quasi-cash category: review before accepting`);
+    if (p.mcc && QUASI_CASH_MCC.has(p.mcc)) notes.push(`MCC ${p.mcc} is a money-transfer/quasi-cash category`);
+    // A merchant may be acquired by several PJSPs: each NNS is an on-us route.
+    const nnsKeys = [...new Set(pjsp.map(a => `ID:NNS:${a.fields.get('01')!.slice(0, 8)}`))];
     return {
       paymentType: 'P2M',
       routing: {
@@ -43,6 +46,7 @@ export const qris: SchemeDefinition = {
         proxyType: 'MPAN',
         references: refs({
           acquirerGuid: primary?.guid,
+          acquirers: pjsp.length > 1 ? pjsp.map(a => `${a.guid}:${a.fields.get('01')}`).join(',') : undefined,
           acquirerMerchantId: primary?.fields.get('02'),
           criteria,
           billNumber: p.additionalData?.billNumber,
@@ -50,7 +54,7 @@ export const qris: SchemeDefinition = {
           terminal: p.additionalData?.terminalLabel,
         }),
       },
-      altRoutingKeys: nns ? [`ID:NNS:${nns}`] : [],
+      altRoutingKeys: nnsKeys,
       confidence: 1,
       notes,
     };

@@ -81,3 +81,43 @@ test('minor-unit conversion', () => {
   assert.equal(fromMinorUnits(12050n, 2), '120.50');
   assert.equal(fromMinorUnits(5n, 2), '0.05');
 });
+
+test('a CRC whose value is literally "6304" is accepted', () => {
+  // Search a synthetic payload whose checksum happens to be 6304.
+  let found: string | undefined;
+  for (let i = 0; i < 400_000 && !found; i++) {
+    const qr = buildMpm({ ...base, merchantName: `SHOP ${i}` });
+    if (qr.endsWith('63046304')) found = qr;
+  }
+  assert.ok(found, 'no 6304 checksum found in search range');
+  const p = decodeMpm(found!);
+  assert.equal(p.crcValid, true);
+  assert.deepEqual(p.errors, []);
+});
+
+test('duplicate sub-IDs inside templates: first occurrence wins, with a warning', () => {
+  const qr = buildMpm({ ...base, accounts: [{ tag: '26', fields: [['00', 'COM.FIRST.GUID'], ['00', 'COM.SECOND.GUID'], ['01', '1']] }] });
+  const p = decodeMpm(qr);
+  assert.equal(p.merchantAccounts[0]!.guid, 'COM.FIRST.GUID');
+  assert.match(p.warnings.join(), /duplicate sub-ID 00/);
+});
+
+test('byte-length mode also applies to nested templates', () => {
+  const qr = buildMpm({ ...base, lengthMode: 'bytes', additional: [['03', 'สาขา1'], ['05', 'REF123']], language: { preference: 'TH', name: 'ร้าน' } });
+  const p = decodeMpm(qr);
+  assert.equal(p.lengthMode, 'bytes');
+  assert.equal(p.additionalData?.storeLabel, 'สาขา1');
+  assert.equal(p.additionalData?.referenceLabel, 'REF123');
+});
+
+test('convenience fee fields are validated', () => {
+  const pct = decodeMpm(buildMpm({ ...base, tip: { indicator: '03', percentage: '150' } }));
+  assert.match(pct.errors.join(), /percentage convenience fee/);
+  // ID 56 without ID 55 is ignored (with a warning) instead of being charged.
+  const withFee = buildMpm({ ...base, tip: { indicator: '02', fixed: '5.00' } });
+  const body = withFee.replace('550202', '').slice(0, -4);
+  const stray = decodeMpm(body + crcHex(body));
+  assert.deepEqual(stray.errors, []);
+  assert.equal(stray.tip, undefined);
+  assert.match(stray.warnings.join(), /56\/57 present without ID 55/);
+});

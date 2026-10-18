@@ -107,6 +107,7 @@ export function decodeMpm(input: string): MpmPayload {
   const errors: string[] = [];
   const warnings: string[] = [];
   const seen = new Set<string>();
+  const tipRaw: Record<string, string> = {};
   const out: MpmPayload = {
     raw,
     lengthMode,
@@ -136,7 +137,7 @@ export function decodeMpm(input: string): MpmPayload {
       else if (o.value === '12') out.initiation = 'dynamic';
       else errors.push(`invalid Point of Initiation Method "${o.value}"`);
     } else if (n >= 2 && n <= 51) {
-      out.merchantAccounts.push(merchantAccount(o, n >= 26, warnings));
+      out.merchantAccounts.push(merchantAccount(o, n >= 26, warnings, lengthMode));
     } else if (o.id === '52') {
       out.mcc = o.value;
       if (!/^\d{4}$/.test(o.value)) warnings.push(`MCC "${o.value}" is not 4 digits`);
@@ -145,15 +146,9 @@ export function decodeMpm(input: string): MpmPayload {
       if (!/^\d{3}$/.test(o.value)) errors.push(`Transaction Currency "${o.value}" is not ISO 4217 numeric`);
     } else if (o.id === '54') {
       out.amount = o.value;
-      if (!/^(?=.*\d)\d*(\.\d*)?$/.test(o.value) || o.value.length > 13) errors.push(`invalid Transaction Amount "${o.value}"`);
-    } else if (o.id === '55') {
-      const mode = ({ '01': 'prompt', '02': 'fixed', '03': 'percentage' } as const)[o.value as '01' | '02' | '03'];
-      if (mode) out.tip = { ...out.tip, mode };
-      else warnings.push(`unknown Tip or Convenience Indicator "${o.value}"`);
-    } else if (o.id === '56') {
-      out.tip = { mode: out.tip?.mode ?? 'fixed', ...out.tip, fixed: o.value };
-    } else if (o.id === '57') {
-      out.tip = { mode: out.tip?.mode ?? 'percentage', ...out.tip, percentage: o.value };
+      if (!AMOUNT.test(o.value) || o.value.length > 13) errors.push(`invalid Transaction Amount "${o.value}"`);
+    } else if (o.id === '55' || o.id === '56' || o.id === '57') {
+      tipRaw[o.id] = o.value;
     } else if (o.id === '58') {
       out.countryCode = o.value;
       if (!/^[A-Z]{2}$/.test(o.value)) warnings.push(`Country Code "${o.value}" is not ISO 3166-1 alpha-2`);
@@ -166,13 +161,13 @@ export function decodeMpm(input: string): MpmPayload {
     } else if (o.id === '61') {
       out.postalCode = o.value;
     } else if (o.id === '62') {
-      out.additionalData = additional(o.value, warnings);
+      out.additionalData = additional(o.value, warnings, lengthMode);
     } else if (o.id === '63') {
       out.crc = o.value;
       if (idx !== objects.length - 1) errors.push('ID 63 (CRC) must be the last data object');
     } else if (o.id === '64') {
       try {
-        const m = new Map(parseTlv(o.value, lengthMode).map(s => [s.id, s.value]));
+        const m = firstWins(parseTlv(o.value, lengthMode), 'ID 64', warnings);
         out.language = { preference: m.get('00'), name: m.get('01'), city: m.get('02') };
       } catch (e) {
         warnings.push(`unparseable Language Template: ${(e as Error).message}`);
@@ -182,9 +177,11 @@ export function decodeMpm(input: string): MpmPayload {
     } else if (n >= 80 && n <= 99) {
       // Unreserved templates are usually TLV, but some profiles put primitives here
       // (DuitNow ID 82 = SHA-256 data-integrity hash), so failures are not reported.
-      out.unreserved.push(merchantAccount(o, true, []));
+      out.unreserved.push(merchantAccount(o, true, [], lengthMode));
     }
   });
+
+  resolveTip(tipRaw, out, errors, warnings);
 
   if (out.payloadFormat === '') errors.push('missing ID 00 (Payload Format Indicator)');
   if (out.merchantAccounts.length === 0) errors.push('no Merchant Account Information (IDs 02..51)');
@@ -210,15 +207,50 @@ function lengthsConsistent(objects: DataObject[]): boolean {
 }
 
 function crcOk(raw: string): boolean {
-  const i = raw.lastIndexOf('6304');
-  if (i < 0 || i !== raw.length - 8) return false;
+  // Positional check: the CRC value itself may legitimately be "6304".
+  if (raw.length < 8 || raw.slice(-8, -4) !== '6304') return false;
   return crcHex(raw.slice(0, -4)) === raw.slice(-4).toUpperCase();
 }
 
-function merchantAccount(o: DataObject, template: boolean, warnings: string[]): MerchantAccount {
+const AMOUNT = /^(?=.*\d)\d*(\.\d*)?$/;
+
+/**
+ * EMVCo §4.7.6: 55 = 01 prompt for tip, 02 fixed convenience fee (56), 03 percentage
+ * convenience fee (57, "0.01".."99.99"). 56/57 without the matching 55 are ignored.
+ */
+function resolveTip(raw: Record<string, string>, out: MpmPayload, errors: string[], warnings: string[]): void {
+  const ind = raw['55'];
+  if (ind === undefined) {
+    if (raw['56'] !== undefined || raw['57'] !== undefined) warnings.push('ID 56/57 present without ID 55: ignored');
+    return;
+  }
+  if (ind === '01') out.tip = { mode: 'prompt' };
+  else if (ind === '02') {
+    const v = raw['56'];
+    if (v === undefined || !AMOUNT.test(v) || v.length > 13) errors.push(`55=02 requires a valid fixed convenience fee in ID 56, got "${v ?? ''}"`);
+    else out.tip = { mode: 'fixed', fixed: v };
+  } else if (ind === '03') {
+    const v = raw['57'];
+    const pct = v !== undefined && /^\d{1,2}(\.\d{1,2})?$/.test(v) ? Number(v) : NaN;
+    if (!(pct >= 0.01 && pct <= 99.99)) errors.push(`55=03 requires a percentage convenience fee 0.01..99.99 in ID 57, got "${v ?? ''}"`);
+    else out.tip = { mode: 'percentage', percentage: v };
+  } else warnings.push(`unknown Tip or Convenience Indicator "${ind}"`);
+}
+
+/** Sub-object map where, as at top level, the first occurrence of an ID wins. */
+function firstWins(subs: DataObject[], where: string, warnings: string[]): Map<string, string> {
+  const m = new Map<string, string>();
+  for (const s of subs) {
+    if (m.has(s.id)) warnings.push(`duplicate sub-ID ${s.id} in ${where}; first occurrence kept`);
+    else m.set(s.id, s.value);
+  }
+  return m;
+}
+
+function merchantAccount(o: DataObject, template: boolean, warnings: string[], mode: LengthMode): MerchantAccount {
   if (!template) return { tag: o.id, fields: new Map([['raw', o.value]]), raw: o.value };
   try {
-    const fields = new Map(parseTlv(o.value).map(s => [s.id, s.value]));
+    const fields = firstWins(parseTlv(o.value, mode), `template ${o.id}`, warnings);
     const guid = fields.get('00');
     if (!guid) warnings.push(`template ${o.id} has no sub-ID 00 (Globally Unique Identifier)`);
     return { tag: o.id, guid, fields, raw: o.value };
@@ -228,15 +260,16 @@ function merchantAccount(o: DataObject, template: boolean, warnings: string[]): 
   }
 }
 
-function additional(value: string, warnings: string[]): AdditionalData {
+function additional(value: string, warnings: string[], mode: LengthMode): AdditionalData {
   const ad: AdditionalData = { systemSpecific: new Map(), all: new Map() };
   let subs: DataObject[] = [];
   try {
-    subs = parseTlv(value);
+    subs = parseTlv(value, mode);
   } catch (e) {
     warnings.push(`Additional Data Field Template is not valid TLV: ${(e as Error).message}`);
   }
-  for (const s of subs) {
+  for (const [id, v] of firstWins(subs, 'ID 62', warnings)) {
+    const s = { id, value: v };
     ad.all.set(s.id, s.value);
     const name = ADDITIONAL_NAMES[s.id];
     if (name) ad[name] = s.value;
@@ -267,6 +300,8 @@ export interface BuildInput {
   mcc: string;
   currencyNumeric: string;
   amount?: string;
+  /** ID 55 indicator with ID 56 (fixed) or ID 57 (percentage). */
+  tip?: { indicator: '01' | '02' | '03'; fixed?: string; percentage?: string };
   countryCode: string;
   merchantName: string;
   merchantCity: string;
@@ -279,14 +314,19 @@ export interface BuildInput {
 
 export function buildMpm(b: BuildInput): string {
   const mode = b.lengthMode ?? 'chars';
-  const tmpl = (t: BuildTemplate) => encodeOne(t.tag, encodeTlv(t.fields.map(([id, value]) => ({ id, value }))), mode);
+  const tmpl = (t: BuildTemplate) => encodeOne(t.tag, encodeTlv(t.fields.map(([id, value]) => ({ id, value })), mode), mode);
   let s = encodeOne('00', b.payloadFormat ?? '01') + encodeOne('01', b.initiation === 'static' ? '11' : '12');
   for (const a of [...b.accounts].sort((x, y) => num(x.tag) - num(y.tag))) s += tmpl(a);
   s += encodeOne('52', b.mcc) + encodeOne('53', b.currencyNumeric);
   if (b.amount) s += encodeOne('54', b.amount);
+  if (b.tip) {
+    s += encodeOne('55', b.tip.indicator);
+    if (b.tip.fixed) s += encodeOne('56', b.tip.fixed);
+    if (b.tip.percentage) s += encodeOne('57', b.tip.percentage);
+  }
   s += encodeOne('58', b.countryCode) + encodeOne('59', b.merchantName, mode) + encodeOne('60', b.merchantCity, mode);
   if (b.postalCode) s += encodeOne('61', b.postalCode);
-  if (b.additional?.length) s += encodeOne('62', encodeTlv(b.additional.map(([id, value]) => ({ id, value }))));
+  if (b.additional?.length) s += encodeOne('62', encodeTlv(b.additional.map(([id, value]) => ({ id, value })), mode), mode);
   if (b.language) {
     const subs: DataObject[] = [
       { id: '00', value: b.language.preference },

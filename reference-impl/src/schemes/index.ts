@@ -10,7 +10,7 @@ import { samplePromptPayQr, sampleThaiMerchantQr, thaiQr } from './th.ts';
 import type { SchemeDefinition } from './types.ts';
 import { sampleVietQrMerchant, vietQr, vnpayQr } from './vn.ts';
 
-export const ALL_SCHEMES: SchemeDefinition[] = [thaiQr, duitNow, payNow(), netsQr, grabPaySg, laoQr, qris, vietQr, vnpayQr, khqr(), qrPh];
+export const ALL_SCHEMES: SchemeDefinition[] = [thaiQr, duitNow, payNow, netsQr, grabPaySg, laoQr, qris, vietQr, vnpayQr, khqr, qrPh];
 
 export interface Sample {
   schemeId: string;

@@ -39,11 +39,25 @@ export interface SchemeMatch {
   /** 0..1 – national-scheme templates score above private-brand ones. */
   confidence: number;
   notes: string[];
+  /** Expiry carried by the code itself (KHQR 99-01, PayNow 04), epoch ms. */
+  qrExpiresAt?: number;
+  /** Set when the template was recognised but must not be paid (e.g. currency mismatch). */
+  declineReason?: string;
+  /** Decimals the rail accepts per currency when narrower than ISO 4217 (QRIS IDR 0, KHQR KHR 0). */
+  amountDecimals?: Partial<Record<string, number>>;
+  /** Per-transaction ceiling of the rail in minor units (QR Ph / InstaPay PHP 50,000). */
+  maxAmountMinor?: Partial<Record<string, bigint>>;
 }
 
-export type SchemeInterpretation = Omit<SchemeMatch, 'schemeId' | 'country' | 'name' | 'rail' | 'currency' | 'template' | 'guid' | 'routingKey'> & {
+export type SchemeInterpretation = Omit<
+  SchemeMatch,
+  'schemeId' | 'country' | 'name' | 'rail' | 'currency' | 'template' | 'guid' | 'routingKey' | 'amountDecimals' | 'maxAmountMinor'
+> & {
   routingKey?: string;
 };
+
+/** Money-transfer, cash-withdrawal and quasi-cash MCCs: not accepted on a purchase route. */
+export const QUASI_CASH_MCC: ReadonlySet<string> = new Set(['4829', '6010', '6011', '6012', '6051']);
 
 export interface SchemeDefinition {
   schemeId: string;
@@ -63,6 +77,8 @@ export interface SchemeDefinition {
   matchTemplate?(acct: MerchantAccount, payload: MpmPayload): boolean;
   /** Default routing key (one settlement partner connection per rail / switch). */
   routingKey: string;
+  amountDecimals?: Partial<Record<string, number>>;
+  maxAmountMinor?: Partial<Record<string, bigint>>;
   /** Converts a matching template into routing data; may return null to decline. */
   interpret(acct: MerchantAccount, payload: MpmPayload): SchemeInterpretation | null;
   /** Spec-level checks beyond EMVCo (e.g. mandatory national-ID template). */

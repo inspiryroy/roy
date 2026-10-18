@@ -3,7 +3,7 @@
 // acquirer ID from PayNet's participant directory. PayNet's PFI is "02", not EMVCo's "01".
 
 import { buildMpm } from '../emvco/mpm.ts';
-import type { SchemeDefinition } from './types.ts';
+import { QUASI_CASH_MCC, type SchemeDefinition } from './types.ts';
 
 export const DUITNOW_AID = 'A0000006150001';
 /** JomPAY bill payment acquirer ID – a biller code, not a merchant. */
@@ -29,6 +29,8 @@ export const duitNow: SchemeDefinition = {
     } else if (p.mcc === '0000') {
       paymentType = 'P2P';
       notes.push('MCC 0000: person-to-person DuitNow QR');
+    } else if (p.mcc && QUASI_CASH_MCC.has(p.mcc)) {
+      notes.push(`MCC ${p.mcc} is cash withdrawal / quasi-cash (PayNet: 6010 = POS cash withdrawal)`);
     }
     const references: Record<string, string> = {};
     for (const [k, name] of [['05', 'referenceLabel'], ['07', 'terminalLabel'], ['90', 'rrn1'], ['91', 'rrn2']] as const) {

@@ -10,6 +10,8 @@ import { buildMpm } from '../emvco/mpm.ts';
 import { refs, type SchemeDefinition } from './types.ts';
 
 export const QRPH_GUID = { P2M: 'ph.ppmi.p2m', P2P: 'com.p2pqrpay' } as const;
+/** P2M identifiers seen by third-party parsers; accepted with lower confidence pending the PPMI text. */
+export const QRPH_P2M_VARIANTS = ['PH.PPMI.P2MEMV', 'COM.BDO.QRPH', 'COM.BPI.QRPH'] as const;
 /** InstaPay per-transaction ceiling (PHP). */
 export const INSTAPAY_MAX_PHP = 50_000;
 
@@ -19,16 +21,19 @@ export const qrPh: SchemeDefinition = {
   name: 'QR Ph',
   rail: 'InstaPay (PPMI / BancNet)',
   currency: 'PHP',
-  guids: [QRPH_GUID.P2M, QRPH_GUID.P2P],
+  guids: [QRPH_GUID.P2M, QRPH_GUID.P2P, ...QRPH_P2M_VARIANTS],
   routingKey: 'PH:INSTAPAY',
+  maxAmountMinor: { PHP: BigInt(INSTAPAY_MAX_PHP) * 100n },
   interpret(acct, p) {
     const participant = acct.fields.get('01');
     if (!participant) return null;
-    const p2m = acct.guid?.toLowerCase() === QRPH_GUID.P2M;
+    const guid = acct.guid?.toUpperCase() ?? '';
+    const variant = (QRPH_P2M_VARIANTS as readonly string[]).includes(guid);
+    const p2m = guid === QRPH_GUID.P2M.toUpperCase() || variant;
     const account = p2m ? acct.fields.get('03') : acct.fields.get('04') ?? acct.fields.get('03');
     if (!account) return null;
     const notes: string[] = [];
-    if (p.amount && Number(p.amount) > INSTAPAY_MAX_PHP) notes.push(`amount exceeds the InstaPay ceiling of PHP ${INSTAPAY_MAX_PHP}`);
+    if (variant) notes.push(`variant QR Ph GUID ${acct.guid}: accepted pending the PPMI specification`);
     if (!p2m) notes.push('QR Ph P2P code: payee name is masked; cross-border payment to individuals is likely remittance');
     return {
       paymentType: p2m ? 'P2M' : 'P2P',
@@ -45,7 +50,7 @@ export const qrPh: SchemeDefinition = {
         }),
       },
       altRoutingKeys: [`PH:BIC:${participant}`],
-      confidence: 0.9,
+      confidence: variant ? 0.7 : 0.9,
       notes,
     };
   },

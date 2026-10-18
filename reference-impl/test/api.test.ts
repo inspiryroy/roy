@@ -1,14 +1,21 @@
 import assert from 'node:assert/strict';
 import type { AddressInfo } from 'node:net';
 import { after, before, test } from 'node:test';
-import { createApi, sign } from '../src/api/server.ts';
+import { createApi, type Role, sign } from '../src/api/server.ts';
 import { createNetwork } from '../src/network.ts';
 import { sampleThaiMerchantQr } from '../src/schemes/th.ts';
 
-const SECRET = 'test-secret';
 const net = createNetwork();
-const server = createApi({ payments: net.payments, settlement: net.settlement, mppSecrets: { PAYPAY: SECRET } });
+const thaiLsp = net.partners.find(p => p.routingKeys.includes('TH:NITMX'))!.id;
+const clients: Record<string, { secret: string; role: Role }> = {
+  PAYPAY: { secret: 'mpp-secret', role: 'mpp' },
+  OTHERWALLET: { secret: 'other-secret', role: 'mpp' },
+  [thaiLsp]: { secret: 'lsp-secret', role: 'lsp' },
+  OPS: { secret: 'ops-secret', role: 'ops' },
+};
+const server = createApi({ payments: net.payments, settlement: net.settlement, clients });
 let base = '';
+let t = Date.now();
 
 before(async () => {
   await new Promise<void>(r => server.listen(0, '127.0.0.1', r));
@@ -16,49 +23,60 @@ before(async () => {
 });
 after(() => new Promise<void>(r => server.close(() => r())));
 
-async function post(path: string, body: unknown, opts: { secret?: string; badSig?: boolean } = {}) {
-  const raw = JSON.stringify(body);
-  const sig = sign(opts.secret ?? SECRET, Date.now(), raw);
+async function call(method: 'GET' | 'POST', path: string, body: unknown, as = 'PAYPAY', opts: { secret?: string; reuse?: string } = {}) {
+  const raw = body === undefined ? '' : JSON.stringify(body);
+  const sig = opts.reuse ?? sign(opts.secret ?? clients[as]!.secret, method, path, as, ++t, raw);
   const res = await fetch(base + path, {
-    method: 'POST',
-    headers: { 'content-type': 'application/json', 'x-mpp-id': 'PAYPAY', signature: opts.badSig ? sig.replace(/.$/, '0') : sig },
-    body: raw,
+    method,
+    headers: { 'content-type': 'application/json', 'client-id': as, signature: sig },
+    body: method === 'POST' ? raw : undefined,
   });
-  return { status: res.status, body: (await res.json()) as Record<string, any> };
+  return { status: res.status, body: (await res.json()) as Record<string, any>, sig };
 }
 
-test('rejects unsigned or wrongly signed requests', async () => {
-  const r1 = await post('/v1/qr/decode', { mppId: 'PAYPAY', qrCode: sampleThaiMerchantQr() }, { secret: 'wrong' });
-  assert.equal(r1.status, 401);
-  const r2 = await post('/v1/qr/decode', { mppId: 'PAYPAY', qrCode: sampleThaiMerchantQr() }, { badSig: true });
-  assert.equal(r2.status, 401);
+test('rejects wrong, missing-role and replayed signatures', async () => {
+  const qr = { qrCode: sampleThaiMerchantQr() };
+  assert.equal((await call('POST', '/v1/qr/decode', qr, 'PAYPAY', { secret: 'wrong' })).status, 401);
+  const ok = await call('POST', '/v1/qr/decode', qr);
+  assert.equal(ok.status, 200);
+  assert.equal((await call('POST', '/v1/qr/decode', qr, 'PAYPAY', { reuse: ok.sig })).status, 401, 'replay');
+  assert.equal((await call('POST', '/v1/settlement/cycles', { cycleId: 'X' })).status, 403, 'MPP cannot settle');
+  assert.equal((await call('POST', '/v1/qr/decode', qr, 'OPS')).status, 403, 'OPS is not a wallet');
 });
 
-test('decode → quote → pay → get over HTTP', async () => {
-  const d = await post('/v1/qr/decode', { mppId: 'PAYPAY', qrCode: sampleThaiMerchantQr({ amount: '350.00' }) });
+test('decode → quote → pay → get over HTTP; other wallets cannot see the payment', async () => {
+  const d = await call('POST', '/v1/qr/decode', { qrCode: sampleThaiMerchantQr({ amount: '350.00' }) });
   assert.equal(d.status, 200);
   assert.equal(d.body.scheme.schemeId, 'TH.THAIQR');
   assert.equal(d.body.amountMinor, '35000');
-
-  const q = await post('/v1/quotes', { mppId: 'PAYPAY', decodeId: d.body.decodeId });
+  assert.equal((await call('POST', '/v1/quotes', { decodeId: d.body.decodeId }, 'OTHERWALLET')).status, 404);
+  const q = await call('POST', '/v1/quotes', { decodeId: d.body.decodeId });
   assert.equal(q.status, 200);
-  assert.match(q.body.payer.amountMinor, /^\d+$/);
-
-  const p = await post('/v1/payments', { mppId: 'PAYPAY', paymentRequestId: 'http-1', quoteId: q.body.quoteId, payerRef: 'u1' });
+  const p = await call('POST', '/v1/payments', { paymentRequestId: 'http-1', quoteId: q.body.quoteId, payerRef: 'u1' });
   assert.equal(p.status, 200);
   assert.equal(p.body.status, 'SUCCEEDED');
+  assert.equal((await call('GET', `/v1/payments/${p.body.paymentId}`, undefined)).body.paymentRequestId, 'http-1');
+  assert.equal((await call('GET', `/v1/payments/${p.body.paymentId}`, undefined, 'OTHERWALLET')).status, 404);
 
-  const raw = '';
-  const g = await fetch(`${base}/v1/payments/${p.body.paymentId}`, { headers: { 'x-mpp-id': 'PAYPAY', signature: sign(SECRET, Date.now(), raw) } });
-  assert.equal(g.status, 200);
-  assert.equal(((await g.json()) as { paymentRequestId: string }).paymentRequestId, 'http-1');
+  // refunds come from the LSP, not from a wallet
+  assert.equal((await call('POST', '/v1/lsp/refunds', { paymentId: p.body.paymentId, amount: '1000', refundRequestId: 'a' })).status, 403);
+  const r1 = await call('POST', '/v1/lsp/refunds', { paymentId: p.body.paymentId, amount: '1000', refundRequestId: 'a' }, thaiLsp);
+  const r2 = await call('POST', '/v1/lsp/refunds', { paymentId: p.body.paymentId, amount: '1000', refundRequestId: 'a' }, thaiLsp);
+  assert.equal(r1.status, 200);
+  assert.equal(r2.body.refundId, r1.body.refundId, 'idempotent');
+
+  const c = await call('POST', '/v1/settlement/cycles', { cycleId: 'HTTP-1' }, 'OPS');
+  assert.equal(c.status, 200);
+  assert.equal((await call('POST', '/v1/settlement/cycles', { cycleId: 'HTTP-1' }, 'OPS')).status, 409);
 });
 
-test('business errors map to 422 with a code', async () => {
-  const r = await post('/v1/qr/decode', { mppId: 'PAYPAY', qrCode: '000201010211' });
-  assert.equal(r.status, 422);
-  assert.equal(r.body.error.code, 'INVALID_QR');
-  const q = await post('/v1/quotes', { mppId: 'PAYPAY', decodeId: 'nope', amount: '12.5' });
-  assert.equal(q.status, 422);
-  assert.equal(q.body.error.code, 'BAD_REQUEST');
+test('business and request errors map to 4xx, never 500', async () => {
+  const bad = await call('POST', '/v1/qr/decode', { qrCode: '000201010211' });
+  assert.deepEqual([bad.status, bad.body.error.code], [422, 'INVALID_QR']);
+  const q = await call('POST', '/v1/quotes', { decodeId: 'nope', amount: '12.5' });
+  assert.deepEqual([q.status, q.body.error.code], [400, 'BAD_REQUEST']);
+  const missing = await call('POST', '/v1/payments', { quoteId: 'Q1' });
+  assert.deepEqual([missing.status, missing.body.error.code], [400, 'BAD_REQUEST']);
+  const nul = await call('POST', '/v1/qr/decode', null);
+  assert.equal(nul.status, 400);
 });
