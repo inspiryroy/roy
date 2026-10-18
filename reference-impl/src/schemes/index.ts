@@ -1,8 +1,12 @@
-// National scheme profiles. Country profiles are added once their identifiers
-// (GUID/AID, sub-tag layout) are verified against primary specifications.
+// National scheme profiles. Each profile documents the evidence level of its
+// identifiers; see docs/02-qr-interoperability.md for sources.
+import { laoQr, sampleLaoQr } from './la.ts';
+import { duitNow, sampleDuitNowQr } from './my.ts';
+import { grabPaySg, netsQr, payNow, sampleSgqr } from './sg.ts';
+import { samplePromptPayQr, sampleThaiMerchantQr, thaiQr } from './th.ts';
 import type { SchemeDefinition } from './types.ts';
 
-export const ALL_SCHEMES: SchemeDefinition[] = [];
+export const ALL_SCHEMES: SchemeDefinition[] = [thaiQr, duitNow, payNow(), netsQr, grabPaySg, laoQr];
 
 export interface Sample {
   schemeId: string;
@@ -11,4 +15,13 @@ export interface Sample {
   enterAmountMinor?: bigint;
 }
 
-export const SAMPLES: Sample[] = [];
+/** Synthetic merchant codes (fictitious merchants and accounts) used by the demo. */
+export const SAMPLES: Sample[] = [
+  { schemeId: 'TH.THAIQR', qr: sampleThaiMerchantQr(), enterAmountMinor: 12000n },
+  { schemeId: 'TH.THAIQR', qr: sampleThaiMerchantQr({ amount: '350.00', bankCode: '004' }) },
+  { schemeId: 'MY.DUITNOW', qr: sampleDuitNowQr({ amount: '18.50' }) },
+  { schemeId: 'SG.NETS', qr: sampleSgqr(), enterAmountMinor: 650n },
+  { schemeId: 'LA.LAOQR', qr: sampleLaoQr({ amount: '150000' }) },
+];
+
+export { samplePromptPayQr };

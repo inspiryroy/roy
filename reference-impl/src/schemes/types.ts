@@ -31,6 +31,11 @@ export interface SchemeMatch {
   routing: MerchantRouting;
   /** Key used to pick the local settlement partner (one per rail / switch). */
   routingKey: string;
+  /**
+   * Narrower keys that also reach this merchant, e.g. "TH:ACQ:004" when only the
+   * merchant's own acquirer is a partner ("on-us" acceptance without switch access).
+   */
+  altRoutingKeys?: string[];
   /** 0..1 – national-scheme templates score above private-brand ones. */
   confidence: number;
   notes: string[];

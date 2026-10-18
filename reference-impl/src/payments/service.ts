@@ -20,7 +20,7 @@ import { currencyByAlpha, currencyByNumeric, toMinorUnits } from '../emvco/iso42
 import { decodeMpm, type MpmPayload, promptedFields } from '../emvco/mpm.ts';
 import { type Quote, type QuotePolicy, type RateSource, priceLocalAmount } from '../fx/quote.ts';
 import type { Ledger } from '../ledger/ledger.ts';
-import type { SchemeRegistry } from '../schemes/registry.ts';
+import { routeKeys, type SchemeRegistry } from '../schemes/registry.ts';
 import type { SchemeMatch } from '../schemes/types.ts';
 import type { MppNotifier, Screening, SettlementPartner } from '../adapters/types.ts';
 
@@ -127,8 +127,18 @@ export class PaymentService {
     if (payload.errors.length) throw new PaymentError('INVALID_QR', payload.errors.join('; '));
     const matches = this.d.registry.identify(payload);
     if (!matches.length) throw new PaymentError('UNSUPPORTED_QR', 'no supported national scheme template found in QR');
-    const match = matches.find(m => this.partnerByKey.has(m.routingKey) && m.confidence >= 0.5);
-    if (!match) throw new PaymentError('NO_ROUTE', `recognised ${matches.map(m => m.schemeId).join(', ')} but no settlement partner is connected`);
+    let match: SchemeMatch | undefined;
+    let partner: SettlementPartner | undefined;
+    for (const m of matches) {
+      if (m.confidence < 0.5) continue;
+      const key = routeKeys(m).find(k => this.partnerByKey.has(k));
+      if (key) {
+        match = m;
+        partner = this.partnerByKey.get(key);
+        break;
+      }
+    }
+    if (!match || !partner) throw new PaymentError('NO_ROUTE', `recognised ${matches.map(m => m.schemeId).join(', ')} but no settlement partner is connected`);
     if (match.paymentType === 'P2P') throw new PaymentError('P2P_NOT_SUPPORTED', 'person-to-person QR codes are not accepted for cross-border merchant payments');
 
     const local = currencyByNumeric(payload.currencyNumeric!)!;
@@ -146,7 +156,7 @@ export class PaymentService {
       prompts: promptedFields(payload),
       warnings: [...payload.warnings, ...match.notes],
     };
-    this.decodes.set(decodeId, { mppId, payload, match, partner: this.partnerByKey.get(match.routingKey)!, result });
+    this.decodes.set(decodeId, { mppId, payload, match, partner, result });
     return result;
   }
 

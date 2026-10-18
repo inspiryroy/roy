@@ -128,7 +128,9 @@ export function decodeMpm(input: string): MpmPayload {
     if (o.id === '00') {
       out.payloadFormat = o.value;
       if (idx !== 0) errors.push('ID 00 (Payload Format Indicator) must be the first data object');
-      if (o.value !== '01') errors.push(`unsupported Payload Format Indicator "${o.value}"`);
+      // EMVCo mandates "01"; Malaysia's DuitNow QR (PayNet MPM spec v1.5) uses "02".
+      if (!/^\d{2}$/.test(o.value)) errors.push(`invalid Payload Format Indicator "${o.value}"`);
+      else if (o.value !== '01') warnings.push(`non-EMVCo Payload Format Indicator "${o.value}"`);
     } else if (o.id === '01') {
       if (o.value === '11') out.initiation = 'static';
       else if (o.value === '12') out.initiation = 'dynamic';
@@ -178,7 +180,9 @@ export function decodeMpm(input: string): MpmPayload {
     } else if (n >= 65 && n <= 79) {
       out.rfu.set(o.id, o.value);
     } else if (n >= 80 && n <= 99) {
-      out.unreserved.push(merchantAccount(o, true, warnings));
+      // Unreserved templates are usually TLV, but some profiles put primitives here
+      // (DuitNow ID 82 = SHA-256 data-integrity hash), so failures are not reported.
+      out.unreserved.push(merchantAccount(o, true, []));
     }
   });
 
@@ -256,6 +260,8 @@ export interface BuildTemplate {
 }
 
 export interface BuildInput {
+  /** Defaults to the EMVCo value "01". */
+  payloadFormat?: string;
   initiation: Initiation;
   accounts: BuildTemplate[];
   mcc: string;
@@ -274,7 +280,7 @@ export interface BuildInput {
 export function buildMpm(b: BuildInput): string {
   const mode = b.lengthMode ?? 'chars';
   const tmpl = (t: BuildTemplate) => encodeOne(t.tag, encodeTlv(t.fields.map(([id, value]) => ({ id, value }))), mode);
-  let s = encodeOne('00', '01') + encodeOne('01', b.initiation === 'static' ? '11' : '12');
+  let s = encodeOne('00', b.payloadFormat ?? '01') + encodeOne('01', b.initiation === 'static' ? '11' : '12');
   for (const a of [...b.accounts].sort((x, y) => num(x.tag) - num(y.tag))) s += tmpl(a);
   s += encodeOne('52', b.mcc) + encodeOne('53', b.currencyNumeric);
   if (b.amount) s += encodeOne('54', b.amount);

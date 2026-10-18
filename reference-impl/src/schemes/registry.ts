@@ -7,6 +7,11 @@ import { currencyByNumeric } from '../emvco/iso4217.ts';
 import type { MpmPayload } from '../emvco/mpm.ts';
 import type { SchemeDefinition, SchemeMatch } from './types.ts';
 
+/** Switch-level key first, then any narrower acquirer-level keys. */
+export function routeKeys(m: SchemeMatch): string[] {
+  return [m.routingKey, ...(m.altRoutingKeys ?? [])];
+}
+
 export class SchemeRegistry {
   private readonly byGuid = new Map<string, SchemeDefinition>();
   private readonly defs: SchemeDefinition[] = [];
@@ -64,6 +69,6 @@ export class SchemeRegistry {
 
   /** Best match whose routing key has a connected settlement partner. */
   route(p: MpmPayload, connected: ReadonlySet<string>): SchemeMatch | undefined {
-    return this.identify(p).find(m => connected.has(m.routingKey) && m.confidence >= 0.5);
+    return this.identify(p).find(m => m.confidence >= 0.5 && routeKeys(m).some(k => connected.has(k)));
   }
 }
