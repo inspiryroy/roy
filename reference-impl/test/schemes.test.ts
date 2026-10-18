@@ -42,6 +42,15 @@ test('Thailand: acquirer template adds an on-us routing key', () => {
   assert.equal(registry.route(decodeMpm(sampleThaiMerchantQr({ bankCode: '014' })), new Set(['TH:ACQ:004'])), undefined);
 });
 
+test('Thailand: the cross-border Bill Payment AID is recognised but not routed', () => {
+  const body = sampleThaiMerchantQr({ amount: '350.00' }).replace('A000000677010112', 'A000000677012006').slice(0, -4);
+  const p = decodeMpm(body + crc(body));
+  const [m] = registry.identify(p);
+  assert.equal(m!.schemeId, 'TH.THAIQR');
+  assert.match(m!.declineReason ?? '', /A000000677012006/);
+  assert.equal(registry.route(p, new Set(['TH:NITMX'])), undefined);
+});
+
 test('Thailand: personal PromptPay QR is classified P2P', () => {
   const [m] = identify(samplePromptPayQr());
   assert.equal(m!.paymentType, 'P2P');
@@ -163,6 +172,13 @@ test('Indonesia: QRIS national domain (ID 51) with acquirer NNS from the PJSP te
   assert.equal(m!.routing.acquirerId, '93609999');
   assert.deepEqual(m!.altRoutingKeys, ['ID:NNS:93609999']);
   assert.equal(m!.routing.references.acquirerGuid, 'COM.EXAMPLEBANK.WWW');
+});
+
+test('Indonesia: a QRIS code without a well-formed NMID is not treated as a merchant', () => {
+  const body = sampleQris({ amount: '85000' }).replace('ID2026000000001', 'IDBADNMID000001').slice(0, -4);
+  const p = decodeMpm(body + crc(body));
+  assert.match(registry.identify(p)[0]!.declineReason ?? '', /NMID/);
+  assert.equal(registry.route(p, new Set(['ID:QRIS-XB'])), undefined);
 });
 
 test('Vietnam: VietQR nested beneficiary template; P2P when no merchant identity', () => {

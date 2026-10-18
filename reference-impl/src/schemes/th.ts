@@ -57,14 +57,20 @@ export const thaiQr: SchemeDefinition = {
         const references: Record<string, string> = { ref1 };
         if (f.get('03')) references.ref2 = f.get('03')!;
         if (p.additionalData?.terminalLabel) references.terminal = p.additionalData.terminalLabel;
-        const notes = acct.guid?.toUpperCase() === TH_AID.BILL_XB ? ['cross-border Thai QR variant (A000000677012006)'] : [];
+        const notes: string[] = [];
         if (!/^\d{15}$/.test(billerId)) notes.push(`Biller ID "${billerId}" is not 15 digits (13-digit tax ID + 2-digit suffix)`);
+        // A000000677012006 appears (low confidence) to be the variant overseas merchants show
+        // to Thai travellers; its inbound use is unconfirmed, so it is recognised, not routed.
+        const declineReason = acct.guid?.toUpperCase() === TH_AID.BILL_XB
+          ? 'cross-border Bill Payment variant (A000000677012006): inbound use unconfirmed with BOT/NITMX'
+          : undefined;
         return {
           paymentType: 'P2M',
           routing: { acquirerId: bankCode, merchantId: billerId, account: billerId, proxyType: 'BILLER_ID', references },
           altRoutingKeys: alt,
           confidence: 1,
           notes,
+          declineReason,
         };
       }
       case TH_AID.ACQUIRER: {

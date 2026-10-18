@@ -26,7 +26,9 @@ export const qris: SchemeDefinition = {
     const nmid = acct.fields.get('02');
     if (!nmid) return null;
     const notes: string[] = [];
-    if (!/^ID\d{13}$/.test(nmid)) notes.push(`NMID "${nmid}" does not match ID + 13 digits`);
+    // P2M is inferred from the national template; QRIS TUNTAS (P2P) layout is not public, so a
+    // code without a well-formed NMID is not treated as a merchant.
+    const declineReason = /^ID\d{13}$/.test(nmid) ? undefined : `NMID "${nmid}" does not match ID + 13 digits`;
     const criteria = acct.fields.get('03');
     if (criteria && !CRITERIA.has(criteria)) notes.push(`unknown merchant criteria "${criteria}"`);
     // Acquirer domains: IDs 26–45 whose sub 01 is a Merchant PAN starting with 9360.
@@ -57,6 +59,7 @@ export const qris: SchemeDefinition = {
       altRoutingKeys: nnsKeys,
       confidence: 1,
       notes,
+      declineReason,
     };
   },
 };

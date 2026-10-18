@@ -1,0 +1,575 @@
+{
+ "topic": "泰国（PromptPay / Thai QR Payment、NITMX、BOT）与老挝（LAO QR / LAPNet、Bank of the Lao PDR）：国家二维码、支付轨道、跨境联通、监管与稳定币版“Alipay+”接入方案",
+ "report_md": "# 泰国与老挝国家二维码调研：稳定币版“Alipay+”（以 PayPay 用户扫当地国家码为例）\n\n> 调研日期：2026-10-18。\n> **方法与局限（先读）：** 本次 WebFetch 全部失败（DNS ENOTFOUND），Bash 直连外网也被代理拒绝（403）。所以页面级核实只能靠三条路：(a) WebSearch 返回的页面摘要（含 bot.or.th、sec.or.th、hkma.gov.hk 等官方页面）；(b) GitHub 代码检索，拿到真实生产环境的 QR 字符串，并在本地重算 CRC 校验；(c) 从 npm registry 下载开源 Thai QR 库的源码，逐行阅读。\n> 本轮 WebSearch 次数在中途用尽（与其他子代理共享 200 次上限），以下几项因此没能继续查：各条联通的结算行全表、Project Nexus 最新状态、LAPNet 统计数据。\n> 本次没有拿到泰国央行（BOT）Thai QR 规范 PDF 或 LAPNet 规范的原文。下文 tag/AID 细节来自 BOT 2019 指引的衍生整理、多个独立开源实现和真实 payload，置信度已逐条标注。\n\n---\n\n## 0. 结论摘要（TL;DR）\n\n1. **泰国 Thai QR / PromptPay 是 EMVCo MPM 的本地 profile。** 标准由 BOT 制定（政策指引 FPG 25620084，2019-04-17），PromptPay 交换由 National ITMX（NITMX）运营。\n   - 个人收款（P2P/个人商户）用 **tag 29**，AID `A000000677010111`。\n   - 商户收单与账单用 **tag 30**（Bill Payment），AID `A000000677010112`，路由键是 Biller ID（13 位税号 + 2 位后缀）和 Ref1/Ref2。\n   - 收单行自定义用 **tag 31**，AID `A000000677010113`，sub 01 是 3 位银行代码（例：004 = KBank）。\n   - tag 30 另有跨境 AID `A000000677012006`，配合 62-08“币种 + 本地金额 + 国家”使用。按现有资料，它看起来用于“境外商户展示泰式码、泰国用户付款”，不是入境方向。\n2. **泰国的跨境联通是全东南亚最多的。** 已连：新加坡、越南、马来西亚、印尼、柬埔寨、香港、老挝、日本（仅泰国人出境、CPM 模式）、中国（2025-10-30 起，Alipay/WeChat Pay/UnionPay）。2026-06 TAT 推出“Pay Like a Local”，8 家泰国银行参与。\n   - 模式都是“境外交换机/钱包 ↔ NITMX ↔ 参与联通的泰国收单行商户码”，并指定泰方结算行（中国线：Bangkok Bank、Krungthai；香港线：Bangkok Bank + HSBC；老挝线：KBank + BCEL）。\n   - **入境方向只能扫“参与银行发出的商户码”**，不是任意 PromptPay 码。中国线开通时只有 6 家银行的商户码可扫。\n3. **日本钱包（PayPay 等）目前没有直连 PromptPay 的入境通道**（截至 2026-09 公开信息）。\n   - PayPay 的“海外支付模式”2025-09-30 在韩国上线，2026-04 扩到台湾，靠 Alipay+ 等网络，手续费为汇率 + 3.85%。泰国未见上线。\n   - NITMX–Ant 联通（2025-10）一期只覆盖中国 Alipay，未见扩展到其他 Alipay+ 钱包。\n4. **泰国监管的硬约束：**\n   - 2022-04-01 起，SEC 禁止数字资产业者为“用加密资产支付商品服务”提供便利。\n   - 2026-06 BOT 行长强调：持牌支付机构只能处理泰铢交易，个人 QR 必须以泰铢结算，并已冻结约 5,000 个人民币 P2P 账户。\n   - 泰铢稳定币：BOT 2026-06 表态推进 1:1 泰铢储备型稳定币，**初期仅限持牌金融机构用于结算**，公众咨询定于 2026 年底。\n   - TouristDigiPay（2025-08-18 公布，18 个月沙盒）允许外国游客经 SEC 持牌交易所 + BOT 持牌 e-money 把加密资产换成泰铢，再扫 PromptPay 码消费。上限：充值 ≤50 万泰铢/月；个人码商户 ≤5 万/月；经 KYM 的商户码 ≤50 万/月。不可提现。获批运营商名单未查到。\n   - 外汇：NRBA/NRBS 日终余额上限 2 亿泰铢。**2023-09 起，提供跨境支付服务的非居民可加入 NRQC 计划，豁免该上限**，这对我们的结算设计非常关键。\n5. **老挝 LAO QR：** BOL 2020-01-29 软发布，LAPNet 运营，是 EMVCo MPM 格式。\n   - 从真实 payload 看，用 **tag 38**，GUID `A005266284662577`。sub 01 = 8 位收单 IIN（BCEL `27710418`、JDB `32170418`），sub 02 = 业务类型（001 个人转账 / 002 商户支付，一个实现称 003 = 账单），sub 03 = 收款方 token。货币 418，国家 LA。中国游客走 tag 15（UnionPay）双标码。\n   - 跨境：柬埔寨（2023-08 一期 / 2025-12-19 二期）、泰国（2024-04 / 2024-06）、越南（2025-01）、UnionPay（2024-12）、韩国 GLN（2022-12，BCEL 商户）。日本未见。\n   - 监管：国内定价与支付必须用基普；BOL 2018 年禁止金融机构从事加密业务；e-money 只能以基普发行；支付牌照对老挝本地持股和董事有要求。\n6. **对 INSPAY 的建议：**\n   - 泰国首选“与一家已在 NITMX 跨境框架内的泰国结算/收单行合作，申请作为新的境外交换方接入”（复制 Ant/UnionPay/Tenpay 模式），或先借道 Alipay+ 起步。\n   - 稳定币只放在**离岸清结算层**（INSPAY ↔ 境外流动性提供方）。进泰国境内的必须是泰铢（或美元，由泰国授权银行兑换），不能让泰国持牌加密交易所直接为支付变现。\n   - 老挝体量小、外汇管制更严、加密受禁，建议放第二阶段，经 BCEL 或 LAPNet 双边谈判接入。\n\n---\n\n## 1. 泰国\n\n### 1.1 国家二维码标准\n\n| 项目 | 内容 | 置信度 |\n|---|---|---|\n| 名称 | Thai QR Code / Thai QR Payment（商户贴纸带“THAI QR PAYMENT”标识）。PromptPay QR 是其中的转账码 | 中 |\n| 所有者 | Bank of Thailand（BOT）制定，与 Thai Bankers' Association 及卡组织、本地支付机构共同开发（BOT Payment Systems Report 2017） | 中-高 |\n| 现行文件 | BOT Policy Guideline “Standardized Thai QR Code for Payment Transactions”，编号 FPG **25620084**，日期 **2019-04-17（B.E. 2562）**。泰文为正式版，英文为非官方译本。共三部分：(1) 支付服务商实践；(2) Thai QR Code Payment Standard（支付与转账）；(3) QR Code Standard for bill payment。据一份衍生整理，它废止并取代了 2017-03-31 的旧指引，截至 2026-08 未见新版 | 中-高（PDF 未能直接打开，靠搜索摘要和衍生文档） |\n| 首次发布 | 2017-08 前后。GSB 文件称 BOT 于 2017-08-30 正式宣布使用标准 QR | 中 |\n| 基础规范 | EMVCo QRCPS **MPM**（衍生文档指出 BOT 2019 指引早于 EMVCo v1.1（2020-11），存在版本差） | 高（多源一致） |\n| CPM | 有。“MyPrompt QR”（B scan C）由消费者出码、商户扫码。BOT 字段表把 AID `A000000677010114` 定义为 customer-presented。部分开源库把 ...0114 解释为“OTA 变体”，二者冲突，以 BOT 原文为准 | 中 |\n| 静态/动态 | 01 = `11` 静态（付款人自填金额）/ `12` 动态（含 54 金额） | 高 |\n| 用户数 | PromptPay 注册约 **8,106 万**（2025-03 末，二手）。另有“7,000 万+ 账户”的口径（Antom），二者口径不同 | 中 |\n| 交易量 | 2021 年 92.775 亿笔 / 31.8 万亿泰铢（BOT 2021 年报）。2025-12 单月 **23.8 亿笔 / 4.70 万亿泰铢**（Mastercard 引 BOT 数据）。2026-03 单月 >25 亿笔、近 5 万亿泰铢，笔均约 1,950 泰铢（Bangkok Bank 2026-07 报告）。BOT 2026 BAHTNET 现代化咨询称**峰值约 9,500 万笔/日** | 中 |\n| 商户数 | **未查到**官方 Thai QR 商户总数 | — |\n| 跨境 QR | 2024 年入境 QR 约 25 亿泰铢（BOT×Visa 白皮书 2025-12，转引）。2025-02 跨境 QR 2.96 亿泰铢，同比 +119%（二手）。2025 全年 730 万笔 / 59.35 亿泰铢（Spark，二手，低）。中国线开通至 2025 年底 >90 万笔、>6 亿泰铢（BOT 杂志） | 中/低 |\n\n### 1.2 码结构\n\n**tag 段分配（BOT 2019 指引，经衍生文档转述）：**\n\n| 段 | 用途 |\n|---|---|\n| 00–01 | Payload Format Indicator / Point of Initiation |\n| 02–25 | 国际卡组织（按 EMVCo，如 02/03 Visa、04/05 Mastercard、15 UnionPay） |\n| 26–28 | **本地卡组织** |\n| 29–31 | **PromptPay 及其他支付系统** |\n| 32–38、40–51 | 按 EMVCo |\n| 39 | 尚未接入集中式系统的服务商专用，接入后必须停用 |\n\n**tag 29：PromptPay Credit Transfer**（个人或个人商户“转账码”）\n\n| sub | 名称 | 格式/长度 | 说明 |\n|---|---|---|---|\n| 00 | AID | ans 16 | `A000000677010111` = merchant-presented；`A000000677010114` = customer-presented（BOT 表） |\n| 01 | Mobile number | N13 | `0066` + 去掉首位 0 的 9 位号码，例：`0066812345678` |\n| 02 | National ID / Tax ID | N13 | |\n| 03 | e-Wallet ID | N15 | 非银 e-money 的 PromptPay ID。TrueMoney 以前缀 `14` 区分（开源库，低） |\n| 04 | Bank account | var ≤43 | **BOT 标注“Reserved for future use”**：3 位银行代码 + 账号 |\n| 05 | OTA | N10 | AID 为 ...0114 时必填 |\n\n01/02/03 三选一必填。\n\n**tag 30：Bill Payment**（商户收单、账单、K-Shop 等“商户码”的主路由）\n\n| sub | 名称 | 格式 | 说明 |\n|---|---|---|---|\n| 00 | AID | ans 16 | `A000000677010112` 国内；`A000000677012006` 跨境 |\n| 01 | Biller ID | N15 | National ID/Tax ID（13）+ Suffix（2），例 `010753600031501` = KBank 税号 0107536000315 + 01 |\n| 02 | Reference 1 | ans ≤20，M | Bangkok Bank API 称最长 30，属单行实现差异 |\n| 03 | Reference 2 | ans ≤20，O | |\n\nTerminal ID 不放在 tag 30 sub-04，而是放 **62-07**。BOT 允许 tag 30 出现时使用 62-07。\n\n**tag 31：Payment Innovation**（两种用法，BOT 表，衍生文档转述）\n- Standard API：AID `A000000677012004`；01 API ID（3N，`001` = Transaction verification API）；03 Transaction Reference（25 ans）。衍生文档指出 BOT 表在 sub 01 同时列了“API ID”和“Service Provider ID”，存在编号冲突。\n- Acquirer-specific：AID `A000000677010113`；01 Acquirer ID（3N，例 `004` KBank）；02–99 由收单行自定义。\n\n**其他字段：**\n- 52 MCC（ISO 18245）、53 `764`、54 金额（如 `350.00`）、55–57 小费/便利费（01 提示 / 02 固定 / 03 百分比，EMVCo 通用，泰国实际很少用）、58 `TH`、59 商户名（≤25）、60 城市（≤15）、61 邮编。\n- 62 Additional Data（EMVCo）：01 bill no. / 02 mobile / 03 store / 04 loyalty / 05 reference / 06 customer / 07 terminal / 08 purpose / 09 consumer data request。\n  - **BOT 跨境专用：62-08 = Currency(3) + Local amount(13) + Country(2)**，官方示例形如 `3920000003000.00JP`（JPY 3000.00，日本）。BOT 对 09/10 没有额外限制。\n- 63 CRC：**CRC-16/CCITT-FALSE**（poly 0x1021，init 0xFFFF），计算范围包含 `6304` 四个字符，输出 4 位大写十六进制。\n- 开源库还实现了 tag 80（VAT TQRC 电子税票扩展）和 tag 81（TrueMoney 私有留言）。衍生文档称 81 **不在 BOT 规范中**。两者均为低置信度。\n\n**真实样例（GitHub 公开代码中的 KBank K-Shop 静态商户码，本地重算 CRC 通过）：**\n```\n00020101021130810016A00000067701011201150107536000315010214KB0000020817990320KPS004KB00000208179931690016A00000067701011301030040214KB0000020817990420KPS004KB00000208179953037645802TH630472B3\n```\n解析：00=01｜01=11（静态）｜30 → [00 `A000000677010112`｜01 `010753600031501`｜02 `KB000002081799`｜03 `KPS004KB000002081799`]｜31 → [00 `A000000677010113`｜01 `004`｜02 `KB000002081799`｜04 `KPS004KB000002081799`]｜53=764｜58=TH｜63=72B3。\n另一份真实样例在同一码里同时放了 02（Visa）、04（Mastercard）、15（UnionPay，值 = 收单 IIN `34300764` + 转发 IIN `00520446` + 15 位 MID）、30、31、51、62。这说明泰国商户码普遍是“多网络合一”的聚合码。\n\n**自行构造的示例（非官方，仅演示字段与 CRC）：**\n- 静态 PromptPay 手机号：`00020101021129370016A000000677010111011300668123456785802TH530376463045D82`\n- 动态 Bill Payment：`00020101021230680016A00000067701011201150105556123456010214INV202610180010307TABLE075204581253037645406350.005802TH5911SAMPLE CAFE6007BANGKOK62090705POS016304AE23`\n\n**如何从码里判别泰国码并路由：**\n1. 58=`TH` 且 53=`764`。\n2. tag 29 + `...0111`：PromptPay 代理寻址转账。路由到 NITMX，由 ID 类型（手机/身份证/e-wallet）查找收款行。**这类码没有商户身份，跨境联通一般不接受**，2026 年 BOT 还在整治个人码的商用和人民币 P2P。\n3. tag 30 + `...0112`：账单/商户收款。Biller ID 的前 13 位是 biller 或收单行的税号，NITMX 据此找到对应银行；Ref1/Ref2 必须原样回传，用于对账。\n4. tag 31 + `...0113` 的 sub 01 直接给出收单行 3 位代码（004 KBank 有真实样例。其他代码：002 BBL、006 KTB、014 SCB、025 BAY，来自记忆，**未核实**）。\n5. 同一张码里出现 02–28 的卡组织模板时，按自身能力选择网络。\n\n### 1.3 底层支付轨道\n- **PromptPay**：BOT 2016 年推出，NITMX 运营的银行间零售即时转账系统，7×24，支持转账、跨行账单、政府福利、退税、跨境等。\n- **报文**：2021 年 ITMX 采用 ACI Worldwide 实时支付平台，符合 ISO 20022，同时与现有 ISO 8583 并存（当时 33 家成员行）。有二手资料称内部为 ISO 20022，并有适配器转换成员行的 ISO 8583（中）。\n- **清算/结算**：NITMX 清算，每日把成员**净头寸**送 BOT 的 RTGS 系统 **BAHTNET**，经 Multilateral Funds Transfer（MFT）完成最终结算，**属于延时净额（DNS）**。成员须按 BOT 计算的 Potential Debit Position 质押证券（SRS 规则 SorRorKhor 1/2557）。BOT 2026 BAHTNET 现代化咨询拟“为零售系统增加结算场次、消除隔夜”，可见当前存在隔夜敞口。具体每日场次**未查到**。\n- **参与者**：银行，以及非银 e-money（通过 e-Wallet ID 入网）。BFA 2022 资料：28 家银行 + 6 家 e-wallet，属自愿加入。\n- **外国机构接入**：未查到允许境外机构直接成为 PromptPay 会员的公开规则。现有跨境案例全部是“境外交换机/钱包 + 泰国结算行 + NITMX”，在 BOT 指导下由私营部门对接。实务上，**必须通过泰国持牌银行（结算行/赞助行）或在泰国设立持牌主体**。\n\n### 1.4 跨境 QR 联通现状\n\n| 对端 | 方向 | 上线 | 技术/结算 | 限额等 | 置信度 |\n|---|---|---|---|---|---|\n| 新加坡 PayNow | 双向 P2P 实时转账（手机号） | 2021-04-29 | PromptPay–PayNow 直连 | S$1,000 或 THB25,000/日 | 高 |\n| 新加坡 NETS | QR | BOT 页面列有 | — | 未查到 | 中 |\n| 越南 VietQR | 双向 QR | 2021-03-26 启动 | 互操作 QR | 未查到 | 高 |\n| 马来西亚 DuitNow | 双向 QR | 2021-06-18 | PromptPay–DuitNow 实时零售系统直连 | 马方 RM3,000/笔；日限额按银行不同（RM10k–50k）；汇率由付款方银行/钱包报价 | 中-高 |\n| 印尼 QRIS | 双向 QR | 试点 2021-08-17；实施 2022-08-29（76 家机构） | 规划 BI-FAST↔PromptPay 转账 | 未查到 | 高 |\n| 柬埔寨 KHQR/Bakong | 双向 | 2023（6 月见报） | — | 泰国用户 10 万泰铢/笔、50 万/日 | 中 |\n| 香港 FPS | 双向 QR | 2023-12-04 | HKICL ↔ NITMX；结算行 HSBC、Bangkok Bank（报道） | 香港用户 HK$10,000/日；7 家银行 + 2 家 SVF | 高/中 |\n| 老挝 LAO QR | 老→泰 2024-04-03；泰→老 2024-06 底 | | NITMX ↔ LAPNet；结算行 KBank、BCEL | 未查到 | 高 |\n| 日本 | **仅泰国人出境**（CPM：泰国人出示 MyPrompt QR，日本商户扫） | Krungsri 2019 试点；2020-10 与 NTT DATA 签约；2022 前后接入 NETSTARS | 泰国银行 + 日本服务商 | Krungsri：10 万泰铢/笔、50 万/日，免手续费；2026-02 约 9,000 家日本门店（含 SHIBUYA109） | 中-高 |\n| 中国 | 入境 | **2025-10-30** | NITMX + Alipay、UnionPay、WeChat Pay（Tenpay）；泰方结算行 **Bangkok Bank、Krungthai**；Ant 线结算行 Krungthai | 开通时可扫 BBL、KTB、KBank、ICBC Thai、SCB、BAAC 的商户码；BAY、GSB、HSBC TH、ttb 待上线；出境方向规划 2026–2027 | 高 |\n| 韩国 | 入境 | 2023 | SCB × KB Kookmin × GLN（KB Wallet GLN），全国 Thai QR 商户 | 免手续费 | 中 |\n| “Pay Like a Local”（TAT/BOT） | 入境整合宣传 | 2026-06-26（2026-03 乌隆他尼试点） | 8 家银行：KTB、BBL、KBank、SCB、BAY、ICBC Thai、BAAC、CIMB Thai；伙伴：NITMX、Alipay、WeChat Pay、UnionPay | 面向中、新、马、印尼、越、韩、老、柬、港用户 | 中 |\n| Project Nexus | 多边 | Nexus Global Payments 2025-03 在新加坡注册，预期 2026 上线 | — | 2026-10 状态**未核实** | 低-中 |\n\n**境外钱包在泰国的受理方式，有两种：**\n- (a) **扫国家码**：中国 Alipay/WeChat/UnionPay（经 NITMX 联通）、东盟银行 App（双边联通）。\n- (b) **收单行另贴或聚合品牌码**：Alipay+ 由 KTC、2C2P（Ant 控股）、Antom 等收单，覆盖 AlipayHK、Kakao Pay、TnG 等；Alipay 自 2015 年起在泰受理。\n\nPayPay 方向：PayPay 在日本境内**接入**泰国的 SCB Planet Plus、ShopeePay（2026-06-29/30，经 Alipay+），但这是“泰国人在日本付”。PayPay 用户在泰国付款**未见上线**。\n\n### 1.5 监管\n1. **支付牌照**：Payment Systems Act B.E. 2560（2017）。e-money、收单、支付便利（PF）、e-money 转账等“designated payment services”须获财政部依 BOT 建议发放的牌照。据 KPMG，无泰籍持股强制要求，但外资控股须另办 Foreign Business Licence。2023 年 SorKorChor 2/2566、4/2566 提高了资格要求（中）。\n2. **只处理泰铢**：2026-06（Vitai 行长讲话）持牌 PSP 只能处理泰铢交易；个人 QR 须以泰铢结算；绕过兑换的 Alipay/WeChat 人民币 P2P 不被允许，2025-02 至 2026-05 约 5,000 个账户被冻结或终止；违规可罚款、暂停或吊销牌照。依 1942 年 Exchange Control Act，最高罚 20 万泰铢及/或 3 年监禁（中，来自讲话报道，非正式通知原文）。\n3. **加密资产支付禁令**：BOT 与 SEC 2022-01 提出、2022-03 发布（SEC Notification **KorThor 5/2565**），**2022-04-01 生效**。数字资产业者不得为加密支付提供便利，不得提供可作支付工具的钱包，发现客户用于支付须警告、暂停或关户；存量须于 2022-05-01 前合规。交易和投资仍合法（高）。\n4. **稳定币**：\n   - 2021-03-19 BOT 指引：泰铢锚定稳定币按 e-money（Payment Systems Act）监管，发行前须与 BOT 沟通；外币锚定稳定币当时未纳入监管（中）。\n   - 2025-03-16 起，SEC 把 **USDT、USDC** 加入核准加密货币清单（可作交易所基础交易对），清单变为 BTC、ETH、XRP、XLM、USDT、USDC 及 BOT 沙盒代币（中-高）。\n   - **2026-06-26**：BOT 拟推 1:1 泰铢储备稳定币（非 CBDC），储备放在持牌机构的隔离账户，**初期仅限持牌金融机构用于结算**，2026 年底前公开征求意见，2026 年底至 2027 年初成形（中）。\n   - **2026-07-11**：BOT 宣布针对大额现金、黄金和**稳定币资金流**的管控，2026 Q4 生效（Tilleke 2026-07-17）。稳定币部分的具体义务**未查到**。\n5. **TouristDigiPay**（SEC 主导，联合财政部、AMLO、旅游体育部；BOT 监管 e-money 侧）：\n   - 2025-08-18 公布；18 个月沙盒；运营商申请期 2025-09-25 至 12-26。\n   - 运营方资格：SEC 持牌数字资产 exchange/broker/dealer，与 BOT 持牌 e-money 合作。\n   - 游客在泰国境内开两个账户：DA 账户（卖币换泰铢）和 **Tourist Wallet**（e-money）。之后扫 PromptPay/Thai QR 付款，商户只收泰铢。\n   - 限额（SEC FAQ 口径）：充值 ≤50 万泰铢/月/户；向小商户 **Personal QR** 付款 ≤5 万/月；经 **KYM 的 Merchant QR** ≤50 万/月。有媒体写成“合计 55 万”。\n   - 月交易超过 5 万泰铢须用区块链取证工具核验资金来源；禁止在金、珠宝、佛牌、古董、赌场、娱乐场所消费；不可提现，仅在关户时退款。\n   - 支持资产：官网称 BTC、ETH、各类稳定币及其他核准代币。\n   - **获批运营商名单与实际上线情况均未查到。** 律所推测的候选（Bitkub、Satang、Upbit TH、Gulf Binance）只是推测。2025-08 CoinDesk 报道 BOT “Tourist Wallet”（外币→泰铢 QR）已推出，但加密兑换功能当时暂停审查。\n6. **外汇与泰铢离岸**：\n   - NRBA/NRBS 日终余额合计上限 **2 亿泰铢**（2019-07 由 3 亿下调；年份按 Bangkok Post 原文推断，中）。\n   - **NRQC 计划**（2021-01 起）：合格非居民不受日终上限约束，也无需逐笔提交底层单据。**BOT 2023-09-26（PR 42/2023）明确：提供跨境支付服务的非居民可以加入 NRQC。**\n   - BOT Notification No.34（2025-09-01 发布、2025-12-01 生效）进一步放宽 NRBA/NRBS 存取规则，并新设 Special Non-resident Baht Account 框架（用于泰铢借款、发债）。\n   - 2025-12-30 起，银行须报告非居民来账超过 20 万美元的交易。\n   - 离岸 THB NDF 市场存在（记忆，未核实）。\n\n### 1.6 候选合作方\n- **NITMX 跨境线上的泰国结算/收单行**：Krungthai（Ant 线结算行）、Bangkok Bank（中国线、香港线结算行）、KBank（老挝线结算行，K-Shop 商户网络庞大）、SCB（与 KB 国民/GLN 有入境先例；SCB Planet Plus 已接入 PayPay）、Krungsri/BAY（MyPrompt QR 对日本，与 NTT DATA、NETSTARS 合作，三菱 UFJ 系，**对日方天然友好**）、ICBC Thai、BAAC、CIMB Thai。\n- **收单/PF**：KTC（Alipay+ 收单）、2C2P、Antom、Opn（Omise）（未核实其 Alipay+ 角色）。\n- **e-money**：TrueMoney、KBank TAGTHAi Easy Pay（2025-03 上线的游客钱包）等。\n- **SEC 持牌数字资产业者**：Bitkub、Gulf Binance、Upbit TH、Satang 等。仅限 TouristDigiPay 沙盒框架内的游客用途。\n- **先例**：\n  - Ant：Alipay+ 收单模式 + 2025 年 NITMX 国家码直连。\n  - GLN：韩国，经 SCB。\n  - 日本出境：Krungsri + NTT DATA/NETSTARS。\n\n### 1.7 对 INSPAY 的技术含义\n\n**建议路径（由易到难）：**\n1. **短期（借道）**：作为 Alipay+ 钱包侧接入，或让 PayPay 沿用其 Alipay+ 海外模式。覆盖的是 Alipay+ 收单商户，不是全量 Thai QR，而且 FX 和手续费不受我们控制。\n2. **中期（单收单行模式）**：与一家泰国银行（建议 Krungsri、SCB 或 KBank）签入境 QR 受理协议，复制 GLN×SCB 模式。只能覆盖该行的商户码（tag 30/31 指向该行），但可以较快落地。\n3. **长期（国家码全覆盖）**：在 BOT 指导下，作为新的“境外交换方”经泰国结算行接入 NITMX 跨境平台（复制 Ant/UnionPay/Tenpay 2025 模式）。可扫所有参与银行的商户码。\n\n**交易流（以 PayPay 用户扫泰国商户码为例）：**\n1. PayPay App（嵌 INSPAY SDK）扫码，本地校验 CRC，识别 58=TH/53=764，判断 tag 30/31/29。\n2. INSPAY 发 inquiry 到泰方（NITMX 跨境网关或收单行 API），取回商户名、可受理性和金额校验。\n3. INSPAY 报 JPY/THB 汇率并锁价，用户确认。\n4. PayPay 扣日元。\n5. INSPAY 发支付指令，泰方实时入账商户泰铢，回传泰方交易参考号。\n6. 日终或周期性清结算：INSPAY 在离岸用 JPYC/USDC 向流动性提供方换成 THB（或 USD），汇入泰国结算行（通过 NRBA，或由泰国授权银行兑换）。\n\n**稳定币放在哪里：**\n- 只放在 INSPAY ↔ PayPay/日本侧，以及 INSPAY ↔ 离岸 OTC/做市商。\n- **不要让泰国持牌加密交易所为商户支付直接把稳定币变成泰铢**，否则会触碰 2022 年支付禁令和 2026 年“只处理泰铢”的要求。\n- 预付资金可设计成：结算行侧保留泰铢预付池（或 NRQC 身份下的 NRBA 余额），靠稳定币做离岸快速补仓。BOT 泰铢稳定币如果开放给机构结算，可评估作为结算行之间的结算资产。\n\n**技术坑：**\n- (a) 个人码（tag 29）在跨境线一般不受理，而且有合规风险。只接 tag 30/31 商户码，或经 KYM 的码。\n- (b) 静态码须让用户输入泰铢金额。双币显示要处理精度（泰铢 2 位，日元 0 位）和锁价有效期。\n- (c) Ref1/Ref2、62-05/62-07 必须原样透传，商户对账依赖它们。\n- (d) 很多码不带 59 商户名，须靠 inquiry 回显。\n- (e) 退款：PromptPay 是推式贷记，撤销通常要收单行发起反向交易或线下处理，须在协议中约定退款报文、时限和汇率口径（具体机制**未查到**）。\n- (f) 对账文件格式由结算行定义（未查到标准）。\n- (g) 小费 55–57 在泰国基本不用。\n- (h) 不同发卡侧限额（如 HK$10,000/日、RM3,000/笔）要在我方风控里复刻。\n- (i) BAHTNET 净额结算有隔夜敞口，结算行可能要求预付或抵押。\n\n---\n\n## 2. 老挝\n\n### 2.1 国家二维码标准\n\n| 项目 | 内容 | 置信度 |\n|---|---|---|\n| 名称 | **LAO QR**（LaoQR） | 高 |\n| 所有者/运营方 | Bank of the Lao PDR（BOL）主导，**LAPNet**（Lao National Payment Network Co., Ltd.）运营推广。LAPNet 由 BOL 与 BCEL、LDB、APB、LVB、JDB、ST Bank、BIC 等银行合资（UnionPay 参与建设国家卡系统，2015）。据 Yicai，BOL、BCEL 与 UnionPay 签署了合资协议 | 中 |\n| 发布 | **2020-01-29** BOL 软发布 | 高 |\n| 版本 | **未查到**官方规范编号或版本 | — |\n| EMVCo | BCEL 文件表态对齐 EMVCo；真实 payload 是标准 EMVCo MPM TLV + CRC-16 | 中-高 |\n| CPM | 未查到 | — |\n| 静态/动态 | 01=`11` 静态（BCEL One 个人码）；动态样例中可见 `12` 及 54 金额 | 中 |\n| 成员 | 越南线有 14 家老挝银行；泰国线报道 17 家；LOCA 称 LAPNet 有 22 家银行 + 4 家 e-wallet/非银成员；**MmoneyX 2025-07-01 成为首个加入 LAPNet 的 e-wallet** | 中 |\n| 商户数/交易量 | **未查到** | — |\n\n### 2.2 码结构（真实 payload 推断，非官方规范）\n\n**tag 38：Lao National QR Merchant Account Information**\n\n| sub | 含义（推断） | 观测值 |\n|---|---|---|\n| 00 | GUID | `A005266284662577`（多份独立真实码一致） |\n| 01 | 收单/发码机构 IIN（8 位） | BCEL `27710418`、JDB `32170418`、IDB `70140418`（样例含空格，低）。规律：4 位机构码 + `0418`（老挝 ISO 数字代码 418） |\n| 02 | 业务类型 | `001` 见于 BCEL One 个人转账码；`002` 见于 JDB/IDB 商户码。一个 LMPS 实现注释：001=Credit（转账）、002=QR Payment、003=Bill |\n| 03 | 收款方/商户 token | 24–25 位字母数字，如 `CCHRJZRJZWUDWNQVHEXUHNOQ`、`mchVKyozC3MbjS51h67qal4Os` |\n\n**其他字段：**\n- tag 15 UnionPay（面向中国）：值 = 收单 IIN（8）+ 转发 IIN（8，观测到 `00520446`，泰国 UnionPay 码中也出现同一值）+ MID（15）。可见 LaoQR 商户码常是 LaoQR + UnionPay 双标。\n- 52 MCC、53 `418`、54 金额、58 `LA`、59 商户名、60 城市、62（商户样例中见 01 bill no.、05 reference、07 terminal、08 purpose）、63 CRC-16/CCITT-FALSE（两份真实码本地校验通过）。\n- **未发现**跨境专用 GUID 或字段。\n\n**真实样例（GitHub 公开代码，CRC 校验通过）：**\n- BCEL One 个人转账码：\n```\n00020101021138670016A00526628466257701082771041802030010324CCHRJZRJZWUDWNQVHEXUHNOQ53034185802LA63049B5F\n```\n- JDB 商户码（LaoQR + UnionPay 双标）：\n```\n00020101021115312031041800520446JDBMSZZXE44BFS038680016A00526628466257701083217041802030020325mchVKyozC3MbjS51h67qal4Os5204581253034185802LA5915JDBMSZZXE44BFS06009Vientiane63043F88\n```\n- 自行构造的动态商户码（非官方，仅演示）：\n```\n00020101021238600016A00526628466257701082771041802030020317MERCHANTTOKEN000152045812530341854061500005802LA5911SAMPLE SHOP6009VIENTIANE62190106INV0010705POS0163044794\n```\n\n**判别与路由**：58=`LA` 且 53=`418`，tag 38 GUID = `A005266284662577`，再按 38-01 的 IIN 路由到收单/收款行，按 38-02 区分转账、商户和账单。个人码没有商户名，须先做 INQUIRY 拿户名。\n\n### 2.3 底层支付轨道\n- LAPNet：BOL 主导的银行间交换网络，承担 ATM、POS、转账和 QR 的跨行交换（宣传口径：银行与数字金融服务商之间的安全高速转账）。\n- **成员接口（来自两份独立开源实现，中）**：成员实现的接口称为 **“LMPS”**，一份实现标注“LMPS v8.7.4 spec”。\n  - 形式：JSON over HTTPS。请求头有 `X-LAPNET-Request-Signature`、`X-Source-Request-Signature`、`X-LAPNET-Transaction-ID`；签名 **SHA256withRSA**。\n  - 命令：INQUIRY / TRANSFER / NOTIFY。\n  - 字段：`frommember`、`fromuser`、`fromaccount`、`fromaccounttype`、`totype`、`toaccount`、`tomember`、`reference`（20 位字母数字）、`amount`、`fee`、`ccy`、`purpose`、`time`、`retry`；响应含 `shouldRevert`。\n  - 结论：LAPNet 不是 ISO 20022 或 ISO 8583，而是私有 JSON 加 RSA 签名。\n- **清结算方式、是否 7×24、结算周期：未查到。**\n- 参与者：银行；非银 e-wallet 自 2025-07（MmoneyX）开始加入。外国机构须通过老挝持牌银行，直接入会的规则**未查到**。\n\n### 2.4 跨境 QR 联通\n\n| 对端 | 方向 | 日期 | 模式/结算 | 置信度 |\n|---|---|---|---|---|\n| 柬埔寨 KHQR/Bakong | 一期：柬→老（柬方用户扫 Lao QR）；二期：老→柬（Lao 用户扫 KHQR，约 450 万商户） | 一期 2023-08；二期 **2025-12-19**（MoU 2022-11） | 结算行 ACLEDA Bank Plc. + ACLEDA Bank Lao | 高/中 |\n| 泰国 PromptPay | 老→泰 2024-04-03；泰→老 2024-06 底（Krungsri 首家） | | NITMX ↔ LAPNet；KBank + BCEL 结算 | 高 |\n| 越南 VietQR/NAPAS | 越→老（越方用户扫 LaoQR）；反向为后续阶段 | 2025-01 | NAPAS ↔ LAPNet；LAK/VND 本币，按实时汇率；7 家越南银行 / 14 家老挝银行 | 高 |\n| 中国 UnionPay | 入境：UnionPay App、经 UnionPay MobileWallet Connect 的中国钱包、国际 UPI 合作钱包可扫 Lao QR | 2024-12-19 上海签约（新闻稿 2024-12-25）；2023 年 MoU | UPI 网络互联；首阶段 8 家 LAPNet 成员行（BCEL、JDB、APB 等）；结算细节**未查到** | 高/中 |\n| 韩国 GLN | 入境：GLN 钱包扫 BCEL OnePay 商户码；2026-04 增加 BCEL ATM 扫码取现 | 2022-12 | BCEL 双边 | 中 |\n| Alipay/WeChat | BCEL 商户受理（经 Wallyt/SwiftPass） | 2019 | 收单行模式，非国家码互联；**Alipay+ 经 LaoQR 未查到** | 中 |\n| 日本 | 无 | — | — | — |\n\n**其他游客方案：**\n- BCEL **EZyKip**（2024-01，游客 App，可在 Lao QR 商户付款）。\n- **LOCA PAY**：本地 PF，游客绑 Visa/MC/JCB/UPI 卡或 Alipay 后可扫任意 Lao QR。用户评价称费用约 3% + 5,000 基普（低）。\n\n### 2.5 监管\n1. **支付法**：Law on Payment System No.32/NA（2017-11-07），2023-11-20 修订。提供支付结算服务须获 BOL 牌照。Decision No.288/BOL（2020-03，2020-04-12 生效）要求老挝本地持股并任命老挝籍董事；有资料称本地持股 10%、注册资本 100–400 亿基普（中-低）。修订法规定 **e-money 只能以基普发行**（中）。\n2. **外汇**：修订后的外汇管理法自 2022-07 起施行，**国内标价、支付、收款一律用基普**。BOL Decision No.11/BOL（2025-01-03）仅允许少数情形以外币为辅币。2023 年起只有商业银行可做兑换。Decision No.1161（2024-10-29）在手机银行内设立官方外汇市场。个人向他人账户转外币，每日超过 1 万美元须提供证明，机构超过 10 万美元/日；外币转账费 0.3%，上限 30 美元。非居民基普账户、离岸基普规则：**未查到**。\n3. **加密资产**：BOL Notice **No.382/CO（2018-10-30）** 禁止境内金融机构持有、交易、协助加密业务，包括兑换、平台、顾问和信用卡购币，2019 年重申。\n   - 2021 年总理府试点：允许 6 家公司挖矿和交易；**LDX、Bitqik** 获牌（2021/2022 说法不一）；2021-11 科技通讯部规定须 100% 老挝资本并在 BOL 存 500 万美元保证金。\n   - 2025-10 拟于 2026 Q1 停止向挖矿供电（是否执行未核实）。\n   - 2026-01 Tether 与 Bitqik 开展 USDT 教育项目。\n   - **稳定币用于支付：未见任何许可，应视为禁止。**\n   - DLak（CBDC）与 Soramitsu 的 PoC 于 2023-02 开始，截至 2025-09 仍是 PoC。\n\n### 2.6 候选合作方\n- **BCEL**：最大国有商业银行，OnePay/EZyKip，泰国线结算行，接过 GLN、UnionPay、Alipay/WeChat。\n- **JDB**：Yespay 商户 API 有开源对接案例。\n- **ACLEDA Bank Lao**：柬埔寨线结算行。\n- LDB、APB、LVB、IDB。\n- **LAPNet** 本身（交换机对交换机）。\n- MmoneyX（Lao Telecom 系 e-wallet）、LOCA（PF）、Bitqik/LDX（持牌数字资产交易所，仅供参考，不可用于支付）。\n\n### 2.7 对 INSPAY 的技术含义\n- **入境路径**：BOL 指导下与 LAPNet 做交换机对交换机接入（参照 UPI 2024 模式），或经 BCEL 做收单行模式。\n- **结算**：老挝侧须拿到基普，由老挝结算行（BCEL）入账商户。INSPAY 在离岸把稳定币换成 USD/THB，交付结算行，由其按 BOL 官方市场兑换成 LAK。**稳定币不得在老挝境内落地。**\n- **风险**：基普贬值和兑换管制，资金汇回很难；基普只能在境内交割；每日外币证明门槛；市场规模小；LAPNet 规范不公开（LMPS JSON 私有接口）；LaoQR 个人码没有商户名，须先做 INQUIRY；部分商户码带 UnionPay tag 15，须优先识别 tag 38。\n- **退款与对账**：标准**未查到**，须双边约定。\n\n---\n\n## 3. 跨国对照与总体架构建议\n- **码层**：泰国（tag 29/30/31，AID 前缀 `A000000677`）与老挝（tag 38，`A005266284662577`）都是 EMVCo MPM，可用同一个 TLV 解析器 + 按国家 profile 处理（58/53 判国，模板 tag + GUID 判方案，子标签判收单方）。\n- **网络层**：泰国是 NITMX 中心化跨境平台，有多条交换机到交换机的先例；老挝是 LAPNet 双边对接。两国都要求有本地结算行，入账货币都必须是本币。\n- **稳定币层**：两国境内都不允许把稳定币用作支付或商户结算。稳定币只能做 INSPAY 离岸清结算和预付补仓的工具。泰国未来的机构用泰铢稳定币，可能成为结算行之间的结算资产，值得跟踪 2026 年底的 BOT 咨询。\n- **日本侧**：PayPay 已通过 Alipay+ 在韩国、台湾开展出境支付，说明“日本钱包出境扫码”的产品形态已被验证。INSPAY 的差异化在于：直连国家码（覆盖更广）+ 稳定币做离岸结算（降低代理行和预付资金成本）。\n",
+ "facts": [
+  {
+   "claim": "BOT 2019 年发布 Policy Guideline 'Standardized Thai QR Code for Payment Transactions'（编号 FPG 25620084，B.E.2562），含三部分：PSP 实践、Thai QR Code Payment Standard（支付与转账）、bill payment 用 QR 标准；泰文为正式版，英文为非官方译本",
+   "category": "qr_spec",
+   "source_url": "https://www.bot.or.th/content/dam/bot/fipcs/documents/FPG/2562/EngPDF/25620084.pdf",
+   "source_date": "2019-04-17",
+   "confidence": "medium",
+   "note": "PDF 未能直接打开（WebFetch DNS 失败），依据搜索摘要；2019-04-17 这一日期来自 GitHub 衍生文档"
+  },
+  {
+   "claim": "Thai QR 的 tag 段分配：02–25 国际卡组织，26–28 本地卡组织，29–31 PromptPay 及其他支付系统，32–38 与 40–51 按 EMVCo，39 给尚未接入集中式系统的服务商（接入后必须停用）",
+   "category": "qr_spec",
+   "source_url": "https://github.com/mamamind47/promptpay-resolution-oracle",
+   "source_date": "2026-08",
+   "confidence": "medium",
+   "note": "该仓库 TLV-REFERENCE.md 称依据 BOT FPG 25620084 整理，非 BOT 原文"
+  },
+  {
+   "claim": "tag 29 PromptPay Credit Transfer：sub 00 AID 'A000000677010111'（merchant-presented）；sub 01 手机号 N13，格式 0066+号码；sub 02 身份证/税号 N13；sub 03 e-Wallet ID N15；01/02/03 三选一必填",
+   "category": "qr_spec",
+   "source_url": "https://github.com/dtinth/promptpay-qr",
+   "source_date": "2026",
+   "confidence": "medium",
+   "note": "多个独立开源实现（dtinth/promptpay-qr、thai-qr-payment npm 1.2.0 源码）与 BOT 衍生字段表一致；BOT 原文未取得"
+  },
+  {
+   "claim": "BOT 字段表把 tag 29 下的 AID 'A000000677010114' 定义为 customer-presented mode，sub 05 OTA（N10）在 AID 为 ...0114 时必填；sub 04 Bank account 标为 'Reserved for future use'",
+   "category": "qr_spec",
+   "source_url": "https://github.com/mamamind47/promptpay-resolution-oracle",
+   "source_date": "2026-08",
+   "confidence": "low",
+   "note": "衍生文档称依据 BOT 表；thai-qr-payment 等库把 ...0114 解释为 OTA 变体并实现了 sub 04，两种说法冲突"
+  },
+  {
+   "claim": "tag 30 Bill Payment：sub 00 AID 国内为 'A000000677010112'、跨境为 'A000000677012006'；sub 01 Biller ID N15（税号/身份证 13 位 + 2 位后缀）；sub 02 Ref1（≤20，必填）；sub 03 Ref2（≤20，选填）",
+   "category": "qr_spec",
+   "source_url": "https://github.com/mamamind47/promptpay-resolution-oracle",
+   "source_date": "2026-08",
+   "confidence": "medium",
+   "note": "跨境 AID 在 saladpuk/PromptPay、keenthekeen/php-promptpay-qr、ihiroshi27/promptpay-js 等多个库中一致；Bangkok Bank API 称 Ref 最长 30（单行实现差异）"
+  },
+  {
+   "claim": "BOT 跨境 profile：62-08（purpose of transaction）在跨境时为 Currency(3)+Local amount(13)+Country(2)，例如 '3920000003000.00JP'；tag 30 存在时允许 62-07 Terminal ID",
+   "category": "qr_spec",
+   "source_url": "https://github.com/mamamind47/promptpay-resolution-oracle",
+   "source_date": "2026-08",
+   "confidence": "low",
+   "note": "衍生文档转述 BOT 表；示例显示该字段用于境外（日本）商户码，属推断"
+  },
+  {
+   "claim": "tag 31 Payment Innovation：收单行专用 AID 'A000000677010113'，sub 01 为 3 位 Acquirer ID（真实 KBank 码为 004），02–99 由收单行自定义；另有 Standard API AID 'A000000677012004'（sub 01 API ID 001 = Transaction verification API）",
+   "category": "qr_spec",
+   "source_url": "https://github.com/Fakepng/k-bank-api",
+   "source_date": "2023-2026",
+   "confidence": "medium",
+   "note": "多个真实 KBank K-Shop payload 可见 ...0113 与 004；A000000677012004 仅见于单一衍生文档，属低置信度"
+  },
+  {
+   "claim": "真实 KBank K-Shop 静态商户码 '00020101021130810016A00000067701011201150107536000315010214KB0000020817990320KPS004KB00000208179931690016A00000067701011301030040214KB0000020817990420KPS004KB00000208179953037645802TH630472B3'，本地重算 CRC-16/CCITT-FALSE 通过；Biller ID 010753600031501",
+   "category": "qr_spec",
+   "source_url": "https://github.com/spayicloud01-source/admin-id-bot",
+   "source_date": "2026",
+   "confidence": "medium",
+   "note": "GitHub 代码检索所得的生产码；0107536000315 为 KBank 税号属记忆，未核实"
+  },
+  {
+   "claim": "Thai QR CRC 为 CRC-16/CCITT-FALSE（poly 0x1021，init 0xFFFF），计算范围包含 '6304'；货币 53='764'，国家 58='TH'；01='11' 静态、'12' 动态",
+   "category": "qr_spec",
+   "source_url": "https://github.com/dtinth/promptpay-qr",
+   "source_date": "2026",
+   "confidence": "high",
+   "note": "开源库源码与真实 payload CRC 校验一致"
+  },
+  {
+   "claim": "PromptPay QR 基于 EMVCo MPM；MyPrompt QR 用于消费者出码（B scan C）",
+   "category": "qr_spec",
+   "source_url": "https://developer.scb.co.th/assets/documents/documentation/qr-payment/thai-qr.html",
+   "source_date": "未知",
+   "confidence": "medium",
+   "note": "SCB 开发者文档，经搜索摘要读取"
+  },
+  {
+   "claim": "PromptPay 由 NITMX 运营；NITMX 把成员净头寸送 BAHTNET，经 Multilateral Funds Transfer 做最终、不可撤销结算（延时净额）；成员须按 BOT 计算的 Potential Debit Position 质押证券",
+   "category": "rail",
+   "source_url": "https://www.bot.or.th/content/dam/bot/documents/en/our-roles/payment-systems/payment-systems-notification---circulars/SRS/regulation/SorRorKhor_1-2557_MeasuresforManagingRisks.pdf",
+   "source_date": "2014/2024",
+   "confidence": "medium",
+   "note": "BOT SRS 规则与 BAHTNET 2024 自评估（搜索摘要）；每日结算场次未查到"
+  },
+  {
+   "claim": "BOT 2026 BAHTNET 现代化咨询称 PromptPay 峰值约 9,500 万笔/日，并拟为零售系统增加结算场次、消除隔夜敞口",
+   "category": "rail",
+   "source_url": "https://www.bot.or.th/content/dam/bot/documents/th/our-roles/payment-systems/regulations-announcements/bahtnet-modernization-consultation-paper/Response%20Form%20to%20the%20Consultation%20Paper_072026.pdf",
+   "source_date": "2026-07",
+   "confidence": "medium",
+   "note": "只读到搜索摘要，属咨询提案，未定案"
+  },
+  {
+   "claim": "2021 年 ITMX 采用 ACI Worldwide 实时支付平台，符合 ISO 20022，与 ISO 8583 并存，覆盖 33 家成员行",
+   "category": "rail",
+   "source_url": "https://investor.aciworldwide.com/node/22186",
+   "source_date": "2021-02-02",
+   "confidence": "medium",
+   "note": "厂商新闻稿"
+  },
+  {
+   "claim": "PromptPay 为自愿加入的计划，参与者包括 28 家银行和 6 家 e-wallet（非银）",
+   "category": "rail",
+   "source_url": "https://bfaglobal.com/wp-content/uploads/2022/08/Highlights-emerging-from-Thailand.pdf",
+   "source_date": "2022-08",
+   "confidence": "medium",
+   "note": "BFA 报告，数据可能已过时"
+  },
+  {
+   "claim": "PromptPay 2021 年交易 92.775 亿笔、金额 31.8 万亿泰铢",
+   "category": "market_data",
+   "source_url": "https://www.bot.or.th/content/dam/bot/documents/en/research-and-publications/reports/payment-report/payment-systems-annual-report/Payment_2021_E.pdf",
+   "source_date": "2022",
+   "confidence": "medium",
+   "note": "BOT 年报，经搜索摘要读取"
+  },
+  {
+   "claim": "PromptPay 2025-12 单月 23.8 亿笔、4.70 万亿泰铢（引 BOT 数据）",
+   "category": "market_data",
+   "source_url": "https://www.mastercard.com/europe/en/news-and-trends/Insights/2026/real-time-payments-ignite-thailand-as-an-economic-force.html",
+   "source_date": "2026",
+   "confidence": "medium",
+   "note": "二手转引"
+  },
+  {
+   "claim": "PromptPay 2026-03 单月超过 25 亿笔、近 5 万亿泰铢，笔均约 1,950 泰铢",
+   "category": "market_data",
+   "source_url": "https://www.bangkokbank.com/th-TH/-/media/7987988529484de29125743bdd2ff585.ashx",
+   "source_date": "2026-07",
+   "confidence": "medium",
+   "note": "Bangkok Bank 报告，经搜索摘要读取"
+  },
+  {
+   "claim": "PromptPay 注册量 2025-03 末约 8,106 万",
+   "category": "market_data",
+   "source_url": "https://tazapay.com/en-sg/blog/promptpay-for-business-thailand-checkout-success",
+   "source_date": "2025",
+   "confidence": "medium",
+   "note": "二手；Antom 另称“7,000 万+账户”，口径不同"
+  },
+  {
+   "claim": "2024 年泰国入境跨境 QR 支付约 25 亿泰铢（约 8,000 万美元），已联通国家游客只占入境游客的 29%",
+   "category": "market_data",
+   "source_url": "https://fintechnews.sg/124222/thailand/top-payment-trends-among-tourists-visiting-thailand/",
+   "source_date": "2025-12",
+   "confidence": "medium",
+   "note": "转引 BOT×Visa 白皮书"
+  },
+  {
+   "claim": "泰国–中国跨境 QR 联通 2025-10-30 上线：NITMX 联通 Alipay、UnionPay、WeChat Pay；泰方结算行 Bangkok Bank、Krungthai；开通时可扫 BBL、KTB、KBank、ICBC Thai、SCB、BAAC 的商户码；BAY、GSB、HSBC TH、ttb 待上线",
+   "category": "linkage",
+   "source_url": "https://www.bot.or.th/en/news-and-media/news/news-20251030.html",
+   "source_date": "2025-10-30",
+   "confidence": "high",
+   "note": "BOT 官方新闻稿（搜索摘要）"
+  },
+  {
+   "claim": "NITMX、Ant International、Krungthai 2025-10-26 宣布 PromptPay–Alipay 联通，Krungthai 为结算行；一期中国 Alipay 用户在 Alipay App 内扫 PromptPay 码",
+   "category": "linkage",
+   "source_url": "https://www.businesswire.com/news/home/20251026429360/en/NITMX-Ant-International-and-Krungthai-Bank-Expand-Payment-Connectivity-Between-Thailand-and-China-via-PromptPay",
+   "source_date": "2025-10-26",
+   "confidence": "high",
+   "note": "官方新闻稿（搜索摘要）；未见扩展到其他 Alipay+ 钱包的二期公告"
+  },
+  {
+   "claim": "中国线开通至 2025 年底超过 90 万笔、6 亿泰铢；出境方向规划 2026–2027 年",
+   "category": "market_data",
+   "source_url": "https://www.bot.or.th/th/research-and-publications/articles-and-publications/bot-magazine-issues/phrasiam-69-1/connect-the-border.html",
+   "source_date": "2026",
+   "confidence": "medium",
+   "note": "BOT 杂志（泰文），经搜索摘要读取"
+  },
+  {
+   "claim": "PromptPay × FPS（香港）2023-12-04 上线，双向扫码，运营方 HKICL 与 NITMX",
+   "category": "linkage",
+   "source_url": "https://www.hkma.gov.hk/eng/news-and-media/press-releases/2023/12/20231204-3/",
+   "source_date": "2023-12-04",
+   "confidence": "high",
+   "note": "HKMA 与 BOT 联合新闻稿"
+  },
+  {
+   "claim": "香港线结算行为 HSBC 与 Bangkok Bank；香港用户上限 HK$10,000/日；7 家银行 + 2 家 SVF 参与",
+   "category": "linkage",
+   "source_url": "https://www.aseanbriefing.com/news/thailand-and-hong-kong-launch-cross-border-qr-payments/",
+   "source_date": "2023-12",
+   "confidence": "medium",
+   "note": "二手报道"
+  },
+  {
+   "claim": "PromptPay–PayNow 2021-04-29 上线，用手机号做跨境实时转账，上限 S$1,000 或 THB25,000/日",
+   "category": "linkage",
+   "source_url": "https://www.bot.or.th/en/news-and-media/news/news-20210429.html",
+   "source_date": "2021-04-29",
+   "confidence": "high",
+   "note": "BOT 新闻稿"
+  },
+  {
+   "claim": "泰国–越南互操作 QR 于 2021-03-26 启动",
+   "category": "linkage",
+   "source_url": "https://www.bot.or.th/en/news-and-media/news/news-20210324-1.html",
+   "source_date": "2021-03-24",
+   "confidence": "high",
+   "note": "BOT 新闻稿"
+  },
+  {
+   "claim": "泰国–马来西亚 PromptPay–DuitNow 跨境 QR 联通（BOT 2021-06-18 新闻稿）；马方 DuitNow 跨境 QR 限 RM3,000/笔，汇率由付款方银行/钱包报价",
+   "category": "linkage",
+   "source_url": "https://www.bot.or.th/en/news-and-media/news/news-20210618.html",
+   "source_date": "2021-06-18",
+   "confidence": "medium",
+   "note": "日限额各行不同（RM10k–50k）"
+  },
+  {
+   "claim": "泰国–印尼 QRIS 跨境 QR 2021-08-17 试点，2022-08-29 进入实施阶段（76 家机构）",
+   "category": "linkage",
+   "source_url": "https://www.bot.or.th/en/news-and-media/news/news-20220829-1.html",
+   "source_date": "2022-08-29",
+   "confidence": "high",
+   "note": "BOT 新闻稿"
+  },
+  {
+   "claim": "泰国–老挝跨境 QR：2024-04-03 一期（老挝用户扫 Thai PromptPay 码），2024-06 底起二期（泰国用户扫 LAO QR）；运营方 NITMX 与 LAPNet；结算行 KBank、BCEL",
+   "category": "linkage",
+   "source_url": "https://www.bot.or.th/en/news-and-media/news/news-20240403.html",
+   "source_date": "2024-04-03",
+   "confidence": "high",
+   "note": "BOT/BOL 联合新闻稿；结算行信息来自 Bangkok Post 与 KBank"
+  },
+  {
+   "claim": "泰国–日本：泰国游客在手机银行生成 MyPromptQR（买家出码），日本参与商户扫码；由泰国商业银行与日本服务商在 BOT 支持下建立；仅泰国人出境方向",
+   "category": "linkage",
+   "source_url": "https://www.bot.or.th/en/financial-innovation/digital-finance/digital-payment/cross-border-payment.html",
+   "source_date": "2026-05",
+   "confidence": "high",
+   "note": "BOT 跨境页面（搜索摘要）"
+  },
+  {
+   "claim": "Krungsri 与 NTT DATA 2020-10 签约，在日本推出 MyPromptQR；此后与 NETSTARS 合作扩展；出境 QR 上限 10 万泰铢/笔、50 万泰铢/日",
+   "category": "partner",
+   "source_url": "https://www.krungsri.com/en/newsandactivities/krungsri-banking-news/krungsri-ntt-launch-mypromptqr",
+   "source_date": "2020-10",
+   "confidence": "medium",
+   "note": "限额来自 Krungsri 产品页"
+  },
+  {
+   "claim": "截至 2026-02，PromptPay 已在日本约 9,000 家门店受理，并于 2026-03 在 SHIBUYA109 上线",
+   "category": "market_data",
+   "source_url": "https://honichi.com/news/2026/03/16/prompt-pay-shibuya109/",
+   "source_date": "2026-03-16",
+   "confidence": "medium",
+   "note": "页面部分付费墙"
+  },
+  {
+   "claim": "TAT/BOT 2026-06-26 推出“Pay Like a Local”：8 家银行（KTB、BBL、KBank、SCB、BAY、ICBC Thai、BAAC、CIMB Thai），伙伴 NITMX、Alipay、WeChat Pay、UnionPay；面向中、新、马、印尼、越、韩、老、柬、港用户",
+   "category": "linkage",
+   "source_url": "https://thailand.go.th/event-detail/-cross-border-qr-payment--",
+   "source_date": "2026-06-26",
+   "confidence": "medium",
+   "note": "官方页面经搜索摘要读取"
+  },
+  {
+   "claim": "SCB 与 KB Kookmin、GLN 合作，韩国游客可用 KB Wallet GLN 扫泰国全国 Thai QR 商户码",
+   "category": "partner",
+   "source_url": "https://www.scb.co.th/en/about-us/news/dec-2023/qr-code-payment",
+   "source_date": "2023-12",
+   "confidence": "medium",
+   "note": "当前状态未核实"
+  },
+  {
+   "claim": "Alipay+ 在泰国经收单方受理（KTC 网关首批，2C2P 为 Ant 控股）：AlipayHK、Kakao Pay、TnG、Alipay（自 2015 年）",
+   "category": "partner",
+   "source_url": "https://techwireasia.com/2023/05/chinas-ant-group-expands-alipay-integrations-in-thailand/",
+   "source_date": "2023-05",
+   "confidence": "medium",
+   "note": "不属于国家码互联"
+  },
+  {
+   "claim": "PayPay“海外支付模式”2025-09-30 在韩国上线，2026-04 扩展到台湾；结算汇率外加 3.85%（含税）海外事务手续费；截至 2026-09 未见泰国上线",
+   "category": "partner",
+   "source_url": "https://about.paypay.ne.jp/en/pr/20260414/01/",
+   "source_date": "2026-04-14",
+   "confidence": "medium",
+   "note": "“泰国未上线”属检索未果的结论"
+  },
+  {
+   "claim": "PayPay 2026-06-29 经 Alipay+ 新接入 ShopeePay（新加坡、泰国）与 SCB Planet Plus（泰国），可在日本 PayPay 商户使用，合计 17 个国家地区 35 项服务",
+   "category": "partner",
+   "source_url": "https://about.paypay.ne.jp/en/pr/20260629/01/",
+   "source_date": "2026-06-29",
+   "confidence": "high",
+   "note": "PayPay 官方新闻稿（搜索摘要）"
+  },
+  {
+   "claim": "SEC Notification KorThor 5/2565：自 2022-04-01 起，数字资产业者不得为用数字资产支付商品服务提供便利，不得提供可作支付工具的钱包，发现客户用于支付须警告、暂停或关户",
+   "category": "regulation",
+   "source_url": "https://blockchain.bakermckenzie.com/2022/03/27/thai-sec-bans-cryptocurrency-as-a-means-of-payment",
+   "source_date": "2022-03-27",
+   "confidence": "high",
+   "note": "多家律所一致；发布日 3-18 与 3-23 两说"
+  },
+  {
+   "claim": "SEC 把 USDT、USDC 加入核准加密货币清单，2025-03-16 生效，可作交易所基础交易对",
+   "category": "stablecoin",
+   "source_url": "https://technode.global/2025/03/10/thai-sec-adds-usdc-and-usdt-to-the-cryptocurrencies-list/",
+   "source_date": "2025-03-10",
+   "confidence": "medium",
+   "note": "SEC 新闻 SECID=11613"
+  },
+  {
+   "claim": "TouristDigiPay：SEC 2025-08-18 宣布，联合财政部、AMLO、旅游体育部推出 18 个月沙盒；运营方须为 SEC 持牌数字资产 exchange/broker/dealer，与 BOT 持牌 e-money 合作；申请期 2025-09-25 至 2025-12-26",
+   "category": "stablecoin",
+   "source_url": "https://www.sec.or.th/EN/Pages/Shortcut/TouristDigiPay.aspx",
+   "source_date": "2025-08-18",
+   "confidence": "high",
+   "note": "SEC 官方页面（搜索摘要）"
+  },
+  {
+   "claim": "TouristDigiPay 限额：Tourist Wallet 充值 ≤50 万泰铢/月/户；向小商户 Personal QR 付款 ≤5 万/月；经 KYM 的 Merchant QR ≤50 万/月；月交易超 5 万泰铢须做区块链取证；禁止金、珠宝、佛牌、古董、赌场、娱乐场所；不可提现，仅关户时退款",
+   "category": "stablecoin",
+   "source_url": "https://www.infoquest.co.th/?p=542781",
+   "source_date": "2025-08",
+   "confidence": "medium",
+   "note": "转述 SEC FAQ（2025-08-18 版）；获批运营商名单和实际上线情况未查到"
+  },
+  {
+   "claim": "BOT 行长 Vitai 2026-06-26：BOT 拟推 1:1 泰铢储备稳定币（非 CBDC），初期仅限持牌金融机构用于结算，2026 年底前公开征求意见",
+   "category": "stablecoin",
+   "source_url": "https://news.bitcoin.com/bank-of-thailand-backs-11-baht-stablecoin-while-tightening-cross-border-payment-rules/",
+   "source_date": "2026-06-29",
+   "confidence": "medium",
+   "note": "二手报道，非咨询文件原文"
+  },
+  {
+   "claim": "BOT 2026-06：持牌 PSP 只能处理泰铢交易，个人 QR 必须以泰铢结算；2025-02 至 2026-05 约 5,000 个用于人民币 P2P（Alipay/WeChat）的账户被冻结或终止",
+   "category": "regulation",
+   "source_url": "https://www.nationthailand.com/business/banking-finance/40067830",
+   "source_date": "2026-06",
+   "confidence": "medium",
+   "note": "讲话报道，非正式通知"
+  },
+  {
+   "claim": "BOT 2026-07-11 宣布针对大额现金、黄金和稳定币资金流的管控，2026 Q4 生效",
+   "category": "regulation",
+   "source_url": "https://www.tilleke.com/insights/bank-of-thailands-cash-gold-and-digital-asset-controls-combating-the-grey-economy",
+   "source_date": "2026-07-17",
+   "confidence": "medium",
+   "note": "稳定币部分的具体义务未查到"
+  },
+  {
+   "claim": "BOT 2021-03-19 稳定币指引：泰铢锚定稳定币按 Payment Systems Act 下的 e-money 监管，发行前须与 BOT 沟通；外币锚定稳定币当时未纳入监管",
+   "category": "stablecoin",
+   "source_url": "https://www.tilleke.com/insights/stablecoin-policy-guidelines-issued-by-bank-of-thailand",
+   "source_date": "2021-04-05",
+   "confidence": "medium",
+   "note": "律所摘要"
+  },
+  {
+   "claim": "BOT 2023-09-26（PR 42/2023）：提供跨境支付服务的非居民可以加入 NRQC 计划，在 NRBA 中管理泰铢流动性而不受日终余额上限约束，且无需逐笔提交底层单据",
+   "category": "regulation",
+   "source_url": "https://www.bot.or.th/en/news-and-media/news/news-20230926.html",
+   "source_date": "2023-09-26",
+   "confidence": "high",
+   "note": "BOT 新闻稿（搜索摘要）"
+  },
+  {
+   "claim": "NRBA 与 NRBS 日终余额合计上限 2 亿泰铢（由 3 亿下调）",
+   "category": "regulation",
+   "source_url": "https://www.bangkokpost.com/business/1711395/bot-tightens-screws-on-non-resident-accounts",
+   "source_date": "2019-07",
+   "confidence": "medium",
+   "note": "下调年份按 Bangkok Post 原文推断为 2019 年；2025 年 No.34 之后是否调整未核实"
+  },
+  {
+   "claim": "BOT Exchange Control Notification No.34 于 2025-09-01 发布、2025-12-01 生效，放宽 NRBA/NRBS 存取规则及对非居民的泰铢借贷",
+   "category": "regulation",
+   "source_url": "https://www.nishimura.com/en/knowledge/publications/20260216-119076",
+   "source_date": "2026-02-16",
+   "confidence": "medium",
+   "note": "具体条款未读到"
+  },
+  {
+   "claim": "Payment Systems Act B.E.2560 下，e-money、收单、支付便利、e-money 转账等须获财政部依 BOT 建议发放的牌照；无泰籍持股强制要求，但外资控股须另办 Foreign Business Licence",
+   "category": "regulation",
+   "source_url": "https://kpmg.com/th/en/home/insights/2023/03/legal-news-update-issue-23.html",
+   "source_date": "2023-03",
+   "confidence": "medium",
+   "note": "须当地律师确认"
+  },
+  {
+   "claim": "KBank TAGTHAi Easy Pay 为泰国首个游客 e-wallet，2025-03 上线，配合 PAY&TOUR 预付卡使用",
+   "category": "partner",
+   "source_url": "https://www.kasikornbank.com/en/News/Pages/TAGTHAi_EASY_PAY.aspx",
+   "source_date": "2025-03",
+   "confidence": "medium",
+   "note": ""
+  },
+  {
+   "claim": "BOL 于 2020-01-29 软发布 Lao QR Code 支付标准",
+   "category": "qr_spec",
+   "source_url": "http://www.xinhuanet.com/english/2020-01/30/c_138743047.htm",
+   "source_date": "2020-01-30",
+   "confidence": "high",
+   "note": "新华社"
+  },
+  {
+   "claim": "LAO QR 使用 tag 38 作商户账户模板，GUID 为 'A005266284662577'；sub 01 为 8 位 IIN（BCEL 27710418、JDB 32170418），sub 02 为业务类型（个人码 001、商户码 002），sub 03 为收款方 token；53='418'，58='LA'",
+   "category": "qr_spec",
+   "source_url": "https://github.com/dongri/emv-qrcode",
+   "source_date": "2018-2026",
+   "confidence": "medium",
+   "note": "多份独立真实 payload（dongri/emv-qrcode 测试、BCEL One 码、JDB 配置）CRC 校验一致；非官方规范"
+  },
+  {
+   "claim": "一份 LAPNet 对接实现注释：LaoQR tag 38 的 sub 02 中 001=Credit（转账）、002=QR Payment、003=Bill；tag 15 UnionPay 的转发 IIN 默认值为 00520446",
+   "category": "qr_spec",
+   "source_url": "https://github.com/ketsanato7/monday-mfi-backend",
+   "source_date": "2026",
+   "confidence": "low",
+   "note": "单一第三方实现"
+  },
+  {
+   "claim": "真实 BCEL One 个人转账码 '00020101021138670016A00526628466257701082771041802030010324CCHRJZRJZWUDWNQVHEXUHNOQ53034185802LA63049B5F'，CRC 校验通过",
+   "category": "qr_spec",
+   "source_url": "https://github.com/Phoudthavisack/nodejs-hack-wifi",
+   "source_date": "2023",
+   "confidence": "medium",
+   "note": "公开仓库中的真实码"
+  },
+  {
+   "claim": "LAPNet 成员接口 LMPS（一份实现标注 v8.7.4）为 JSON over HTTPS，请求头 X-LAPNET-Request-Signature、X-Source-Request-Signature、X-LAPNET-Transaction-ID，签名 SHA256withRSA，命令 INQUIRY/TRANSFER/NOTIFY，reference 为 20 位",
+   "category": "rail",
+   "source_url": "https://github.com/Long0017/mobile-transfer-api",
+   "source_date": "2026",
+   "confidence": "low",
+   "note": "两份独立开源实现交叉印证，非官方文档"
+  },
+  {
+   "claim": "LAPNet 由 BOL 与 BCEL、LDB、APB、Lao-Viet Bank、JDB、ST Bank、BIC 七家银行合资",
+   "category": "rail",
+   "source_url": "https://laos.opendevelopmentmekong.net/news/lao-banks-partner-in-integrated-payment-system/",
+   "source_date": "未知",
+   "confidence": "medium",
+   "note": "另有资料称 UnionPay 参与合资和国家卡系统建设"
+  },
+  {
+   "claim": "MmoneyX 于 2025-07-01 签约，成为首个加入 LAPNet 的 e-wallet，可向成员行转账并扫 Lao QR 付款",
+   "category": "rail",
+   "source_url": "https://kpl.gov.la/detail.aspx?id=92282",
+   "source_date": "2025-07",
+   "confidence": "medium",
+   "note": "老挝国家通讯社"
+  },
+  {
+   "claim": "越南–老挝跨境 QR 2025-01 上线：越南用户扫 LaoQR，7 家越南银行、14 家老挝银行，LAK/VND 本币按实时汇率；反向为后续阶段",
+   "category": "linkage",
+   "source_url": "https://vietnamnews.vn/economy/1690482/seven-banks-allow-customers-to-pay-by-qr-codes-in-laos.html",
+   "source_date": "2025-01-11",
+   "confidence": "high",
+   "note": "多家越南官方媒体一致"
+  },
+  {
+   "claim": "UnionPay International 与 LAPNet 2024-12-19 启动 QR 互联：UnionPay App、经 MobileWallet Connect 的中国钱包、国际 UPI 合作钱包可扫 Lao QR 付款",
+   "category": "linkage",
+   "source_url": "https://www.globenewswire.com/news-release/2024/12/25/3001834/0/en/Lao-QR-Merchants-Now-Accept-Payments-by-UnionPay-Powered-Wallets-UnionPay-International-and-LAPNet-Launch-Payment-Linkage.html",
+   "source_date": "2024-12-25",
+   "confidence": "high",
+   "note": "结算细节未查到"
+  },
+  {
+   "claim": "柬埔寨–老挝跨境 QR：一期 2023-08（ACLEDA Bank Plc. 与 ACLEDA Bank Lao 为结算行）；二期 2025-12-19 上线，老挝用户可扫 KHQR（约 450 万商户）",
+   "category": "linkage",
+   "source_url": "https://www.nbc.gov.kh/english/news_and_events/news_info.php?id=877",
+   "source_date": "2025-12-19",
+   "confidence": "high",
+   "note": "NBC 官方新闻"
+  },
+  {
+   "claim": "BCEL 与韩国 GLN 2022-12 合作，GLN 钱包可扫 BCEL OnePay 商户码，并在 BCEL ATM 扫码取现",
+   "category": "linkage",
+   "source_url": "https://www.tourismlaos.org/2022/12/27/laos-south-korea-allow-qr-payments-for-travelers/",
+   "source_date": "2022-12-27",
+   "confidence": "medium",
+   "note": "2026-04 GLN 新闻稿称取现服务已扩展"
+  },
+  {
+   "claim": "老挝修订外汇管理法自 2022-07 起施行，国内标价、支付、收款须用基普；BOL Decision No.11/BOL（2025-01-03）仅允许少数情形以外币为辅币",
+   "category": "regulation",
+   "source_url": "https://www.tilleke.com/insights/new-regulations-on-foreign-currency-in-laos/",
+   "source_date": "2025",
+   "confidence": "medium",
+   "note": "律所摘要"
+  },
+  {
+   "claim": "老挝个人向他人账户转外币，每日超过 1 万美元须提供用途证明，机构超过 10 万美元/日；外币转账费 0.3%，上限 30 美元；BOL Decision No.1161（2024-10-29）在手机银行内设立官方外汇市场",
+   "category": "regulation",
+   "source_url": "https://www.vdb-loi.com/?p=5219",
+   "source_date": "2024-2025",
+   "confidence": "medium",
+   "note": "律所摘要"
+  },
+  {
+   "claim": "老挝 Law on Payment System No.32/NA（2017-11-07）于 2023-11-20 修订；支付服务须获 BOL 牌照；Decision 288/BOL（2020-04-12 生效）要求老挝本地持股和老挝籍董事；修订法规定 e-money 只能以基普发行",
+   "category": "regulation",
+   "source_url": "https://conventuslaw.com/report/new-license-requirement-in-lao-payment-services/",
+   "source_date": "2020-06-23",
+   "confidence": "medium",
+   "note": "本地持股 10%、资本 100–400 亿基普的说法属低置信度"
+  },
+  {
+   "claim": "BOL Notice No.382/CO（2018-10-30）禁止境内金融机构从事加密资产业务（交易、兑换、平台、顾问、信用卡购币）",
+   "category": "regulation",
+   "source_url": "https://data.laos.opendevelopmentmekong.net/laws_record/notice-on-prohibition-of-financial-institutions-within-the-country-conducting-business-related-to-c",
+   "source_date": "2018-10-30",
+   "confidence": "medium",
+   "note": "2019 年重申"
+  },
+  {
+   "claim": "老挝 2021 年试点允许 6 家公司挖矿和交易，LDX、Bitqik 获交易所牌照；2025-10 政府拟于 2026 Q1 停止向挖矿供电",
+   "category": "stablecoin",
+   "source_url": "https://www.tilleke.com/insights/laos-initiates-pilot-project-for-cryptocurrency-mining-and-trading/",
+   "source_date": "2021/2025",
+   "confidence": "medium",
+   "note": "停电是否执行未核实；未见允许稳定币支付的规定"
+  },
+  {
+   "claim": "BOL 与 Soramitsu 于 2023-02 启动 DLak CBDC PoC（Hyperledger Iroha），截至 2025-09 仍为 PoC",
+   "category": "stablecoin",
+   "source_url": "https://soramitsu.co.jp/iroha-cbdc-2025",
+   "source_date": "2025-09",
+   "confidence": "medium",
+   "note": "厂商资料"
+  },
+  {
+   "claim": "LOCA PAY（老挝本地 PF）允许游客绑 Visa/MC/JCB/UPI 卡或 Alipay，扫任意 Lao QR 付款",
+   "category": "partner",
+   "source_url": "https://loca.la/locapay/",
+   "source_date": "2024",
+   "confidence": "low",
+   "note": "约 3% + 5,000 基普的费用来自用户评价"
+  },
+  {
+   "claim": "BCEL 2019 年经 Wallyt/SwiftPass 使其商户受理 Alipay 与 WeChat Pay；2024-01 推出游客 App EZyKip",
+   "category": "partner",
+   "source_url": "https://www.theasianbanker.com/press-releases/bcel-and-wallyt-partner-to-enable-alipay-and-wechat-pay-acceptance-in-laos",
+   "source_date": "2019",
+   "confidence": "medium",
+   "note": "Alipay+ 经 LaoQR 互联未查到"
+  }
+ ],
+ "open_questions": [
+  "BOT Thai QR 规范原文（FPG 25620084 附件）中：A000000677010114 到底是 CPM 还是 OTA？tag 29 sub 04 是否仍为保留？tag 31 的 A000000677012004 sub 01 编号冲突如何解释？需从 BOT 或 TBA 取得正式附件。",
+  "AID A000000677012006（跨境 Bill Payment）+ 62-08 的确切用途：是否只用于境外商户展示泰式码（泰国用户出境），入境方向是否从不使用？",
+  "NITMX 跨境平台对新境外交换方（如 INSPAY）的准入条件、技术接口（报文标准、inquiry/confirm/reversal 报文、超时与冲正）、费用，以及是否必须经 BOT 双边或政府间安排。",
+  "各条泰国跨境线的结算细节：结算币种（本币 LCS 还是 USD）、FX 由哪一方报价、结算频率（T+0/T+1）、预付或抵押要求、结算行完整名单。本轮搜索额度用尽，未查完。",
+  "入境线是否接受 tag 29 个人 PromptPay 码（个人商户）？能否扫非参与银行的商户码？2026 年 BOT 对个人码商用的整治对跨境受理有何具体限制？",
+  "跨境 QR 的退款、撤销、拒付机制和对账文件格式（NITMX 与结算行各自的规范）。",
+  "INSPAY 作为非居民跨境支付服务商加入 NRQC 的申请流程与条件；2025-12 生效的 No.34 之后 NRBA 日终上限的现状。",
+  "BOT 2026-07 稳定币资金流管控在 Q4 2026 的具体义务（申报门槛、对银行或交易所的要求），以及 2026 年底泰铢稳定币咨询文件是否允许跨境机构或结算行用于跨境结算。",
+  "TouristDigiPay 实际获批的数字资产运营商与 e-money 合作方名单、上线日期、截至 2026-10 的交易数据；Tourist Wallet 是否支持日本发行卡或日本钱包充值。",
+  "PayPay 海外支付模式何时扩展到泰国、走 Alipay+ 还是直连 NITMX；Ant 与 NITMX 联通二期是否开放给 PayPay 等其他 Alipay+ 钱包。",
+  "Project Nexus 截至 2026-10 的上线状态，泰国是否已经切换或并行使用 Nexus。",
+  "LAPNet LAO QR 官方规范（版本、tag 38 子标签定义、是否有 CPM、动态码有效期）以及 LMPS 接口规范，须向 LAPNet/BOL 索取。",
+  "LAPNet 清结算机制（是否在 BOL RTGS 上做净额结算、场次、7×24 情况）及外国交换机接入条件；UPI–LAPNet 联通的结算币种与结算行。",
+  "老挝非居民能否持有基普账户、基普离岸限制，以及跨境 QR 中 FX 由哪一方报价；Decision 288/BOL 的本地持股比例与资本要求的现行版本。",
+  "泰国银行 3 位代码表（002/004/006/014/025 等）与 Biller ID 的分配和查询方式需官方确认；Biller ID 前 13 位是否总是收单行税号。"
+ ]
+}

@@ -95,6 +95,8 @@ export class SettlementEngine {
         amount: row.balance < 0n ? -row.balance : row.balance,
         direction: row.balance < 0n ? 'PAY' : 'COLLECT',
         status: 'PENDING',
+        // A fiat-mode partner never handles stablecoin: it is paid by, and repays (net refunds)
+        // by, a wire through the off-ramp, which converts at the hub.
         route: fiat ? 'offramp-wire' : 'onchain',
       });
     }

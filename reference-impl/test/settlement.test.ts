@@ -131,6 +131,18 @@ test('refunds after settlement: partner owes the network and the MPP is paid bac
   trialBalanced(n);
 });
 
+test('fiat-mode partner repays net refunds by wire, never in stablecoin', async () => {
+  const n = network({ settlementMode: 'fiat' });
+  const [p] = await payN(n, ['1000.00']);
+  const c1 = await n.settlement.closeCycle('W1');
+  n.settlement.confirmPayout('W1', c1.instructions.find(i => i.role === 'acqp')!.instructionId);
+  await n.payments.refund({ partnerId: 'THP1', paymentId: p!.paymentId, amountMinor: 100000n, refundRequestId: 'full' });
+  const c2 = await n.settlement.closeCycle('W2');
+  const fromPartner = c2.instructions.find(i => i.role === 'acqp')!;
+  assert.deepEqual([fromPartner.direction, fromPartner.route], ['COLLECT', 'offramp-wire']);
+  assert.equal(n.offRamp.payouts.length, 1, 'no payout raised for a collection');
+});
+
 test('recorded treasury conversion closes the FX position', async () => {
   const n = network();
   await payN(n, ['1000.00']);

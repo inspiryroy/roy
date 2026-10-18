@@ -1,0 +1,425 @@
+{
+  "topic": "Alipay+ 架构与 API（MPP/ACQP 角色、码识别、userInitiatedPay/pay/inquiry/cancel/refund、签名与幂等、FX 与结算）、Alipay+ 与各国国家码对接、Ant International 稳定币动作、跨境钱包竞品与稳定币钱包扫本地码先例",
+  "report_md": "# Alipay+ 架构与 API、国家码对接、Ant International 稳定币动作及竞品调研\n（INSPAY「稳定币版 Alipay+」预研 · 调研日期 2026-10-18）\n\n---\n\n## 0. 调研方法与重要限制（请先读）\n\n- 本次只成功执行了 **5 次 WebSearch**，结果都指向 docs.alipayplus.com 官方文档页。之后，本轮所有并行调研 agent 共享的 WebSearch 配额（200 次）用完，后续检索被系统拒绝。\n- **WebFetch 无法使用**：docs.alipayplus.com、antgroup.com、ant-intl.com 均报 `getaddrinfo ENOTFOUND`。经 Bash 直连也被代理拒绝（`CONNECT tunnel failed, response 403`）。因此本次**没有直接打开任何页面原文**。所谓“已核实”是指 WebSearch 返回的官方文档摘要和原文引用片段。\n- 标注规则：\n  - **【已核实】**：来自上述 docs.alipayplus.com 检索结果（含原文引用片段）。\n  - **【未核实】**：凭记忆或推断，facts 中一律为 `confidence=low`，note 写“未核实”。\n- 第 4.2 节（各国国家码对接清单）、第 5 节（Ant International 稳定币）、第 6 节（竞品）、第 7 节（加密钱包先例）**几乎全部未核实**。它们只能作为补检清单，不能作为决策依据。\n- 建议补检时优先打开以下 URL（本次检索已确认存在）：\n  - `docs.alipayplus.com/alipayplus/alipayplus/api_mpp/pay_private_order_code`（userInitiatedPay，MPP 侧）\n  - `.../upgrading_for_regulatory_compliance_mpp/user_initiated_pay`（监管合规升级版）\n  - `.../sdk_mpp/identify_code`、`.../integration_merchant_mode_mpp/alipayplus_code_rules`（码识别）\n  - `.../integration_user_mode_acq/api.md`、`.../integration_user_mode_acq/accept_payment`（UPM，ACQP 侧）\n  - `.../api_acq_ns/signature`、`.../api_acq_unified_1.3.0_beta/signature`、`.../api_mpp/api_overview`（签名与报文头）\n  - `.../registration_acq`（商户登记）、`.../integration_tsp/overview`（TSP 模式）、`.../gateway_tile/gateway_overview_tile`（Gateway）\n\n---\n\n## 1. Alipay+ 的角色模型\n\n### 1.1 官方角色定义【已核实】\n\n| 角色 | 官方定义要点 | 来源页 |\n|---|---|---|\n| **ACQP**（Acquiring Service Provider，收单服务商） | 为商户处理支付的一方，通过集成 Alipay+ 产品接入。TSP 模式下可授权 TSP 代为集成。 | integration_tsp/overview |\n| **MPP**（Mobile Payment Provider，移动支付提供方） | 通常是数字钱包，文档示例为 **GCash**。UPM 场景下付款码显示在 MPP 的 App 上。 | integration_tsp/overview、product_upm_acq |\n| **TSP**（Technical Service Provider，技术服务商） | “An institution that offers technical services, such as development and testing, to ACQPs.” | integration_tsp/overview |\n| **Merchant**（商户） | 交易商品或服务的公司或个人。 | integration_tsp/overview |\n| **Alipay+** | 官方表述：“a collaborative effort along with all Partners to provide more open, digitalized, and inclusive financial services to worldwide consumers and merchants” | integration_tsp/overview |\n\n- **TSP 模式支持的产品**：AutoDebit、User-presented Mode Payment、Merchant-presented Mode Payment【已核实】。\n- **商户登记（Merchant Registration）**【已核实，原文】：“In certain countries and regions, for legal or compliance reasons, the merchant information that is related to a payment must be registered by the Acquiring Service Provider (ACQP) and approved by the Mobile Payment Provider (MPP) before this payment can be processed by the MPP.”\n  - 含义：在部分市场，ACQP 必须先把商户信息登记给 Alipay+，经 MPP 审批后，MPP 才会处理该商户的支付。我们的网络也需要类似的“商户预登记 + 钱包侧准入”流程，以满足日本侧（PayPay 等）对境外商户的 KYC/制裁筛查要求。\n\n### 1.2 结构理解（部分推断）\n\n```\n 用户 ──(钱包App)── MPP ══ Alipay+ API ══ Alipay+ 网络（码规则/路由/FX/清算/营销） ══ Alipay+ API ══ ACQP ── 商户\n                     （如 GCash、PayPay?）                                                      （本地银行/支付机构/交换机?）\n```\n\n- 这是一个星形 hub：MPP 与 ACQP 各自只与 Alipay+ 签约、对接一套 API，不需要两两直连。这一点从 API 方向（MPP→Alipay+、ACQP→Alipay+、Alipay+→MPP/ACQP）可以确认。\n- Alipay+ 在中间承担：码规则分发与码识别、交易路由、（推断）汇率报价与锁定、清算与结算、营销（A+ Rewards 等）。FX、清算与营销部分【未核实】。\n- ACQP 可以是银行、本地支付机构，也可能是国家交换机或码运营方【未核实】。若国家交换机能作为一个 ACQP 接入，就能把整个国家码商户网络一次性带进 Alipay+，这正是“扫国家码”的关键（见第 4 节）。\n\n---\n\n## 2. 产品形态\n\n### 2.1 官方文档中可确认存在的产品【已核实（存在性）】\n\n- **UPM**（User-presented Mode Payment，即 CPM）：商户扫用户付款码。付款码显示在 MPP App 上，ACQP 根据码识别所属 MPP 后调 `pay`。\n- **MPM**（Merchant-presented Mode Payment）：用户用 MPP App 扫商户码。\n- **Cashier Payment**：线上收银台。用户从商户 App 或网站被重定向到钱包完成支付（userInitiatedPay 页原文：“The user is redirected from the merchant's app or website to complete the payment.”）。\n- **AutoDebit**：代扣（授权后免密扣款）。\n- **Alipay+ Gateway**：有 Gateway overview 文档页（gateway_tile/gateway_overview_tile）。\n- **Tax refund**（ACQP 侧 beta 文档，tax_refund_acqp_beta）。\n\n### 2.2 MPM 的码类型（从 API 命名与码识别逻辑可确认）\n\n| 码类型 | 识别结果 / 处理方式 | 核实状态 |\n|---|---|---|\n| **Entry code**（入口码） | `identifyCode` 返回 `isSupported=true` 且 `postCodeMatchActionType=OPEN_URL`；MPP 用 Alipay+ client SDK 的 launch API 打开入口码 URL | 已核实。“通常为静态码、用户在 H5 页输入金额”为推断，未核实 |\n| **Order code**（订单码） | 返回 `DECODE`；MPP 调 `userInitiatedPay` 把码值发给 Alipay+ 解码 | 已核实 |\n| **Private order code**（私有订单码） | ACQP 自有格式的订单码；ACQP 侧文档描述由 Alipay+ 调用 ACQP 解码 | 已核实（检索摘要） |\n| **Payment code**（付款码，UPM） | 显示在 MPP App；ACQP 识别 MPP 后调 `pay`；Alipay+ 再向 MPP 发 `pay`，用付款码扣款 | 已核实 |\n\n### 2.3 营销与标识【未核实】\n\n- A+ Rewards、Alipay+ D-store（数字化商户工具）、Alipay+ 合作钱包 logo 墙（受理标识）：凭记忆，未核实。\n- “Alipay+ 统一码”的实质（推断）：Alipay+ 并没有一个类似国家码的统一 QR 规范，而是一套“码规则（code rules）”机制。各 ACQP 的码，包括可能的国家码，登记为规则后，所有 MPP 的 SDK 都能识别并路由（见第 4.1 节）。商户张贴的“Alipay+”标识只是受理标识。\n\n---\n\n## 3. 开放 API 细节（docs.alipayplus.com）\n\n### 3.1 版本并存【已核实】\n\n同一接口存在多个文档版本或路径，说明 Alipay+ 有多代 API 并存：\n- MPP 侧：`api_mpp/`、`upgrading_for_regulatory_compliance_mpp/`（监管合规升级）、`sdk_mpp/`、`server_sdk_mpp_beta/`\n- ACQP 侧：`api_acq/`、`api_acq_unified/`、`api_acq_unified_1.3.0_beta/`、`api_acq_older_edition/`、`api_acq_ns/`、`api_acq_tile/`\n- 方向说明：MPP 版 `userInitiatedPay` 是 MPP 调用 Alipay+；ACQP 版（私有订单码）是 Alipay+ 调用 ACQP。**同名接口在两侧方向相反，不能混读。**\n\n### 3.2 通用报文规范\n\n- **协议**：HTTPS POST，JSON 报文，路径前缀 `/aps/api/v1/...`（例如 `/aps/api/v1/payments/userInitiatedPay`、`/aps/api/v1/payments/pay`）【已核实】。\n- **所有请求参数都是 string 类型**【已核实，原文】：“If the data type of a parameter is Boolean and its value is true, set it as \"true\".” 整数、布尔值也要加引号。\n- **请求头**【已核实】：\n  - `Client-Id`：“a unique ID that is assigned by Alipay+ to identify a Partner and is associated with the keys that are used for the signature”，在 Alipay+ Developer Center 的 Integration Settings 页面获取。\n  - `Request-Time`：ISO 8601，文档示例 `2019-04-04T12:08:56+05:30`。\n  - `Signature`：逗号分隔的 key=value 对（“Each key-value pair is an equation, which is a key joined with its value by an equal sign (=)”）。\n    - `algorithm`：“The supported algorithm is RSA256, which refers to SHA256withRSA”，值大小写不敏感。\n    - `keyVersion`（新版 API）：“If you maintain versions for your key pairs, set the value of this parameter as the latest key version; otherwise, set it as 1.”\n    - `signature`：签名值。\n  - 拼装示例（根据上述说明自行拼装，**非官方原文**）：`Signature: algorithm=RSA256, keyVersion=1, signature=<签名值>`\n- **待签字符串**：\n  - 二手来源 Hookdeck 称，待签内容由 HTTP method + path、Client-Id、Request-Time、原始 body 组成，并强调必须使用原始 body，不能重新序列化 JSON【medium】。\n  - 凭记忆，官方格式为 `<HTTP-METHOD> <HTTP-URI>\\n<Client-Id>.<Request-Time>.<HTTP-BODY>`，签名值 Base64 后再 URL encode【未核实】。\n- **双向验签**【已核实】：ACQP 必须对请求签名，并验证 Alipay+ 响应的签名（“the ACQP must sign the API request and validate the response signature”）。\n\n### 3.3 结果状态与幂等\n\n- Server SDK 层的状态【已核实】：`S` = 成功；`F` = 失败；`U` = 未知异常（“the MPP can check logs to view details. The MPP also might retry.”）。\n- API 层【未核实，推断与 SDK 一致】：`result.resultStatus`（S/F/U）+ `resultCode` + `resultMessage`。\n- **幂等**【已核实】：结果未知时，使用与上次相同的 `paymentRequestId` 重试（“retry the same request, using the same paymentRequestId as the previous request”）。退款也用唯一的 `refundRequestId` 做幂等【未核实】。\n\n### 3.4 MPP 侧接口\n\n| 接口 | 方向 | 用途 / 关键字段 | 核实 |\n|---|---|---|---|\n| `ac.code.service.CodeIdentificationService#init` | MPP 服务端 → Alipay+ Server SDK（本地） | 初始化 SDK；status=S 才能继续启动，F/U 时阻断应用启动并排查 | 已核实 |\n| `ac.code.service.CodeIdentificationService#identifyCode` | MPP 服务端 → Server SDK | 请求 `codeValue`（必填，string，≤8192 字符）；响应 `isSupported`（bool）、`postCodeMatchActionType`（`DECODE` / `OPEN_URL`）；beta 版请求为 `CodeIdentificationIdentifyRequest`，增加 `openId` 用于灰度判断（不发送给 Alipay+） | 已核实 |\n| `inquiryCodeRules` | MPP → Alipay+ | 拉取 Alipay+ 码规则并在本地同步（“Use Alipay+ code rules locally”），以替代每次调 SDK | 已核实（存在性），字段未查到 |\n| `userInitiatedPay`，`POST /aps/api/v1/payments/userInitiatedPay` | MPP → Alipay+ | MPP 上送订单码，Alipay+ 解码并返回支付信息；覆盖 MPM 扫码与 Cashier 跳转两类流程。监管合规升级版响应含 `acquirerId`、`pspId`、`codeType`（有效值 `ORDER_CODE`）、`paymentRequestId` | 已核实 |\n| `pay`（UPM） | Alipay+ → MPP | “Alipay+ sends a request to the MPP to deduct funds from the user's MPP account using the payment code” | 已核实 |\n| `pay`（MPM / Cashier） | Alipay+ → MPP（推断） | 解码后由 Alipay+ 向 MPP 发起扣款 | 未核实 |\n| `notifyPayment` | 推断为 MPP → Alipay+ 的支付结果通知 | 方向与字段未查到 | 未核实 |\n| `inquiryPayment` / `cancelPayment` / `refund` | 推断为 Alipay+ → MPP | 查询、撤销、退款 | 未核实 |\n| AutoDebit 授权相关（如 applyToken / revoke 等） | — | 名称未核实 | 未核实 |\n\n### 3.5 ACQP 侧接口\n\n| 接口 | 方向 | 用途 | 核实 |\n|---|---|---|---|\n| `pay`（UPM），`POST /aps/api/v1/payments/pay` | ACQP → Alipay+ | 商户扫用户付款码，ACQP 根据码识别 MPP 后发起支付 | 已核实 |\n| `inquiryPayment`、`cancelPayment`、`refund`（同属 `/aps/api/v1/payments/` 路径族） | ACQP → Alipay+ | 查询、撤销、退款 | 已核实（列在 UPM API 列表中） |\n| `pay`（MPM Entry code）、`pay`（MPM Order code） | 同样使用 `/aps/api/v1/payments/pay` | MPM 场景的支付 | 存在性已核实；方向与字段未核实 |\n| `userInitiatedPay`（Private order code） | Alipay+ → ACQP | Alipay+ 请 ACQP 解码其私有订单码 | 已核实（检索摘要） |\n| 商户登记 registration（及登记状态查询、通知） | ACQP → Alipay+ | 商户信息登记，待 MPP 审批 | 流程已核实；接口名未核实 |\n| `notifyPayment` | 推断为 Alipay+ → ACQP | 支付结果通知 | 未核实 |\n| 汇率查询（任务中提到的 `consultExchangeRate` / `inquiryExchangeRate`） | — | **本次未查到官方接口名**，不能确认其是否存在 | 未查到 |\n\n### 3.6 超时、重试与撤销\n\n- 【已核实】结果未知时，用同一 `paymentRequestId` 重试；未完成的支付可调用 `cancelPayment` 关闭。\n- 【未核实，行业惯例】UPM 下：\n  - `pay` 返回 U 或处理中时，轮询 `inquiryPayment`；到达约定超时后调 `cancelPayment`。\n  - `cancelPayment` 通常有时间窗（如交易当日或若干小时内），超出时间窗只能 `refund`。\n  - 退款通常支持部分、多次退款，累计不超过原金额，并有退款期限（常见 ≤365 天）。\n  - **具体轮询间隔、超时秒数、撤销窗口、退款期限本次均未查到**，需以官方文档或合同为准。\n\n### 3.7 汇率与结算【全部未核实】\n\n- **三种币种（推断）**：交易币种（商户标价的本币）、支付币种（用户钱包币种，由 MPP 侧扣减）、结算币种（Alipay+ 与 MPP、ACQP 之间的结算币种）。\n- **汇率锁定（凭记忆）**：Alipay+ 在支付报文中携带报价对象，如 `paymentQuote`、`settlementQuote`，含 quoteId、quotePrice、quoteCurrencyPair、报价起止时间等。用户确认时锁定汇率。**字段名未核实。**\n- **清算与结算（凭记忆）**：Alipay+ 分别与 MPP、ACQP 做双边清算，按日生成交易明细与结算汇总文件，经 SFTP 交付。结算周期按合同约定（常见 T+1 至 T+N），结算币种常为 USD 或当地币。**文件格式、周期、币种均未查到官方原文。**\n- 对我们的意义：这部分通常只在签约后的 Settlement Guide 里提供。需通过 Alipay+ 商务渠道，或参考现有 Alipay+ 合作方（如 PayPay、本地 ACQP）的接口文档确认。\n\n---\n\n## 4. Alipay+ 如何处理“扫当地国家二维码”\n\n### 4.1 技术机制（核心步骤已核实）\n\n1. 用户在 MPP App 扫码。MPP 先用自身业务逻辑处理自家码和白名单码【已核实：“MPP's own local codes and allowlisted codes are handled by its own business logic before any Alipay+ check”】。\n2. 对自己无法识别的码，MPP 调用 Server SDK 的 `identifyCode`，或用 `inquiryCodeRules` 同步到本地的规则做匹配【已核实】。\n3. 根据识别结果分流【已核实】：\n   - `isSupported=false`：拒绝该码。\n   - `OPEN_URL`：通过 client SDK 的 launch API 打开入口码 URL（ACQP 侧页面）。\n   - `DECODE`：调用 `userInitiatedPay`，把完整 `codeValue` 发给 Alipay+。\n4. Alipay+ 按码规则确定所属 ACQP。若是私有订单码，Alipay+ 再调用 ACQP 解码【已核实】。返回给 MPP 的信息包括 `acquirerId`、`pspId`、`paymentRequestId` 及订单信息【已核实（合规升级版）】。\n5. 之后由 Alipay+ 向 MPP 发起扣款，MPP 扣款，再通过 notify 或 inquiry 闭环；Alipay+ 与 ACQP 之间完成清算，ACQP 向商户入账【未核实细节】。\n\n**推论**：国家码规范本身不需要“原生支持 Alipay+”。只要满足两点，全球所有 Alipay+ MPP 都能识别该国家码并路由到该 ACQP：\n- 国家码的收单方、聚合方或交换机作为 ACQP 接入 Alipay+；\n- 在 Alipay+ 登记了能匹配其国家码的“码规则”（例如某个 EMV tag 26–51 的 GUID 加商户标识结构）。\n\n码规则的具体表达形式（正则、前缀，还是 EMV TLV 字段匹配）本次**未查到**，需后续核实。对我们来说，这是最值得复制的设计。\n\n### 4.2 各国对接现状【全部未核实，需逐条复核；不得直接引用】\n\n| 国家/地区 | 国家码 | 记忆中的 Alipay+ 接入情况 | 置信度 |\n|---|---|---|---|\n| 日本 | JPQR / PayPay 码 | PayPay 约从 2018–2019 年起受理支付宝，后扩展为受理 Alipay+ 合作钱包（PayPay 作为 ACQP 角色）。未查到 Alipay+ 直接受理 JPQR 的官方信息 | low |\n| 韩国 | ZeroPay | 记忆中 Alipay+ 与 ZeroPay 运营方（韩国简便结算振兴院）有合作，使 Alipay+ 钱包可在 ZeroPay 商户付款。时间与模式未核实 | low |\n| 新加坡 | SGQR | SGQR 是多方案共存的标签，可含 Alipay 等条目；Alipay+ 钱包通过新加坡本地 ACQP 受理。是否解析 SGQR 内 PayNow/NETS 的 GUID 未查到 | low |\n| 马来西亚 | DuitNow QR | 记忆中 PayNet 与 Alipay+ 有合作，让 Alipay+ 钱包能在 DuitNow QR 商户付款；Touch 'n Go eWallet 为 Alipay+ MPP。日期未核实 | low |\n| 泰国 | Thai QR / PromptPay | Alipay+ 在泰国有银行类 ACQP；Alipay+ 钱包能否直接扫 PromptPay Thai QR 未查到 | low |\n| 印尼 | QRIS | 记忆中 BI 的跨境 QRIS 以央行间双边安排为主，外国钱包需经本地 PJSP 与 GPN 交换机；DANA 为 Alipay+ MPP。Alipay+ 钱包在 QRIS 商户的受理方式未查到 | low |\n| 菲律宾 | QR Ph | GCash 是 Alipay+ MPP（文档示例已核实）。Alipay+ 钱包能否扫 QR Ph 未查到 | MPP 身份 high；其余 low |\n| 柬埔寨 | KHQR / Bakong | 记忆中 Ant International / Alipay+ 与 NBC 或本地机构有合作，细节未核实 | low |\n| 越南 | VietQR / NAPAS | 未查到 | low |\n\n---\n\n## 5. Ant International 在稳定币和代币化方面的动作【全部未核实】\n\n- **Whale 平台**：Ant International 基于区块链的跨境资金与流动性管理（treasury）平台，用于集团内部及与合作银行之间的跨境资金调拨。记忆中 2024–2025 年公司称已有相当比例的跨境资金流在 Whale 上处理，**具体比例与金额未核实**。\n- **代币化存款**：记忆中 Ant International 是 HSBC 香港代币化存款服务（Tokenised Deposit Service）的首批企业客户（约 2025 年上半年），用于 24/7 实时资金划转。未核实。\n- **香港稳定币牌照**：记忆中 2025 年 6 月有媒体报道，Ant International 计划在香港《稳定币条例》（2025-08-01 生效）下申请牌照，并考虑新加坡等地。未核实。\n- **监管叫停**：记忆中 2025 年 10 月前后有媒体报道，中国内地监管要求蚂蚁、京东等暂停在香港的稳定币计划。未核实，2026 年的后续进展未查到。\n- **与 Alipay+ 资金结算的关系**：未查到官方披露称 Alipay+ 与 MPP/ACQP 的清算已改用稳定币。Whale 更可能是 Ant International 的内部 treasury 和银行间资金层，而不是 Alipay+ 网络对外的结算资产。未核实。\n- 2026 年的新动作（如 HKMA 首批发牌名单、Ant 是否获牌）：**未查到**。\n\n---\n\n## 6. 其他跨境钱包网络与竞品【全部未核实】\n\n| 网络 | 模式（凭记忆） | 与国家码的关系 / 备注 |\n|---|---|---|\n| **UnionPay International QR** | 自有 EMVCo 兼容 QR 规范，有 MPM 与 CPM；EMVCo MPM 中为 UnionPay 预留 tag 15–16（未核实） | 与多国交换机或国家码有互联合作（具体国家未核实），也通过合作钱包出境 |\n| **WeChat Pay 跨境（Tenpay Global）** | 出境以商户独立码或聚合码受理为主 | 记忆中 2025 年 Tenpay Global 加入 PayPal World（未核实） |\n| **PayPal World** | 记忆中 2025 年 7 月宣布，互联 PayPal、Venmo、Mercado Pago、NPCI International（UPI）、Tenpay Global（Weixin Pay），用户可用本地钱包在对方商户网络支付 | 是钱包对钱包的互联模型，与 Alipay+ 的 hub 思路相近（未核实） |\n| **Thunes** | 跨境支付网络（Direct Global Network），连接钱包、银行与卡；有面向钱包的跨境收付产品 | “Pay-by-QR”具体产品名与覆盖未核实 |\n| **TerraPay** | B2B 跨境资金转移基础设施，连接钱包与银行账户，在多国持牌 | 未核实 |\n| **Nium** | 实时跨境付款与发卡基础设施 | 未核实 |\n| **NETS** | 新加坡 NETS 参与 SGQR 及跨境 QR 合作 | 属于 ASEAN 双边联通范畴，由 ASEAN-LINK 报告覆盖（未核实） |\n| **Kakao Pay / Naver Pay / Toss** | 海外支付主要借道 Alipay+（Kakao Pay、Naver Pay 为 Alipay+ 合作钱包），部分也经 UnionPay 或自建合作 | 未核实 |\n| **Visa+ / 卡组织** | Visa+ 用于钱包间互转；卡组织也在推稳定币结算 | 由 STABLECOIN-INFRA 报告覆盖（未核实） |\n\n---\n\n## 7. 稳定币/加密钱包“扫本地码付款”先例【全部未核实】\n\n### 7.1 共性模式（推断）\n\n1. 境外加密钱包的用户扫本地码，例如巴西 Pix 的 BR Code（EMV MPM，tag 26 GUID 记忆为 `br.gov.bcb.pix`，未核实）、菲律宾 QR Ph、越南 VietQR、泰国 Thai QR。\n2. 钱包解析 EMV payload，报出稳定币金额，用户确认。\n3. 钱包扣减用户的 USDT/USDC。\n4. 钱包的本地持牌合作方（支付机构、EMI、VASP 或银行）用本币通过即时支付系统付给商户（Pix / InstaPay / Napas 247 / PromptPay）。\n5. 合作方与钱包之间用稳定币或 USD 净额结算。\n\n商户收到的是普通本币转账，付款方往往显示为合作方名称。\n\n### 7.2 已知或传闻案例（均未核实）\n\n- **Bitget Wallet**：记忆中 2025 年推出“扫码付”，支持巴西 Pix 等。\n- **Binance Pay、OKX、RedotPay**：记忆中在巴西或东南亚有本地码或本地转账类功能，具体是否支持“扫商户码”未核实。\n- **KAST**：主要走卡组织（Visa）轨道，而非本地 QR。\n- **Coins.ph**（菲律宾，记忆中持 BSP 的 EMI 与 VASP 牌照）：本地钱包可付 QR Ph；在 BSP 沙盒中发行 PHPC 比索稳定币（约 2024 年）。\n- **Triple-A、FOMO Pay**（新加坡，记忆中持 MAS MPI 牌照）：偏商户侧加密收款，自动兑换成法币给商户。\n- **Alchemy Pay**：出入金与商户收款。\n- **泰国 TouristDigiPay**（2025 年 BoT/SEC 沙盒）：由 TH-LA 报告覆盖。\n\n### 7.3 合规难点（推断）\n\n- 泰国、印尼、越南等多国禁止将加密资产作为支付手段。即使商户收的是本币，本地合作方也可能被认为在为加密支付提供便利。\n- 巴西 2025 年的 VASP 规则把稳定币支付纳入外汇监管（凭记忆，未核实）。\n- 该模式通常无法使用“商户折扣率”的正规收单经济模型。商户名和 MCC 显示、退款、对账能力也弱于正规跨境 QR 联通。\n\n---\n\n## 8. 总结：“稳定币版 Alipay+”需要复制什么、可以改进什么\n\n### 8.1 必须复制（Alipay+ 已验证的设计）\n\n1. **三方角色 + hub**：MPP（日本钱包，如 PayPay）、ACQP（各国本地收单方或交换机参与者）、网络（我们）。双方都只对接我们一套 API，另可加 TSP 模式降低接入成本。\n2. **码识别**：\n   - 提供 Server SDK `identifyCode` 和可本地同步的 `inquiryCodeRules`。\n   - 规则来源于各国国家码规范：解析 EMV TLV，按 tag 26–51 的 GUID、tag 58 国家码等判定国家与本地清算方。\n   - 返回 `DECODE` 或 `OPEN_URL`；先处理钱包自家码和白名单码。\n3. **交易接口集**：\n   - `userInitiatedPay`（扫码解码，返回订单、报价与 `paymentRequestId`）\n   - `pay`（扣款）、`notifyPayment`、`inquiryPayment`、`cancelPayment`、`refund`（含查询退款）\n   - 商户登记与钱包审批（registration）\n   - 所有参数为 string，便于跨语言兼容。\n4. **安全与可靠性**：\n   - `Client-Id` / `Request-Time` / `Signature`（algorithm=RSA256 即 SHA256withRSA，keyVersion 支持密钥轮换），请求与响应双向验签。\n   - 用 `paymentRequestId` 做幂等；结果为 U 时重试；超时后先撤销，再走退款。\n   - 多版本 API 并存，采用灰度发布（参考 identifyCode beta 中的 `openId` 灰度设计）。\n5. **FX 与结算**：报价对象（quoteId、汇率、有效期）在用户确认时锁定；日终出交易明细与结算汇总文件；对 MPP 与 ACQP 分别结算。\n\n### 8.2 可以改进（我们的差异化）\n\n1. **结算资产**：用稳定币（USDC，或在日本合法处理的 JPYC 等）替代代理行汇款和预付资金。做多边净额，再定时上链结算（例如日内多次），结算文件中带链上 tx hash，实现可审计对账。\n2. **FX 透明**：引入持牌做市商 RFQ，“JPY→稳定币→本币”两段报价可拆分展示；报价有效期与锁汇规则写入 API。\n3. **直接面向国家码**：与各国交换机参与者（持牌银行或钱包）签 ACQP 角色，或借道现有双边 QR 通道，让“扫国家码”成为默认能力，而不是逐个商户签约。\n4. **对 MPP 更友好**：提供国家码解析 SDK（含每国 GUID 注册表）、标准化的静态码金额输入页（替代 OPEN_URL 跳 ACQP H5）、统一的退款与撤销语义（各国即时支付多数没有原生撤销，需要用“反向转账”模拟）。\n5. **合规前置**：\n   - 在日本侧明确“为替取引”的主体（PayPay 自身作为资金移动业者，还是我们）。\n   - 稳定币兑换由谁完成（電子決済手段等取引業者）。\n   - Travel Rule、制裁筛查、商户登记审批。\n   - 东南亚侧的结算资产需在本地合作方处换成本币，避免在当地构成“加密支付”。\n\n### 8.3 主要风险\n\n- 东南亚多国禁止将加密资产作为支付手段，本地合作方的监管定性存在风险。\n- 国家码交换机未必允许私营网络作为 ACQP 接入（部分国家只认央行间双边安排）。\n- Alipay+ 的网络效应（合作钱包与商户覆盖）以及与各国交换机的既有合作。\n- 稳定币发行方风险与冻结风险。\n- 本报告大部分竞品与国家信息未核实，需补检后再做决策。",
+  "facts": [
+    {
+      "claim": "MPP 侧 userInitiatedPay 接口为 POST /aps/api/v1/payments/userInitiatedPay：MPP 把订单码发给 Alipay+，由 Alipay+ 解码并返回支付信息；同时覆盖 MPM（用户扫商户码）与 Cashier（从商户 App/网站跳转）两类流程。",
+      "category": "architecture",
+      "source_url": "https://docs.alipayplus.com/alipayplus/alipayplus/api_mpp/pay_private_order_code",
+      "source_date": "页面未标注日期（2026-10-18 经 WebSearch 检索）",
+      "confidence": "high",
+      "note": "经 WebSearch 摘要与原文片段核实，未直接打开页面（WebFetch DNS 失败）"
+    },
+    {
+      "claim": "监管合规升级版 userInitiatedPay（MPP 侧）的响应含 acquirerId、pspId、codeType（有效值 ORDER_CODE）、paymentRequestId。",
+      "category": "architecture",
+      "source_url": "https://docs.alipayplus.com/alipayplus/alipayplus/upgrading_for_regulatory_compliance_mpp/user_initiated_pay",
+      "source_date": "页面未标注日期（2026-10-18 经 WebSearch 检索）",
+      "confidence": "medium",
+      "note": "WebSearch 摘要；完整字段表未读到"
+    },
+    {
+      "claim": "Alipay+ API 的所有请求参数都是 string 类型；布尔值 true 须写成 \"true\"。",
+      "category": "architecture",
+      "source_url": "https://docs.alipayplus.com/alipayplus/alipayplus/api_mpp/pay_private_order_code.md",
+      "source_date": "页面未标注日期（2026-10-18 经 WebSearch 检索）",
+      "confidence": "high",
+      "note": "官方原文片段"
+    },
+    {
+      "claim": "Alipay+ 文档存在多套 API 版本并存（api_mpp、api_acq、api_acq_unified、api_acq_unified_1.3.0_beta、api_acq_older_edition、api_acq_ns、api_acq_tile、upgrading_for_regulatory_compliance_mpp 等）；同名接口（如 userInitiatedPay）在 MPP 侧是 MPP→Alipay+，在 ACQP 侧（私有订单码）是 Alipay+→ACQP。",
+      "category": "architecture",
+      "source_url": "https://docs.alipayplus.com/alipayplus/alipayplus/api_acq_unified/pay_private_order_code",
+      "source_date": "页面未标注日期（2026-10-18 经 WebSearch 检索）",
+      "confidence": "medium",
+      "note": "由检索结果 URL 列表与摘要归纳"
+    },
+    {
+      "claim": "MPP 码识别通过 Alipay+ Server SDK 完成：先调用 ac.code.service.CodeIdentificationService#init 初始化，再调用 #identifyCode；请求只有一个必填字段 codeValue（string，最长 8192 字符）。",
+      "category": "architecture",
+      "source_url": "https://docs.alipayplus.com/alipayplus/alipayplus/sdk_mpp/identify_code",
+      "source_date": "页面未标注日期（2026-10-18 经 WebSearch 检索）",
+      "confidence": "high",
+      "note": "官方文档摘要"
+    },
+    {
+      "claim": "identifyCode 返回 isSupported 与 postCodeMatchActionType：DECODE 表示订单码，MPP 须调用 userInitiatedPay 解码；OPEN_URL 表示 MPP 须用 Alipay+ client SDK 的 launch API 打开入口码 URL；isSupported=false 时 MPP 应拒绝该码。",
+      "category": "architecture",
+      "source_url": "https://docs.alipayplus.com/alipayplus/alipayplus/integration_merchant_mode_mpp/alipayplus_code_rules",
+      "source_date": "页面未标注日期（2026-10-18 经 WebSearch 检索）",
+      "confidence": "high",
+      "note": "官方原文片段"
+    },
+    {
+      "claim": "码识别结果状态：S 成功，F 失败，U 未知异常（MPP 可查日志并重试）；init 返回 F/U 时会阻断应用启动。",
+      "category": "architecture",
+      "source_url": "https://docs.alipayplus.com/alipayplus/alipayplus/sdk_mpp/identify_code",
+      "source_date": "页面未标注日期（2026-10-18 经 WebSearch 检索）",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "claim": "identifyCode 的 beta 版请求类为 CodeIdentificationIdentifyRequest，增加 openId 字段用于判断用户是否在灰度比例或白名单内；该字段不发送给 Alipay+。",
+      "category": "architecture",
+      "source_url": "https://docs.alipayplus.com/alipayplus/alipayplus/server_sdk_mpp_beta/identify_code",
+      "source_date": "页面未标注日期（2026-10-18 经 WebSearch 检索）",
+      "confidence": "medium",
+      "note": "WebSearch 摘要"
+    },
+    {
+      "claim": "MPP 可以通过 inquiryCodeRules API 获取 Alipay+ 码规则并在本地同步（Use Alipay+ code rules locally），以替代每次调 SDK；MPP 自家码和白名单码先由 MPP 自身业务逻辑处理。",
+      "category": "architecture",
+      "source_url": "https://docs.alipayplus.com/alipayplus/alipayplus/integration_cashier_mpp/identify_code",
+      "source_date": "页面未标注日期（2026-10-18 经 WebSearch 检索）",
+      "confidence": "medium",
+      "note": "WebSearch 摘要；码规则的具体格式未查到"
+    },
+    {
+      "claim": "Alipay+ 角色：ACQP（为商户处理支付的收单服务商）、MPP（TSP 模式下通常为数字钱包，示例 GCash）、TSP（为 ACQP 提供开发、测试等技术服务的机构）、Merchant。",
+      "category": "partner",
+      "source_url": "https://docs.alipayplus.com/alipayplus/alipayplus/integration_tsp/overview",
+      "source_date": "页面未标注日期（2026-10-18 经 WebSearch 检索）",
+      "confidence": "high",
+      "note": "官方原文片段"
+    },
+    {
+      "claim": "TSP 模式支持 AutoDebit、User-presented Mode Payment、Merchant-presented Mode Payment 三类产品。",
+      "category": "architecture",
+      "source_url": "https://docs.alipayplus.com/alipayplus/alipayplus/integration_tsp/overview",
+      "source_date": "页面未标注日期（2026-10-18 经 WebSearch 检索）",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "claim": "在部分国家/地区，出于法律或合规原因，支付相关的商户信息须先由 ACQP 登记并经 MPP 审批，MPP 才能处理该笔支付。",
+      "category": "regulation",
+      "source_url": "https://docs.alipayplus.com/alipayplus/alipayplus/registration_acq",
+      "source_date": "页面未标注日期（2026-10-18 经 WebSearch 检索）",
+      "confidence": "high",
+      "note": "官方原文片段"
+    },
+    {
+      "claim": "User-presented Mode（CPM）下，ACQP 调用 POST /aps/api/v1/payments/pay（ACQP→Alipay+）发起支付；同一 API 列表还包括 inquiryPayment、cancelPayment、refund。",
+      "category": "architecture",
+      "source_url": "https://docs.alipayplus.com/alipayplus/alipayplus/integration_user_mode_acq/api.md",
+      "source_date": "页面未标注日期（2026-10-18 经 WebSearch 检索）",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "claim": "UPM 流程：商户扫描 MPP App 上的用户付款码并发送给 ACQP，ACQP 根据码识别 MPP 并路由支付。",
+      "category": "architecture",
+      "source_url": "https://docs.alipayplus.com/alipayplus/alipayplus/integration_user_mode_acq/accept_payment",
+      "source_date": "页面未标注日期（2026-10-18 经 WebSearch 检索）",
+      "confidence": "medium",
+      "note": "WebSearch 摘要"
+    },
+    {
+      "claim": "UPM 中结果未知时，应使用与上次相同的 paymentRequestId 重试（幂等）；未完成的支付可调用 cancelPayment 关闭。",
+      "category": "architecture",
+      "source_url": "https://docs.alipayplus.com/alipayplus/alipayplus/integration_user_mode_acq/accept_payment",
+      "source_date": "页面未标注日期（2026-10-18 经 WebSearch 检索）",
+      "confidence": "high",
+      "note": "官方原文片段；超时秒数与撤销时间窗未查到"
+    },
+    {
+      "claim": "ACQP 必须对 API 请求签名，并验证 Alipay+ 响应的签名。",
+      "category": "architecture",
+      "source_url": "https://docs.alipayplus.com/alipayplus/alipayplus/integration_user_mode_acq/accept_payment",
+      "source_date": "页面未标注日期（2026-10-18 经 WebSearch 检索）",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "claim": "MPP 侧 pay（UPM）：由 Alipay+ 向 MPP 发起请求，使用付款码从用户的 MPP 账户扣款。",
+      "category": "architecture",
+      "source_url": "https://docs.alipayplus.com/alipayplus/alipayplus/api_mpp/pay",
+      "source_date": "页面未标注日期（2026-10-18 经 WebSearch 检索）",
+      "confidence": "high",
+      "note": "官方原文片段"
+    },
+    {
+      "claim": "ACQP 侧 MPM 的 entry code 与 order code 支付页面同样使用 POST /aps/api/v1/payments/pay 路径。",
+      "category": "architecture",
+      "source_url": "https://docs.alipayplus.com/alipayplus/alipayplus/api_acq/pay_entry_code",
+      "source_date": "页面未标注日期（2026-10-18 经 WebSearch 检索）",
+      "confidence": "medium",
+      "note": "WebSearch 摘要；调用方向与字段未核实"
+    },
+    {
+      "claim": "ACQP 侧文档描述了私有订单码（private order code）流程：由 Alipay+ 调用 ACQP 解码 ACQP 自有格式的订单码。",
+      "category": "architecture",
+      "source_url": "https://docs.alipayplus.com/alipayplus/alipayplus/api_acq/pay_private_order_code",
+      "source_date": "页面未标注日期（2026-10-18 经 WebSearch 检索）",
+      "confidence": "medium",
+      "note": "WebSearch 摘要"
+    },
+    {
+      "claim": "Signature 请求头由逗号分隔的 key=value 对组成；algorithm 目前支持 RSA256（即 SHA256withRSA），值大小写不敏感。",
+      "category": "architecture",
+      "source_url": "https://docs.alipayplus.com/alipayplus/alipayplus/api_acq_ns/signature",
+      "source_date": "页面未标注日期（2026-10-18 经 WebSearch 检索）",
+      "confidence": "high",
+      "note": "官方原文片段"
+    },
+    {
+      "claim": "新版 API 的 Signature 请求头含 keyVersion：维护密钥版本时填最新版本号，否则填 1。",
+      "category": "architecture",
+      "source_url": "https://docs.alipayplus.com/alipayplus/alipayplus/api_acq_unified_1.3.0_beta/signature",
+      "source_date": "页面未标注日期（2026-10-18 经 WebSearch 检索）",
+      "confidence": "high",
+      "note": "官方原文片段"
+    },
+    {
+      "claim": "Client-Id 是 Alipay+ 分配给合作方的唯一 ID，与签名密钥关联，在 Alipay+ Developer Center 的 Integration Settings 页面获取；Request-Time 为 ISO 8601 时间戳（文档示例 2019-04-04T12:08:56+05:30）。",
+      "category": "architecture",
+      "source_url": "https://docs.alipayplus.com/alipayplus/alipayplus/api_mpp/api_overview",
+      "source_date": "页面未标注日期（2026-10-18 经 WebSearch 检索）",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "claim": "待签内容由 HTTP method 与 path、Client-Id、Request-Time、原始请求 body 组成，用 SHA256withRSA 签名；必须使用原始 body，不能重新序列化 JSON。",
+      "category": "architecture",
+      "source_url": "https://hookdeck.com/webhooks/platforms/guide-to-alipay-webhooks-features-and-best-practices",
+      "source_date": "页面未标注日期（2026-10-18 经 WebSearch 检索）",
+      "confidence": "medium",
+      "note": "二手来源（Hookdeck）；官方签名拼接格式（记忆中为 <METHOD> <URI>\\n<Client-Id>.<Request-Time>.<BODY>）未核实"
+    },
+    {
+      "claim": "Alipay+ 文档包含 Cashier Payment（从商户 App/网站跳转支付）、Alipay+ Gateway（网关模式）及 ACQP 侧 Tax refund（beta）等产品页。",
+      "category": "architecture",
+      "source_url": "https://docs.alipayplus.com/alipayplus/alipayplus/gateway_tile/gateway_overview_tile",
+      "source_date": "页面未标注日期（2026-10-18 经 WebSearch 检索）",
+      "confidence": "medium",
+      "note": "存在性已核实；内容未读"
+    },
+    {
+      "claim": "MPP 侧 inquiryPayment、cancelPayment、refund 由 Alipay+ 调用 MPP，notifyPayment 由 MPP 向 Alipay+ 通知结果。",
+      "category": "architecture",
+      "source_url": "N/A（凭记忆，未能在线核实）",
+      "source_date": "N/A",
+      "confidence": "low",
+      "note": "未核实；方向为推断"
+    },
+    {
+      "claim": "不能确认 consultExchangeRate / inquiryExchangeRate 是否为 Alipay+ 官方接口名。",
+      "category": "architecture",
+      "source_url": "N/A（凭记忆，未能在线核实）",
+      "source_date": "N/A",
+      "confidence": "low",
+      "note": "未查到"
+    },
+    {
+      "claim": "Alipay+ 支付报文中有 paymentQuote / settlementQuote 等报价对象（含 quoteId、quotePrice、quoteCurrencyPair、有效期），用户确认时锁定汇率。",
+      "category": "architecture",
+      "source_url": "N/A（凭记忆，未能在线核实）",
+      "source_date": "N/A",
+      "confidence": "low",
+      "note": "未核实，字段名凭记忆"
+    },
+    {
+      "claim": "Alipay+ 与 MPP、ACQP 分别做双边清算，按日经 SFTP 提供交易明细与结算汇总文件；结算周期 T+1 至 T+N，结算币种多为 USD 或当地币。",
+      "category": "architecture",
+      "source_url": "N/A（凭记忆，未能在线核实）",
+      "source_date": "N/A",
+      "confidence": "low",
+      "note": "未核实"
+    },
+    {
+      "claim": "cancelPayment 有时间窗（如交易当日或若干小时），超过只能 refund；退款可部分、多次，期限常见 ≤365 天。",
+      "category": "architecture",
+      "source_url": "N/A（凭记忆，未能在线核实）",
+      "source_date": "N/A",
+      "confidence": "low",
+      "note": "未核实，行业惯例推断"
+    },
+    {
+      "claim": "Alipay+ 约在 2020 年推出；Ant International 总部位于新加坡；合作钱包约 40 家、用户账户约 18 亿（不同年份口径不同）。",
+      "category": "market_data",
+      "source_url": "N/A（凭记忆，未能在线核实）",
+      "source_date": "N/A",
+      "confidence": "low",
+      "note": "未核实，数字不可直接引用"
+    },
+    {
+      "claim": "PayPay 受理支付宝及 Alipay+ 合作钱包（PayPay 作为 Alipay+ ACQP 角色），约始于 2018–2019 年。",
+      "category": "partner",
+      "source_url": "N/A（凭记忆，未能在线核实）",
+      "source_date": "N/A",
+      "confidence": "low",
+      "note": "未核实"
+    },
+    {
+      "claim": "Alipay+ 与韩国 ZeroPay 运营方有合作，Alipay+ 钱包可在 ZeroPay 商户付款。",
+      "category": "linkage",
+      "source_url": "N/A（凭记忆，未能在线核实）",
+      "source_date": "N/A",
+      "confidence": "low",
+      "note": "未核实，日期未知"
+    },
+    {
+      "claim": "马来西亚 PayNet 与 Alipay+ 合作，Alipay+ 钱包可在 DuitNow QR 商户付款；Touch 'n Go eWallet 是 Alipay+ MPP。",
+      "category": "linkage",
+      "source_url": "N/A（凭记忆，未能在线核实）",
+      "source_date": "N/A",
+      "confidence": "low",
+      "note": "未核实"
+    },
+    {
+      "claim": "Alipay+ 钱包能否直接扫 Thai QR/PromptPay、QRIS、QR Ph、VietQR、KHQR、JPQR：本次均未查到官方信息。",
+      "category": "linkage",
+      "source_url": "N/A（凭记忆，未能在线核实）",
+      "source_date": "N/A",
+      "confidence": "low",
+      "note": "未查到"
+    },
+    {
+      "claim": "DANA（印尼）、GCash（菲律宾）、Touch 'n Go（马来西亚）、TrueMoney（泰国）、Kakao Pay、Naver Pay、Toss（韩国）、AlipayHK、MPay（澳门）等为 Alipay+ 合作钱包。",
+      "category": "partner",
+      "source_url": "N/A（凭记忆，未能在线核实）",
+      "source_date": "N/A",
+      "confidence": "low",
+      "note": "仅 GCash 作为 MPP 示例已在官方文档核实，其余未核实"
+    },
+    {
+      "claim": "Ant International 的 Whale 是基于区块链的跨境资金与流动性管理平台，用于集团内部及银行间资金调拨。",
+      "category": "stablecoin",
+      "source_url": "N/A（凭记忆，未能在线核实）",
+      "source_date": "N/A",
+      "confidence": "low",
+      "note": "未核实；处理比例和金额未知"
+    },
+    {
+      "claim": "Ant International 是 HSBC 香港代币化存款服务（Tokenised Deposit Service）的首批企业客户（约 2025 年上半年）。",
+      "category": "stablecoin",
+      "source_url": "N/A（凭记忆，未能在线核实）",
+      "source_date": "N/A",
+      "confidence": "low",
+      "note": "未核实"
+    },
+    {
+      "claim": "约 2025 年 6 月，媒体报道 Ant International 计划在香港《稳定币条例》（2025-08-01 生效）下申请稳定币牌照，并考虑新加坡等地。",
+      "category": "stablecoin",
+      "source_url": "N/A（凭记忆，未能在线核实）",
+      "source_date": "N/A",
+      "confidence": "low",
+      "note": "未核实"
+    },
+    {
+      "claim": "约 2025 年 10 月，媒体报道中国内地监管要求蚂蚁、京东等暂停在香港的稳定币计划。",
+      "category": "regulation",
+      "source_url": "N/A（凭记忆，未能在线核实）",
+      "source_date": "N/A",
+      "confidence": "low",
+      "note": "未核实；2026 年后续未查到"
+    },
+    {
+      "claim": "EMVCo MPM 规范为 UnionPay 预留 Merchant Account Information tag 15–16；UnionPay International 有自有 QR 规范（MPM/CPM）。",
+      "category": "qr_spec",
+      "source_url": "N/A（凭记忆，未能在线核实）",
+      "source_date": "N/A",
+      "confidence": "low",
+      "note": "未核实"
+    },
+    {
+      "claim": "PayPal World 约于 2025 年 7 月宣布，互联 PayPal、Venmo、Mercado Pago、NPCI International（UPI）、Tenpay Global（Weixin Pay）。",
+      "category": "partner",
+      "source_url": "N/A（凭记忆，未能在线核实）",
+      "source_date": "N/A",
+      "confidence": "low",
+      "note": "未核实；上线状态未知"
+    },
+    {
+      "claim": "Thunes（Direct Global Network）、TerraPay、Nium 为 B2B 跨境支付基础设施，连接钱包、银行与卡。",
+      "category": "partner",
+      "source_url": "N/A（凭记忆，未能在线核实）",
+      "source_date": "N/A",
+      "confidence": "low",
+      "note": "未核实；Thunes 是否有名为 Pay-by-QR 的产品未核实"
+    },
+    {
+      "claim": "Kakao Pay、Naver Pay、Toss 的海外线下支付主要借道 Alipay+，部分经 UnionPay 或自建合作。",
+      "category": "partner",
+      "source_url": "N/A（凭记忆，未能在线核实）",
+      "source_date": "N/A",
+      "confidence": "low",
+      "note": "未核实"
+    },
+    {
+      "claim": "巴西 Pix 的 BR Code 基于 EMV MPM，tag 26 GUID 为 br.gov.bcb.pix。",
+      "category": "qr_spec",
+      "source_url": "N/A（凭记忆，未能在线核实）",
+      "source_date": "N/A",
+      "confidence": "low",
+      "note": "未核实"
+    },
+    {
+      "claim": "Bitget Wallet 约于 2025 年推出扫码付款，支持巴西 Pix 等本地码：由钱包的本地持牌合作方以本币支付给商户，钱包扣减用户稳定币。",
+      "category": "stablecoin",
+      "source_url": "N/A（凭记忆，未能在线核实）",
+      "source_date": "N/A",
+      "confidence": "low",
+      "note": "未核实；合作方与规模未知"
+    },
+    {
+      "claim": "Binance Pay、OKX、RedotPay 在巴西或东南亚有本地支付或转账功能；是否支持扫商户本地码未核实。",
+      "category": "stablecoin",
+      "source_url": "N/A（凭记忆，未能在线核实）",
+      "source_date": "N/A",
+      "confidence": "low",
+      "note": "未核实"
+    },
+    {
+      "claim": "Coins.ph 持 BSP 的 EMI 与 VASP 牌照，可付 QR Ph；在 BSP 沙盒中发行 PHPC 比索稳定币（约 2024 年）。",
+      "category": "stablecoin",
+      "source_url": "N/A（凭记忆，未能在线核实）",
+      "source_date": "N/A",
+      "confidence": "low",
+      "note": "未核实；与 PH-MM 报告交叉核对"
+    },
+    {
+      "claim": "Triple-A、FOMO Pay 持新加坡 MAS MPI 牌照，提供商户侧加密收款并兑换成法币结算。",
+      "category": "stablecoin",
+      "source_url": "N/A（凭记忆，未能在线核实）",
+      "source_date": "N/A",
+      "confidence": "low",
+      "note": "未核实"
+    },
+    {
+      "claim": "巴西央行 2025 年的 VASP 规则把稳定币支付或转账纳入外汇监管。",
+      "category": "regulation",
+      "source_url": "N/A（凭记忆，未能在线核实）",
+      "source_date": "N/A",
+      "confidence": "low",
+      "note": "未核实"
+    },
+    {
+      "claim": "Visa+ 提供钱包间互转能力；卡组织在推进稳定币结算。",
+      "category": "partner",
+      "source_url": "N/A（凭记忆，未能在线核实）",
+      "source_date": "N/A",
+      "confidence": "low",
+      "note": "未核实；见 STABLECOIN-INFRA 报告"
+    }
+  ],
+  "open_questions": [
+    "【补检优先】重新打开 docs.alipayplus.com 原文（WebFetch 本次 DNS 失败、搜索配额用尽）：MPP 侧与 ACQP 侧完整 API 列表、各接口方向、请求和响应字段表、resultCode 枚举。",
+    "Alipay+ 官方签名拼接格式（<METHOD> <URI>\\n<Client-Id>.<Request-Time>.<BODY>？）、签名值编码（Base64 + URL encode？），以及 keyVersion 轮换流程。",
+    "UPM/MPM 的超时秒数、inquiryPayment 轮询间隔、cancelPayment 的时间窗、退款期限、部分退款次数上限。",
+    "Alipay+ 汇率相关的官方接口名（是否存在 consultExchangeRate / inquiryExchangeRate）、报价对象字段（paymentQuote / settlementQuote?）、汇率有效期，以及谁承担 FX 风险。",
+    "Alipay+ 清算文件格式（字段、命名、交付方式 SFTP/API）、清算周期（T+1? T+2?）、结算币种，以及与 MPP 的预付或保证金安排。",
+    "Alipay+ 码规则（inquiryCodeRules）的数据结构：是正则、前缀，还是 EMV TLV 字段匹配？是否包含各国国家码 GUID？",
+    "Alipay+ 与各国国家码或交换机的实际合作：韩国 ZeroPay、新加坡 SGQR、泰国 PromptPay（ITMX）、马来西亚 DuitNow（PayNet）、印尼 QRIS、菲律宾 QR Ph、柬埔寨 KHQR（NBC）、越南 NAPAS、日本 JPQR。每项需要合作方、上线日期，以及钱包是直接扫国家码还是扫商户另贴的码。",
+    "PayPay 在 Alipay+ 中的确切角色（ACQP 受理 inbound？是否也作为 MPP 支持 PayPay 用户出境？）及其出境支付的技术合作方。",
+    "Ant International Whale 平台的公开规模数据、链类型、参与银行，以及是否用于 Alipay+ 合作方结算。",
+    "Ant International 香港和新加坡稳定币牌照申请的最终状态（2025 年 10 月传闻叫停后，2026 年是否有进展），以及 HKMA 首批持牌名单。",
+    "PayPal World 的上线状态与覆盖国家；是否允许第三方钱包或网络接入。",
+    "Thunes、TerraPay、Nium 是否提供“境外钱包扫东南亚国家码”的现成产品，以及其本地清算合作方。",
+    "Bitget Wallet、Binance Pay、OKX、RedotPay 等的“扫本地码付稳定币”产品：在哪些国家上线、本地合作方是谁、是否持牌、交易规模，以及监管是否已有表态。",
+    "在禁止加密资产作为支付手段的国家（泰、印尼、越等），本地合作方以本币支付商户、境外完成稳定币扣款的模式，监管如何定性？是否需要外汇或跨境汇款报送？",
+    "我们的网络能否以 ACQP 等价角色直接接入各国国家码交换机？还是只能通过已是交换机参与者的银行或钱包？哪些国家只允许央行间双边安排？",
+    "日本侧：作为 MPP 的 PayPay 与我们网络之间，谁是“为替取引”主体？JPY→稳定币的兑换由谁完成？需与 JP-PAYPAY 报告交叉确认。",
+    "商户登记与 MPP 审批（Alipay+ 有此流程）在我们网络里如何实现，才能满足日本钱包对境外商户的 KYC 和制裁筛查要求？"
+  ]
+}
